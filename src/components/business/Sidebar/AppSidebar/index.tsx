@@ -1,14 +1,13 @@
-import { APP_HEADER_NAV_KEY, type AppHeaderNavKey } from '@/bootstrap/routeMeta';
+import { APP_HEADER_NAV_KEY } from '@/bootstrap/routeMeta';
 import { useCurrentChatSessionStore } from '@/components/business/ChatPanel/_store/useCurrentChatSessionStore';
 import { clearNewChatSessionStore } from '@/components/business/ChatPanel/_store/useNewChatSessionStore';
-import { useDriveService, useNoteService } from '@/domains';
+import { useNoteService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { useAppRouteMeta } from '@/hooks/useAppRouteMeta';
 import { useOpenResource } from '@/hooks/useOpenResource';
 import { useAppAuth } from '@/layouts/App/AppAuthContext';
 import { createClientError, FRONTEND_CLIENT_ERROR } from '@/utils/error';
 import { RESOURCE_KIND } from '@/utils/navigation/resourceTarget';
-import { NotebookPen } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +18,7 @@ import SidebarHeader from '../_common/header/SidebarHeader';
 import styles from '../_common/sidebarShell.module.less';
 import AppSidebarTabs from '../_common/tab';
 import { useSidebarViewTabStore } from '../_common/tab/_store/useSidebarViewTabStore';
-import { APP_HEADER_NAV_ITEMS } from './appSidebarNavigation';
+import { APP_SIDEBAR_HEADER_ITEMS, type AppSidebarNavigateItem } from './appSidebarNavigation';
 import type { AppSidebarProps } from './index.type';
 
 function AppSidebar({ canGoBack, canGoForward, onGoBack, onGoForward, onToggle }: AppSidebarProps) {
@@ -27,7 +26,6 @@ function AppSidebar({ canGoBack, canGoForward, onGoBack, onGoForward, onToggle }
   const navigate = useNavigate();
   const routeMeta = useAppRouteMeta();
   const appAuth = useAppAuth();
-  const driveService = useDriveService();
   const noteService = useNoteService();
   const openResource = useOpenResource();
   const clearCurrentSession = useCurrentChatSessionStore((state) => state.clearCurrentSession);
@@ -37,47 +35,36 @@ function AppSidebar({ canGoBack, canGoForward, onGoBack, onGoForward, onToggle }
 
   const { loading: creatingNote, run: createNote } = useApi(
     async () => {
-      const root = await driveService.getRoot();
-      if (!root.canMountResources || !root.tagId) {
-        throw createClientError(FRONTEND_CLIENT_ERROR.INTERNAL_STATE, {
-          reason: '个人云盘根目录不可挂载资源',
-        });
-      }
-      const mountTagId = root.tagId;
-
       const title = t('navigation.defaultNoteTitle');
-      const result = await noteService.createNote({ title, pathTagId: mountTagId });
+      const result = await noteService.createNote({ title });
       if (!result.resourceId) {
         throw createClientError(FRONTEND_CLIENT_ERROR.NOTE_CREATE_RESOURCE_ID_MISSING);
       }
-      return { resourceId: result.resourceId, root, title, mountTagId };
+      return { resourceId: result.resourceId, title };
     },
     {
       manual: true,
-      onSuccess: ({ resourceId, root, title, mountTagId }) => {
+      onSuccess: ({ resourceId, title }) => {
         openResource({
           resourceId,
           resourceType: RESOURCE_KIND.NOTE,
           resourceName: title,
-          driveLocation: { scope: root.scope, mountTagId },
         });
       },
     }
   );
 
-  const handleNavItemPress = (navKey: AppHeaderNavKey) => {
+  const handleNavItemPress = (item: AppSidebarNavigateItem) => {
     if (!appAuth.isAuthenticated) {
       appAuth.requireLogin();
       return;
     }
-    const navItem = APP_HEADER_NAV_ITEMS.find((item) => item.key === navKey);
-    if (!navItem) return;
-    setHeaderNavKey(navKey);
-    if (navKey === APP_HEADER_NAV_KEY.CHAT) {
+    setHeaderNavKey(item.key);
+    if (item.key === APP_HEADER_NAV_KEY.CHAT) {
       clearCurrentSession();
       clearNewChatSessionStore();
     }
-    navigate(navItem.to);
+    navigate(item.to);
   };
 
   const handleCreateNote = () => {
@@ -88,25 +75,25 @@ function AppSidebar({ canGoBack, canGoForward, onGoBack, onGoForward, onToggle }
     if (!creatingNote) createNote();
   };
 
-  const headerNavItems: HeaderNavItem[] = APP_HEADER_NAV_ITEMS.flatMap((item) => {
-    const navItem: HeaderNavItem = {
+  const headerNavItems: HeaderNavItem[] = APP_SIDEBAR_HEADER_ITEMS.map((item) => {
+    // createNote 类型的菜单项不导航到其他页面，而是触发创建笔记操作。
+    if (item.type === 'createNote') {
+      return {
+        key: item.key,
+        name: t(item.labelKey),
+        icon: item.icon,
+        isDisabled: creatingNote,
+        onPress: handleCreateNote,
+      };
+    }
+
+    // navigate 类型的菜单项负责跳转到指定页面。
+    return {
       key: item.key,
       name: t(item.labelKey),
       icon: item.icon,
-      onPress: () => handleNavItemPress(item.key),
+      onPress: () => handleNavItemPress(item),
     };
-    if (item.key !== APP_HEADER_NAV_KEY.CHAT) return [navItem];
-
-    return [
-      navItem,
-      {
-        key: 'create-note',
-        name: t('navigation.newNote'),
-        icon: NotebookPen,
-        isDisabled: creatingNote,
-        onPress: handleCreateNote,
-      },
-    ];
   });
 
   return (
