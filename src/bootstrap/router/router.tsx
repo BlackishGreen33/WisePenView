@@ -1,14 +1,12 @@
 import { lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
-import {
-  APP_HEADER_NAV_KEY,
-  appRouteHandle,
-  type AppRouteContentContainer,
-} from '@/bootstrap/routeMeta';
+import type { AppRouteHandle } from '@/bootstrap/router/routeHandle';
+import { APP_SIDEBAR_HEADER_NAV_KEY } from '@/config/appSidebar';
 import AdminLayout from '@/layouts/Admin/AdminLayout';
 import { AppAuthProvider } from '@/layouts/App/AppAuthProvider';
 import AppLayout from '@/layouts/App/AppLayout';
+import { AppFixedPageLayout, AppScrollablePageLayout } from '@/layouts/App/AppPageLayout';
 import AppNavigationLayout from '@/layouts/AppNavigation/AppNavigationLayout';
 import AuthLayout from '@/layouts/Auth/AuthLayout';
 import CourseLayout from '@/layouts/Course/CourseLayout';
@@ -80,49 +78,21 @@ const CourseSettingsRouteGuard = lazy(
 );
 const RootRouteGuard = lazy(() => import('@/views/app/guard/RootRouteGuard'));
 
-const chatHandle = appRouteHandle({
-  pageKey: 'chat',
-  headerNav: APP_HEADER_NAV_KEY.CHAT,
-});
-const chatSessionHandle = appRouteHandle({
-  pageKey: 'chat',
-  headerNav: APP_HEADER_NAV_KEY.CHAT,
-});
-const notificationHandle = appRouteHandle({
-  pageKey: 'notifications',
-  headerNav: APP_HEADER_NAV_KEY.NOTIFICATIONS,
-  contentContainer: 'scrollable',
-});
-const driveHandle = appRouteHandle({
-  pageKey: 'drive',
-  headerNav: APP_HEADER_NAV_KEY.DRIVE,
-  contentContainer: 'fixed',
-});
-const groupHandle = (pageKey: string, contentContainer?: AppRouteContentContainer) =>
-  appRouteHandle({
-    pageKey,
-    headerNav: APP_HEADER_NAV_KEY.PUBLIC,
-    contentContainer,
-  });
-const courseHandle = (pageKey: string, contentContainer?: AppRouteContentContainer) =>
-  appRouteHandle({
-    pageKey,
-    headerNav: APP_HEADER_NAV_KEY.PUBLIC,
-    contentContainer,
-  });
-const publicInviteHandle = appRouteHandle({
-  pageKey: 'invite',
-  headerNav: APP_HEADER_NAV_KEY.PUBLIC,
-  contentContainer: 'scrollable',
-});
-const resourceHandle = appRouteHandle({
-  pageKey: 'resource',
-  headerNav: APP_HEADER_NAV_KEY.DRIVE,
-});
-const profileHandle = appRouteHandle({
-  pageKey: 'profile',
-  contentContainer: 'scrollable',
-});
+const chatRouteHandle = {
+  appSidebar: { selectedHeaderNavKey: APP_SIDEBAR_HEADER_NAV_KEY.CHAT },
+} satisfies AppRouteHandle;
+const notificationRouteHandle = {
+  appSidebar: { selectedHeaderNavKey: APP_SIDEBAR_HEADER_NAV_KEY.NOTIFICATIONS },
+} satisfies AppRouteHandle;
+const driveRouteHandle = {
+  appSidebar: { selectedHeaderNavKey: APP_SIDEBAR_HEADER_NAV_KEY.DRIVE },
+} satisfies AppRouteHandle;
+const publicRouteHandle = {
+  appSidebar: { selectedHeaderNavKey: APP_SIDEBAR_HEADER_NAV_KEY.PUBLIC },
+} satisfies AppRouteHandle;
+const noSidebarSelectionRouteHandle = {
+  appSidebar: { selectedHeaderNavKey: null },
+} satisfies AppRouteHandle;
 
 const router = createBrowserRouter([
   {
@@ -158,7 +128,7 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <AnonymousGuardPage />,
-            handle: chatHandle,
+            handle: chatRouteHandle,
           },
         ],
       },
@@ -179,114 +149,145 @@ const router = createBrowserRouter([
             element: <AppLayout />,
             errorElement: <RouteError />,
             children: [
-              { path: 'chat', element: <ChatPage />, handle: chatHandle },
-              { path: 'chat/:sessionId', element: <ChatPage />, handle: chatSessionHandle },
+              { path: 'chat', element: <ChatPage />, handle: chatRouteHandle },
+              { path: 'chat/:sessionId', element: <ChatPage />, handle: chatRouteHandle },
               {
-                path: 'notifications',
-                element: <NotificationsPage />,
-                handle: notificationHandle,
-              },
-              {
-                path: 'notifications/:messageId',
-                element: <NotificationsPage />,
-                handle: notificationHandle,
-              },
-              { path: 'drive', element: <Navigate to={APP_ROUTE_PATH.DRIVE_PERSONAL} replace /> },
-              { path: 'drive/personal', element: <Drive />, handle: driveHandle },
-              {
-                path: 'drive/personal/folder/:folderId',
-                element: <Drive />,
-                handle: driveHandle,
-              },
-              {
-                path: 'drive/upload-queue',
-                element: <Drive viewMode="uploadQueue" />,
-                handle: driveHandle,
-              },
-              {
-                path: 'drive/favorites',
-                element: <Drive viewMode="favorites" />,
-                handle: driveHandle,
-              },
-              {
-                path: 'drive/trash',
-                element: <Drive viewMode="trash" />,
-                handle: driveHandle,
-              },
-              {
-                path: 'drive/trash/folder/:folderId',
-                element: <Drive viewMode="trash" />,
-                handle: driveHandle,
-              },
-              {
-                path: 'resources/:resourceType/:resourceId',
-                element: <ResourceRouteView />,
-                handle: resourceHandle,
-              },
-              {
-                path: 'invite',
-                element: <PublicInvitePage />,
-                handle: publicInviteHandle,
-              },
-              {
-                path: 'groups',
-                element: <PublicGroupsPage />,
-                handle: groupHandle('groups.list', 'scrollable'),
-              },
-              {
-                path: 'groups/:groupId',
-                element: <GroupRoute />,
+                element: <AppScrollablePageLayout />,
                 children: [
                   {
-                    index: true,
-                    element: <Navigate to="files" replace />,
+                    path: 'notifications',
+                    element: <NotificationsPage />,
+                    handle: notificationRouteHandle,
                   },
                   {
-                    element: <GroupDetail />,
+                    path: 'notifications/:messageId',
+                    element: <NotificationsPage />,
+                    handle: notificationRouteHandle,
+                  },
+                  {
+                    path: 'invite',
+                    element: <PublicInvitePage />,
+                    handle: publicRouteHandle,
+                  },
+                  {
+                    path: 'groups',
+                    element: <PublicGroupsPage />,
+                    handle: publicRouteHandle,
+                  },
+                  {
+                    path: 'courses',
+                    element: <PublicCoursesPage />,
+                    handle: publicRouteHandle,
+                  },
+                  {
+                    path: 'profile/usage',
+                    element: <Usage />,
+                    handle: noSidebarSelectionRouteHandle,
+                  },
+                  {
+                    path: 'profile/account',
+                    element: <Account />,
+                    handle: noSidebarSelectionRouteHandle,
+                  },
+                  {
+                    path: 'profile/appearance',
+                    element: <Appearance />,
+                    handle: noSidebarSelectionRouteHandle,
+                  },
+                  {
+                    path: 'profile/ai',
+                    element: <AISettings />,
+                    handle: noSidebarSelectionRouteHandle,
+                  },
+                ],
+              },
+              { path: 'drive', element: <Navigate to={APP_ROUTE_PATH.DRIVE_PERSONAL} replace /> },
+              {
+                element: <AppFixedPageLayout />,
+                children: [
+                  {
+                    path: 'drive/personal',
+                    element: <Drive />,
+                    handle: driveRouteHandle,
+                  },
+                  {
+                    path: 'drive/personal/folder/:folderId',
+                    element: <Drive />,
+                    handle: driveRouteHandle,
+                  },
+                  {
+                    path: 'drive/upload-queue',
+                    element: <Drive viewMode="uploadQueue" />,
+                    handle: driveRouteHandle,
+                  },
+                  {
+                    path: 'drive/favorites',
+                    element: <Drive viewMode="favorites" />,
+                    handle: driveRouteHandle,
+                  },
+                  {
+                    path: 'drive/trash',
+                    element: <Drive viewMode="trash" />,
+                    handle: driveRouteHandle,
+                  },
+                  {
+                    path: 'drive/trash/folder/:folderId',
+                    element: <Drive viewMode="trash" />,
+                    handle: driveRouteHandle,
+                  },
+                  {
+                    path: 'groups/:groupId',
+                    element: <GroupRoute />,
                     children: [
+                      { index: true, element: <Navigate to="files" replace /> },
                       {
-                        path: 'files',
-                        element: <GroupFilesPage />,
-                        handle: groupHandle('group.files', 'fixed'),
-                      },
-                      {
-                        path: 'files/folder/:folderId',
-                        element: <GroupFilesPage />,
-                        handle: groupHandle('group.files', 'fixed'),
-                      },
-                      {
-                        path: 'members',
-                        element: <GroupMembersPage />,
-                        handle: groupHandle('group.members', 'fixed'),
-                      },
-                      {
-                        element: <GroupWalletRouteGuard />,
+                        element: <GroupDetail />,
                         children: [
                           {
-                            path: 'wallet',
-                            element: <GroupWalletPage />,
-                            handle: groupHandle('group.wallet', 'fixed'),
+                            path: 'files',
+                            element: <GroupFilesPage />,
+                            handle: publicRouteHandle,
                           },
                           {
-                            path: 'token-transfer',
-                            element: <GroupTokenTransferPage />,
-                            handle: groupHandle('group.tokenTransfer', 'fixed'),
+                            path: 'files/folder/:folderId',
+                            element: <GroupFilesPage />,
+                            handle: publicRouteHandle,
+                          },
+                          {
+                            path: 'members',
+                            element: <GroupMembersPage />,
+                            handle: publicRouteHandle,
+                          },
+                          {
+                            element: <GroupWalletRouteGuard />,
+                            children: [
+                              {
+                                path: 'wallet',
+                                element: <GroupWalletPage />,
+                                handle: publicRouteHandle,
+                              },
+                              {
+                                path: 'token-transfer',
+                                element: <GroupTokenTransferPage />,
+                                handle: publicRouteHandle,
+                              },
+                            ],
+                          },
+                          {
+                            path: 'settings',
+                            element: <GroupSettingsPage />,
+                            handle: publicRouteHandle,
                           },
                         ],
-                      },
-                      {
-                        path: 'settings',
-                        element: <GroupSettingsPage />,
-                        handle: groupHandle('group.settings', 'fixed'),
                       },
                     ],
                   },
                 ],
               },
               {
-                path: 'courses',
-                element: <PublicCoursesPage />,
-                handle: courseHandle('courses.list', 'scrollable'),
+                path: 'resources/:resourceType/:resourceId',
+                element: <ResourceRouteView />,
+                handle: driveRouteHandle,
               },
               {
                 path: 'courses/:courseId',
@@ -305,31 +306,31 @@ const router = createBrowserRouter([
                           {
                             path: 'home',
                             element: <CourseHomePage />,
-                            handle: courseHandle('course.home'),
+                            handle: publicRouteHandle,
                           },
                           {
                             path: 'info',
                             element: <CourseInfoPage />,
-                            handle: courseHandle('course.info'),
+                            handle: publicRouteHandle,
                           },
                         ],
                       },
                       {
                         path: 'materials',
                         element: <CourseMaterialsPage />,
-                        handle: courseHandle('course.materials'),
+                        handle: publicRouteHandle,
                       },
                       {
                         path: 'members',
                         element: <CourseMembersPage />,
-                        handle: courseHandle('course.members'),
+                        handle: publicRouteHandle,
                       },
                     ],
                   },
                   {
                     path: 'learning/:outlineNodeId?',
                     element: <CourseLearningLayout />,
-                    handle: courseHandle('course.learning'),
+                    handle: publicRouteHandle,
                   },
                   {
                     element: <CourseSettingsRouteGuard />,
@@ -337,7 +338,7 @@ const router = createBrowserRouter([
                       {
                         path: 'settings',
                         element: <CourseEditorPage />,
-                        handle: courseHandle('course.settings'),
+                        handle: publicRouteHandle,
                       },
                     ],
                   },
@@ -347,10 +348,6 @@ const router = createBrowserRouter([
                 path: 'profile',
                 element: <Navigate to={APP_ROUTE_PATH.PROFILE_ACCOUNT} replace />,
               },
-              { path: 'profile/usage', element: <Usage />, handle: profileHandle },
-              { path: 'profile/account', element: <Account />, handle: profileHandle },
-              { path: 'profile/appearance', element: <Appearance />, handle: profileHandle },
-              { path: 'profile/ai', element: <AISettings />, handle: profileHandle },
             ],
           },
         ],

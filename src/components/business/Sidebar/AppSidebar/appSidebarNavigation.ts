@@ -1,10 +1,10 @@
-import { APP_HEADER_NAV_KEY, type AppHeaderNavKey } from '@/bootstrap/routeMeta';
+import { APP_SIDEBAR_HEADER_NAV_KEY, type AppSidebarHeaderNavKey } from '@/config/appSidebar';
 import { APP_ROUTE_PATH } from '@/utils/navigation/appRoute';
 import { Bell, Folder, MessageSquarePlus, NotebookPen, Users, type LucideIcon } from 'lucide-react';
 
 export interface AppSidebarNavigateItem {
   type: 'navigate';
-  key: AppHeaderNavKey;
+  key: AppSidebarHeaderNavKey;
   labelKey: string;
   icon: LucideIcon;
   to: string;
@@ -22,7 +22,7 @@ export type AppSidebarHeaderItem = AppSidebarNavigateItem | AppSidebarCreateNote
 export const APP_SIDEBAR_HEADER_ITEMS: readonly AppSidebarHeaderItem[] = [
   {
     type: 'navigate',
-    key: APP_HEADER_NAV_KEY.CHAT,
+    key: APP_SIDEBAR_HEADER_NAV_KEY.CHAT,
     labelKey: 'navigation.newChat',
     icon: MessageSquarePlus,
     to: APP_ROUTE_PATH.CHAT,
@@ -35,21 +35,21 @@ export const APP_SIDEBAR_HEADER_ITEMS: readonly AppSidebarHeaderItem[] = [
   },
   {
     type: 'navigate',
-    key: APP_HEADER_NAV_KEY.DRIVE,
+    key: APP_SIDEBAR_HEADER_NAV_KEY.DRIVE,
     labelKey: 'navigation.drive',
     icon: Folder,
     to: APP_ROUTE_PATH.DRIVE_PERSONAL,
   },
   {
     type: 'navigate',
-    key: APP_HEADER_NAV_KEY.PUBLIC,
+    key: APP_SIDEBAR_HEADER_NAV_KEY.PUBLIC,
     labelKey: 'navigation.groups',
     icon: Users,
     to: APP_ROUTE_PATH.GROUPS,
   },
   {
     type: 'navigate',
-    key: APP_HEADER_NAV_KEY.NOTIFICATIONS,
+    key: APP_SIDEBAR_HEADER_NAV_KEY.NOTIFICATIONS,
     labelKey: 'navigation.notifications',
     icon: Bell,
     to: APP_ROUTE_PATH.NOTIFICATIONS,

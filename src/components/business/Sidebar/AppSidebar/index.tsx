@@ -1,9 +1,9 @@
-import { APP_HEADER_NAV_KEY } from '@/bootstrap/routeMeta';
+import { useCurrentRouteHandle } from '@/bootstrap/router';
 import { useCurrentChatSessionStore } from '@/components/business/ChatPanel/_store/useCurrentChatSessionStore';
 import { clearNewChatSessionStore } from '@/components/business/ChatPanel/_store/useNewChatSessionStore';
+import { APP_SIDEBAR_HEADER_NAV_KEY } from '@/config/appSidebar';
 import { useNoteService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
-import { useAppRouteMeta } from '@/hooks/useAppRouteMeta';
 import { useOpenResource } from '@/hooks/useOpenResource';
 import { useAppAuth } from '@/layouts/App/AppAuthContext';
 import { createClientError, FRONTEND_CLIENT_ERROR } from '@/utils/error';
@@ -17,21 +17,17 @@ import type { HeaderNavItem } from '../_common/header/HeaderNav/index.type';
 import SidebarHeader from '../_common/header/SidebarHeader';
 import styles from '../_common/sidebarShell.module.less';
 import AppSidebarTabs from '../_common/tab';
-import { useSidebarViewTabStore } from '../_common/tab/_store/useSidebarViewTabStore';
 import { APP_SIDEBAR_HEADER_ITEMS, type AppSidebarNavigateItem } from './appSidebarNavigation';
 import type { AppSidebarProps } from './index.type';
 
 function AppSidebar({ canGoBack, canGoForward, onGoBack, onGoForward, onToggle }: AppSidebarProps) {
   const { t } = useTranslation('shell');
   const navigate = useNavigate();
-  const routeMeta = useAppRouteMeta();
   const appAuth = useAppAuth();
   const noteService = useNoteService();
   const openResource = useOpenResource();
   const clearCurrentSession = useCurrentChatSessionStore((state) => state.clearCurrentSession);
-  const storedHeaderNavKey = useSidebarViewTabStore((state) => state.headerNavKey);
-  const setHeaderNavKey = useSidebarViewTabStore((state) => state.setHeaderNavKey);
-  const selectedKey = routeMeta?.headerNav ?? storedHeaderNavKey;
+  const selectedKey = useCurrentRouteHandle()?.appSidebar?.selectedHeaderNavKey ?? undefined;
 
   const { loading: creatingNote, run: createNote } = useApi(
     async () => {
@@ -59,8 +55,7 @@ function AppSidebar({ canGoBack, canGoForward, onGoBack, onGoForward, onToggle }
       appAuth.requireLogin();
       return;
     }
-    setHeaderNavKey(item.key);
-    if (item.key === APP_HEADER_NAV_KEY.CHAT) {
+    if (item.key === APP_SIDEBAR_HEADER_NAV_KEY.CHAT) {
       clearCurrentSession();
       clearNewChatSessionStore();
     }

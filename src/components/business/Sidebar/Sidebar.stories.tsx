@@ -3,7 +3,8 @@ import type { ReactNode } from 'react';
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router-dom';
 import { fn } from 'storybook/test';
 
-import { APP_HEADER_NAV_KEY } from '@/bootstrap/routeMeta';
+import type { AppRouteHandle } from '@/bootstrap/router';
+import { APP_SIDEBAR_HEADER_NAV_KEY } from '@/config/appSidebar';
 import { ServicesProvider } from '@/domains';
 import {
   AppNavigationContext,
@@ -44,11 +45,8 @@ function AppSidebarStory() {
       {
         path: '*',
         handle: {
-          app: {
-            pageKey: 'chat',
-            headerNav: APP_HEADER_NAV_KEY.CHAT,
-          },
-        },
+          appSidebar: { selectedHeaderNavKey: APP_SIDEBAR_HEADER_NAV_KEY.CHAT },
+        } satisfies AppRouteHandle,
         element: (
           <AppSidebar
             canGoBack={false}

@@ -1,4 +1,3 @@
-@import '@/styles/scrollbar.module.less';
 @import (reference) '@/styles/layoutMixins.less';
 
 .root {
@@ -108,34 +107,10 @@
   padding: 0;
 }
 
-.middleContentContained {
-  overflow: hidden;
-}
-
 /* 资源页（笔记/对话等）统一用 surface，避免目录/正文透出 background、聊天栏用 surface 造成色差 */
 .middleContentResource {
   overflow: hidden;
   background: var(--surface);
-}
-
-.appPageContainer {
-  .flexColumnFill();
-
-  position: relative;
-  min-height: 0;
-  width: 100%;
-  max-width: var(--app-page-max-width);
-  margin: 0 auto;
-  padding: var(--app-page-padding-block-start) var(--app-page-padding-inline)
-    var(--app-page-padding-block-end);
-  box-sizing: border-box;
-  overflow-y: auto;
-  .appSubtleScrollbar();
-}
-
-.appPageContainerFixed {
-  min-width: var(--layout-drive-page-min-width, 956px);
-  overflow-y: hidden;
 }
 
 @import '@/layouts/_common/desktopTitleBar.less';
