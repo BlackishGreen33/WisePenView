@@ -1,6 +1,6 @@
 import AppModal from '@/components/base/AppModal';
 import { AppButton } from '@/components/base/Button';
-import { FormField, Input, TextArea, UploadZone } from '@/components/base/Input';
+import { FormField, Input, Select, TextArea, UploadZone } from '@/components/base/Input';
 import { FEEDBACK_TYPE, useImageService, useUserService, type FeedbackType } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { parseErrorMessage } from '@/utils/error';
@@ -8,10 +8,9 @@ import {
   assertImageProxyUploadLimit,
   IMAGE_UPLOAD_MAX_SIZE_LABEL,
 } from '@/utils/image/uploadLimit';
-import { Dropdown, Label, toast, type Selection } from '@heroui/react';
+import { ListBox, toast } from '@heroui/react';
 
-import { ChevronDown } from 'lucide-react';
-import { useState, type Key } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { UserFeedbackModalProps } from './index.type';
 import styles from './style.module.less';
@@ -37,7 +36,7 @@ function isFeedbackType(value: string): value is FeedbackType {
 }
 
 function UserFeedbackModal({ isOpen, onOpenChange }: UserFeedbackModalProps) {
-  const { i18n, t } = useTranslation(['shell', 'common']);
+  const { t } = useTranslation(['shell', 'common']);
   const userService = useUserService();
   const imageService = useImageService();
   const [formValues, setFormValues] = useState<FeedbackFormValues>(DEFAULT_FORM_VALUES);
@@ -63,21 +62,6 @@ function UserFeedbackModal({ isOpen, onOpenChange }: UserFeedbackModalProps) {
   const handleCancel = () => {
     resetForm();
     onOpenChange(false);
-  };
-
-  const handleTypeSelectionChange = (keys: Selection) => {
-    if (keys === 'all') {
-      updateFormValue(
-        'types',
-        FEEDBACK_TYPE.options.map((option) => option.value)
-      );
-      return;
-    }
-
-    const nextTypes = Array.from(keys)
-      .map((key: Key) => String(key))
-      .filter(isFeedbackType);
-    updateFormValue('types', nextTypes);
   };
 
   const handleImageChange = (file: File | null) => {
@@ -148,17 +132,6 @@ function UserFeedbackModal({ isOpen, onOpenChange }: UserFeedbackModalProps) {
     });
   };
 
-  const selectedTypeLabels = formValues.types.map((type) => {
-    const typeKey = FEEDBACK_TYPE.getKey(type);
-    return typeKey ? t(`feedback.type.${typeKey}`) : String(type);
-  });
-  const selectedTypeLabel =
-    selectedTypeLabels.length > 0
-      ? new Intl.ListFormat(i18n.resolvedLanguage, { style: 'short', type: 'conjunction' }).format(
-          selectedTypeLabels
-        )
-      : t('feedback.typeRequired');
-
   return (
     <AppModal
       isOpen={isOpen}
@@ -183,51 +156,38 @@ function UserFeedbackModal({ isOpen, onOpenChange }: UserFeedbackModalProps) {
         </>
       }
     >
-      <div className={styles.typeField}>
-        <span className={styles.fieldLabel}>
-          {t('feedback.typeLabel')}
-          <span className={styles.requiredMark} aria-hidden="true">
-            *
-          </span>
-        </span>
-        <Dropdown>
-          <Dropdown.Trigger>
-            <AppButton
-              variant="outline"
-              className={styles.typeTrigger}
-              isDisabled={submitting}
-              aria-label={t('feedback.typeLabel')}
-            >
-              <span
-                className={formValues.types.length > 0 ? styles.typeText : styles.typePlaceholder}
+      <Select
+        label={t('feedback.typeLabel')}
+        aria-label={t('feedback.typeLabel')}
+        placeholder={t('feedback.typeRequired')}
+        selectionMode="multiple"
+        value={formValues.types}
+        onChange={(values) => {
+          if (!Array.isArray(values)) return;
+          updateFormValue('types', values.map(String).filter(isFeedbackType));
+        }}
+        isDisabled={submitting}
+        isRequired
+      >
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover className={styles.typePopover} placement="bottom start">
+          <ListBox aria-label={t('feedback.typeOptionsAria')} className={styles.typeList}>
+            {FEEDBACK_TYPE.options.map((option) => (
+              <ListBox.Item
+                key={option.value}
+                id={option.value}
+                textValue={t(`feedback.type.${option.key}`)}
               >
-                {selectedTypeLabel}
-              </span>
-              <ChevronDown size={16} aria-hidden className={styles.typeChevron} />
-            </AppButton>
-          </Dropdown.Trigger>
-          <Dropdown.Popover className={styles.typePopover} placement="bottom start">
-            <Dropdown.Menu
-              aria-label={t('feedback.typeOptionsAria')}
-              selectionMode="multiple"
-              selectedKeys={new Set(formValues.types)}
-              onSelectionChange={handleTypeSelectionChange}
-              className={styles.typeList}
-            >
-              {FEEDBACK_TYPE.options.map((option) => (
-                <Dropdown.Item
-                  key={option.value}
-                  id={option.value}
-                  textValue={t(`feedback.type.${option.key}`)}
-                >
-                  <Label>{t(`feedback.type.${option.key}`)}</Label>
-                  <Dropdown.ItemIndicator />
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown.Popover>
-        </Dropdown>
-      </div>
+                {t(`feedback.type.${option.key}`)}
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
+      </Select>
 
       <FormField
         label={t('feedback.contentLabel')}
