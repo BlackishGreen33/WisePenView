@@ -1,7 +1,7 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
-import { PieChart } from '@/components/Chart';
-import { FormField, Input, Select } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { PieChart } from '@/components/base/Chart';
+import { FormField, Input, Select } from '@/components/base/Input';
 import type { CourseAssessmentItem, CourseFinalAssessment } from '@/domains/Course';
 import { ListBox } from '@heroui/react';
 

@@ -1,4 +1,4 @@
-import FavoriteCollectionPicker from '@/components/Resource/FavoriteCollectionPicker';
+import FavoriteCollectionPicker from '@/components/business/Resource/FavoriteCollectionPicker';
 import { useInteractService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { parseErrorMessage } from '@/utils/error';

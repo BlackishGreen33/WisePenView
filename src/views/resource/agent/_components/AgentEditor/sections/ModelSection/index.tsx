@@ -1,4 +1,4 @@
-import ModelSelector from '@/components/ModelSelector';
+import ModelSelector from '@/components/business/ModelSelector';
 import type { AgentSpec } from '@/domains/Agent';
 import type { ChatModel } from '@/domains/Chat';
 import { useState } from 'react';

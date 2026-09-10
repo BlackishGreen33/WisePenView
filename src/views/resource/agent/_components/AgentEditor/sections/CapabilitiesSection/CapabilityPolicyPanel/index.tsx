@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
-import AppModal from '@/components/Overlay/AppModal';
+import AppModal from '@/components/base/AppModal';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
 import { Autocomplete, EmptyState, ListBox, SearchField, useFilter, type Key } from '@heroui/react';
 import { Plus, Sparkles, Trash2, Wrench } from 'lucide-react';
 import { useState } from 'react';

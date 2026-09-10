@@ -1,4 +1,4 @@
-import { getGroupDisplayConfig } from '@/components/Group/GroupDisplayConfig';
+import { getGroupDisplayConfig } from '@/components/business/Group/GroupDisplayConfig';
 import { useGroupContext } from '@/layouts/Group/GroupContext';
 import ForbiddenRoute from '@/views/app/error/ForbiddenRoute';
 import { Outlet, useOutletContext } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import { FormField, Input, InputGroup } from '@/components/Input';
+import { FormField, Input, InputGroup } from '@/components/base/Input';
 import { Form, Tabs } from '@heroui/react';
 import { Mail, ShieldUser } from 'lucide-react';
 import type { FormEvent } from 'react';

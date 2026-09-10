@@ -1,7 +1,7 @@
-import AppIconButton from '@/components/Button/AppIconButton';
-import EntryIcon from '@/components/Icons/EntryIcon';
-import AppBreadcrumb, { type AppBreadcrumbItem } from '@/components/Navigation/AppBreadcrumb';
-import ResourcePermissionModal from '@/components/Resource/ResourcePermissionModal';
+import AppBreadcrumb, { type AppBreadcrumbItem } from '@/components/base/AppBreadcrumb';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import EntryIcon from '@/components/base/Icons/EntryIcon';
+import ResourcePermissionModal from '@/components/business/Resource/ResourcePermissionModal';
 import { useUserService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { normalizeId } from '@/utils/normalize/normalizeId';

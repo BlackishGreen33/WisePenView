@@ -1,4 +1,4 @@
-import { PieChart } from '@/components/Chart';
+import { PieChart } from '@/components/base/Chart';
 import { formatCoursePeriodRange, getCoursePeriodTimeRange } from '@/domains/Course';
 import { useCourseContext } from '@/layouts/Course/CourseContext';
 import { formatTimestampToDate } from '@/utils/format/formatTime';

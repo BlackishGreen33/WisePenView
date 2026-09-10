@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import AppBanner from '@/components/Overlay/AppBanner';
-import AppModal from '@/components/Overlay/AppModal';
+import AppBanner from '@/components/base/AppBanner';
+import AppModal from '@/components/base/AppModal';
+import { AppButton } from '@/components/base/Button';
 import { USER_STATUS } from '@/domains/User';
 
 import { Info } from 'lucide-react';

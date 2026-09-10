@@ -1,4 +1,4 @@
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import { useInteractService } from '@/domains';
 import type { FavoriteItem } from '@/domains/Interact';
 import { useApi } from '@/hooks/useApi';

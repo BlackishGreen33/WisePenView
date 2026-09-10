@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
-import AppDisplayDialog from '@/components/Overlay/AppDisplayDialog';
+import { AppButton } from '@/components/base/Button';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
+import AppDisplayDialog from '@/components/business/AppDisplayDialog';
 import { useInteractService, useUserService } from '@/domains';
 import type { CommentSortBy, ResourceComment } from '@/domains/Interact';
 import type { ResourceItem } from '@/domains/Resource';

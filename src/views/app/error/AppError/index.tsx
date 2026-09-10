@@ -1,11 +1,11 @@
-import { AppButton } from '@/components/Button';
+import { AppButton } from '@/components/base/Button';
 import { Copy } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isRouteErrorResponse, useLocation, useNavigate, useRouteError } from 'react-router-dom';
 
-import AppIconButton from '@/components/Button/AppIconButton';
-import { ResultState } from '@/components/Feedback';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { ResultState } from '@/components/base/Feedback';
 import { copyText } from '@/utils/browser/copyText';
 import { getErrorReportId } from '@/utils/error';
 import ErrorPageShell from '@/views/app/error/_components/ErrorPageShell';

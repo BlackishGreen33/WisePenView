@@ -1,10 +1,10 @@
-import { AppButton } from '@/components/Button';
+import { AppButton } from '@/components/base/Button';
 import ErrorPageShell from '@/views/app/error/_components/ErrorPageShell';
 
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { ResultState } from '@/components/Feedback';
+import { ResultState } from '@/components/base/Feedback';
 import { APP_ROUTE_PATH } from '@/utils/navigation/appRoute';
 import shellStyles from '../_components/ErrorPageShell/style.module.less';
 

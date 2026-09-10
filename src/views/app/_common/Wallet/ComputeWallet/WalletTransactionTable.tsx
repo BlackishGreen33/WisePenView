@@ -1,4 +1,4 @@
-import { DataTable, type DataTableColumn } from '@/components/Table';
+import { DataTable, type DataTableColumn } from '@/components/base/Table';
 import { WALLET_TRANSACTION_KIND, type WalletTransactionRecord } from '@/domains/Wallet';
 import { formatCompactNumber } from '@/utils/format/formatNumber';
 import { formatTimestampToDateTime } from '@/utils/format/formatTime';

@@ -1,4 +1,4 @@
-import type { ResourceChatContext } from '@/components/ChatPanel/ResourceChatProtocol';
+import type { ResourceChatContext } from '@/components/business/ChatPanel/ResourceChatProtocol';
 import { registerStore } from '@/store/lifecycle';
 import { create } from 'zustand';
 

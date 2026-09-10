@@ -1,6 +1,7 @@
-import { AppButton } from '@/components/Button';
-import { FormField, Input, Select } from '@/components/Input';
-import { AppAlertDialog, AppFormDialog } from '@/components/Overlay';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input, Select } from '@/components/base/Input';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
+import AppFormDialog from '@/components/business/AppFormDialog';
 import { useChatService } from '@/domains';
 import type { ChatModelConfig, ChatModelFamily } from '@/domains/Chat';
 import { useApi } from '@/hooks/useApi';

@@ -2,8 +2,8 @@ import { cn } from '@/utils/cn';
 import { ChevronsLeft, Menu } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import AppIconButton from '@/components/Button/AppIconButton';
-import type { NoteOutlineItem } from '@/components/Note/CustomBlockNote/index.type';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import type { NoteOutlineItem } from '@/components/business/Note/CustomBlockNote/index.type';
 import styles from './style.module.less';
 
 export const NOTE_OUTLINE_TITLE_ID = '__note_title__';

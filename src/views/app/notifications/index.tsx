@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { EmptyState, ResultState, Spin } from '@/components/Feedback';
+import { AppButton } from '@/components/base/Button';
+import { EmptyState, ResultState, Spin } from '@/components/base/Feedback';
 import { useMessageService } from '@/domains';
 import type { UserMessage } from '@/domains/Message';
 import { useApi, useApiInfiniteScroll } from '@/hooks/useApi';

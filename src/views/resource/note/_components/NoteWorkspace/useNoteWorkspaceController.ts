@@ -1,7 +1,7 @@
 import type {
   NoteBodyEditorHandle,
   NoteCollaborationUser,
-} from '@/components/Note/CustomBlockNote/index.type';
+} from '@/components/business/Note/CustomBlockNote/index.type';
 import { useInlineCommentService, useInteractService, useUserService } from '@/domains';
 import type {
   NoteInfoDisplayData,

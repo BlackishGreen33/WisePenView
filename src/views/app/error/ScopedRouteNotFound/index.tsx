@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { ResultState } from '@/components/Feedback';
+import { AppButton } from '@/components/base/Button';
+import { ResultState } from '@/components/base/Feedback';
 import ErrorPageShell from '@/views/app/error/_components/ErrorPageShell';
 
 import { useTranslation } from 'react-i18next';

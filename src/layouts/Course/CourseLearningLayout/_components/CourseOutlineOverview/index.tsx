@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
-import { FormField, TextArea } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { FormField, TextArea } from '@/components/base/Input';
 import type { CourseOutlineContainerNode, CourseOutlineResourceNode } from '@/domains/Course';
 
 import { ChevronRight, Pencil } from 'lucide-react';

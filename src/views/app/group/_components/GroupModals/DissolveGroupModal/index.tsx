@@ -1,4 +1,4 @@
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import { useGroupService } from '@/domains';
 import type { DeleteGroupRequest } from '@/domains/Group';
 import { useApi } from '@/hooks/useApi';

@@ -1,10 +1,10 @@
-import { AppButton } from '@/components/Button';
-import DriveNavigator from '@/components/Drive/DriveNavigator';
-import type { DriveSelectionItem } from '@/components/Drive/common/driveComponentModel';
-import AppModal from '@/components/Overlay/AppModal';
-import { usePickerSelection } from '@/components/Picker';
+import AppModal from '@/components/base/AppModal';
+import { AppButton } from '@/components/base/Button';
+import type { DriveSelectionItem } from '@/components/business/Drive/common/driveComponentModel';
+import DriveNavigator from '@/components/business/Drive/DriveNavigator';
 import { useCourseService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
+import { usePickerSelection } from '@/hooks/usePickerSelection';
 import { toast } from '@heroui/react';
 import { useTranslation } from 'react-i18next';
 import styles from './style.module.less';

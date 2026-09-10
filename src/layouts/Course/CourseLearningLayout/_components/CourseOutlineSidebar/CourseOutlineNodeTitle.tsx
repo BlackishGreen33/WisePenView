@@ -1,4 +1,4 @@
-import AppIconButton from '@/components/Button/AppIconButton';
+import AppIconButton from '@/components/base/Button/AppIconButton';
 import type { CourseOutlineNode } from '@/domains/Course';
 import { Dropdown, Label } from '@heroui/react';
 import {

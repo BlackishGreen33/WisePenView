@@ -1,4 +1,4 @@
-import type { ResourceChatContext } from '@/components/ChatPanel/ResourceChatProtocol';
+import type { ResourceChatContext } from '@/components/business/ChatPanel/ResourceChatProtocol';
 import { cn } from '@/utils/cn';
 import type { ResourceTarget } from '@/utils/navigation/resourceTarget';
 import {

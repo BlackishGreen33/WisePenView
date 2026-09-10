@@ -1,5 +1,5 @@
-import { FormField, Input, Select, TextArea } from '@/components/Input';
-import AppFormDialog from '@/components/Overlay/AppFormDialog';
+import { FormField, Input, Select, TextArea } from '@/components/base/Input';
+import AppFormDialog from '@/components/business/AppFormDialog';
 import { useUserService } from '@/domains';
 import type { PublishMessageDeliveryScope, PublishMessageType } from '@/domains/User';
 import { useApi } from '@/hooks/useApi';

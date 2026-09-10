@@ -1,5 +1,5 @@
-import QuotaBar from '@/components/QuotaBar';
-import { DataTable, type DataTableColumn } from '@/components/Table';
+import QuotaBar from '@/components/base/QuotaBar';
+import { DataTable, type DataTableColumn } from '@/components/base/Table';
 import { useQuotaService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { type SortDescriptor } from '@heroui/react';

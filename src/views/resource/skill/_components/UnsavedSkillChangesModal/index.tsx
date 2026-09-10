@@ -1,4 +1,4 @@
-import { UnsavedChangesDialog } from '@/components/Overlay';
+import UnsavedChangesDialog from '@/components/business/UnsavedChangesDialog';
 import { useTranslation } from 'react-i18next';
 
 export type UnsavedSkillChangesMode = 'publish' | 'leave' | 'switchVersion' | 'cancelEditing';

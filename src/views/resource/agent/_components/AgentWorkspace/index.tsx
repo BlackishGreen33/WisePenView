@@ -1,4 +1,4 @@
-import { UnsavedChangesDialog } from '@/components/Overlay';
+import UnsavedChangesDialog from '@/components/business/UnsavedChangesDialog';
 import type { AgentDetail } from '@/domains/Agent';
 import { RESOURCE_KIND } from '@/utils/navigation/resourceTarget';
 import type { ResourceHostLayoutConfig } from '@/views/resource/ResourceHostContext';

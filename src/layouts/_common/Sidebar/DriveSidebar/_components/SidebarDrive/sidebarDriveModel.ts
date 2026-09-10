@@ -1,8 +1,8 @@
 import type {
   DriveActionTarget,
   DriveViewNode,
-} from '@/components/Drive/common/driveComponentModel';
-import { isDriveTrashFolderNode } from '@/components/Drive/common/driveComponentModel';
+} from '@/components/business/Drive/common/driveComponentModel';
+import { isDriveTrashFolderNode } from '@/components/business/Drive/common/driveComponentModel';
 import type { DriveNode, FolderNode } from '@/domains/Drive';
 
 export const SIDEBAR_RENDERABLE_TYPES = new Set<'root' | 'folder' | 'resource' | 'link'>([

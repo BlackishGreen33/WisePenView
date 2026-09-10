@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { FormField, Input, TextArea, UploadZone } from '@/components/Input';
-import AppModal from '@/components/Overlay/AppModal';
+import AppModal from '@/components/base/AppModal';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input, TextArea, UploadZone } from '@/components/base/Input';
 import { useGroupService, useImageService } from '@/domains';
 import type { CreateGroupRequest } from '@/domains/Group';
 import { GROUP_TYPE } from '@/domains/Group';

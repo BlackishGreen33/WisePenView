@@ -1,4 +1,4 @@
-import { AppButton } from '@/components/Button';
+import { AppButton } from '@/components/base/Button';
 import { COURSE_ROLE } from '@/domains/Course';
 import {
   APP_ROUTE_PATH,

@@ -1,4 +1,4 @@
-import { FormField, Input, TextArea } from '@/components/Input';
+import { FormField, Input, TextArea } from '@/components/base/Input';
 import type { AgentSpec } from '@/domains/Agent';
 import { useTranslation } from 'react-i18next';
 import SectionShell from '../../shared/SectionShell';

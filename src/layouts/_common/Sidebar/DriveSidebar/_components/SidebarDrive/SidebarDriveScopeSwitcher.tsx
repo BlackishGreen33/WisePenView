@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
 import { useGroupService } from '@/domains';
 import { buildDriveNodeScope } from '@/domains/Drive';
 import type { Group } from '@/domains/Group';

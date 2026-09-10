@@ -1,4 +1,4 @@
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import { useTranslation } from 'react-i18next';
 
 interface PresetRestoreConfirmDialogProps {

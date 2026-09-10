@@ -1,7 +1,7 @@
 import { getCurrentRouteSearch } from '@/bootstrap/authContinuation';
-import { AppButton } from '@/components/Button';
-import { FormField, PasswordInput } from '@/components/Input';
-import AppDisplayDialog from '@/components/Overlay/AppDisplayDialog';
+import { AppButton } from '@/components/base/Button';
+import { FormField, PasswordInput } from '@/components/base/Input';
+import AppDisplayDialog from '@/components/business/AppDisplayDialog';
 import { useAuthService } from '@/domains';
 import type { NewPasswordRequest } from '@/domains/Auth';
 import { useApi } from '@/hooks/useApi';

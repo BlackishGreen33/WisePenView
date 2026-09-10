@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { FormField, Input, TextArea, UploadZone } from '@/components/Input';
-import AppModal from '@/components/Overlay/AppModal';
+import AppModal from '@/components/base/AppModal';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input, TextArea, UploadZone } from '@/components/base/Input';
 import { FEEDBACK_TYPE, useImageService, useUserService, type FeedbackType } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { parseErrorMessage } from '@/utils/error';

@@ -1,8 +1,8 @@
 /**
  * 高级组组长：个人计算点与小组池之间的 Token 划拨（transferTokenBetweenGroupAndUser）。
  */
-import { AppButton } from '@/components/Button';
-import { FormField, Input } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input } from '@/components/base/Input';
 import { useGroupService, useWalletService } from '@/domains';
 import { WALLET_TOKEN_TRANSFER_TYPE } from '@/domains/Wallet';
 import { useApi } from '@/hooks/useApi';

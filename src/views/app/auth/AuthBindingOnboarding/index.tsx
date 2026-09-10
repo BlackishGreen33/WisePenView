@@ -1,6 +1,6 @@
 import { readRedirectParam } from '@/bootstrap/authContinuation';
-import { AppButton } from '@/components/Button';
-import { Spin } from '@/components/Feedback';
+import { AppButton } from '@/components/base/Button';
+import { Spin } from '@/components/base/Feedback';
 import { useUserService } from '@/domains';
 import type { UserAccountProfile } from '@/domains/User';
 import { USER_STATUS } from '@/domains/User';

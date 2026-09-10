@@ -1,6 +1,6 @@
 import { CommandGroup, CommandItem } from '@/components/_shadcn';
-import { Empty, Spin } from '@/components/Feedback';
-import EntryIcon from '@/components/Icons/EntryIcon';
+import { Empty, Spin } from '@/components/base/Feedback';
+import EntryIcon from '@/components/base/Icons/EntryIcon';
 import { useResourceService } from '@/domains';
 import type { SearchHitItem, SearchResultPage } from '@/domains/Resource';
 import { SEARCH_SCOPE } from '@/domains/Resource';

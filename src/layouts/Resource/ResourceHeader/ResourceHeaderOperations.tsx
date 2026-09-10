@@ -1,5 +1,9 @@
-import { isDriveTrashFolderNode } from '@/components/Drive/common/driveComponentModel';
-import { DriveDeleteModal, MoveNodeModal, TrashDeleteModal } from '@/components/Drive/Modals';
+import { isDriveTrashFolderNode } from '@/components/business/Drive/common/driveComponentModel';
+import {
+  DriveDeleteModal,
+  MoveNodeModal,
+  TrashDeleteModal,
+} from '@/components/business/Drive/Modals';
 import {
   useDocumentService,
   useDriveService,

@@ -1,4 +1,4 @@
-import AppIconButton from '@/components/Button/AppIconButton';
+import AppIconButton from '@/components/base/Button/AppIconButton';
 import { useCourseContext } from '@/layouts/Course/CourseContext';
 import { buildCoursePath } from '@/utils/navigation/appRoute';
 import { ArrowLeft } from 'lucide-react';

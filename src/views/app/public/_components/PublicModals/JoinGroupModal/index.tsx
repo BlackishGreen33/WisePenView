@@ -1,4 +1,4 @@
-import JoinByInviteCodeModal from '@/components/Group/JoinByInviteCodeModal';
+import JoinByInviteCodeModal from '@/components/business/Group/JoinByInviteCodeModal';
 import { useGroupService } from '@/domains';
 import { useTranslation } from 'react-i18next';
 import type { JoinGroupModalProps } from './index.type';

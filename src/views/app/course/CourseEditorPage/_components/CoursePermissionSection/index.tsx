@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { TagMountPermissionModal } from '@/components/Drive/Modals';
-import GroupDefaultAccessPermissionModal from '@/components/Group/DefaultAccessPermissionModal';
+import { AppButton } from '@/components/base/Button';
+import { TagMountPermissionModal } from '@/components/business/Drive/Modals';
+import GroupDefaultAccessPermissionModal from '@/components/business/Group/DefaultAccessPermissionModal';
 import { useGroupService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 

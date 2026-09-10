@@ -1,5 +1,5 @@
-import FavoriteCollectionPicker from '@/components/Resource/FavoriteCollectionPicker';
-import { FolderTable, type FolderTableColumn, type FolderTableRow } from '@/components/Table';
+import { FolderTable, type FolderTableColumn, type FolderTableRow } from '@/components/base/Table';
+import FavoriteCollectionPicker from '@/components/business/Resource/FavoriteCollectionPicker';
 import type { FavoriteItem } from '@/domains/Interact';
 import { formatTimestampToDate } from '@/utils/format/formatTime';
 import type { TFunction } from 'i18next';

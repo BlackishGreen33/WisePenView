@@ -7,8 +7,8 @@ import { useDebounceFn, useLatest, useMemoizedFn, useMount, useUnmount } from 'a
 import { useEffect, useImperativeHandle, useRef, type KeyboardEvent, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useNewNoteStore } from '@/components/Note/_store/useNewNoteStore';
-import { getProseMirrorRoot } from '@/components/Note/CustomBlockNote/engines/editor/dom';
+import { useNewNoteStore } from '@/components/business/Note/_store/useNewNoteStore';
+import { getProseMirrorRoot } from '@/components/business/Note/CustomBlockNote/engines/editor/dom';
 import { useNoteService } from '@/domains';
 import { useAppTheme } from '@/theme';
 

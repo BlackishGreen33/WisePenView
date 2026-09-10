@@ -1,6 +1,6 @@
-import AppAvatar from '@/components/Avatar';
-import { AppButton } from '@/components/Button';
-import AppDisplayDialog from '@/components/Overlay/AppDisplayDialog';
+import AppAvatar from '@/components/base/Avatar';
+import { AppButton } from '@/components/base/Button';
+import AppDisplayDialog from '@/components/business/AppDisplayDialog';
 import { useUserService } from '@/domains';
 import type { User } from '@/domains/User';
 import { IDENTITY } from '@/domains/User';

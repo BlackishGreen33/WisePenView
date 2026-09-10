@@ -1,4 +1,4 @@
-import AppIconButton from '@/components/Button/AppIconButton';
+import AppIconButton from '@/components/base/Button/AppIconButton';
 import type { FavoriteCollection } from '@/domains/Interact';
 import { Dropdown, Label, ListBox, ListBoxItem } from '@heroui/react';
 import { EllipsisVertical, Plus } from 'lucide-react';

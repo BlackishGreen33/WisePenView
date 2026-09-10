@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { Spin } from '@/components/Feedback';
+import { AppButton } from '@/components/base/Button';
+import { Spin } from '@/components/base/Feedback';
 import { useCourseService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { useCourseContext } from '@/layouts/Course/CourseContext';

@@ -1,7 +1,7 @@
-import AppAvatar from '@/components/Avatar';
-import { AppButton } from '@/components/Button';
-import { UploadZone } from '@/components/Input';
-import AppModal from '@/components/Overlay/AppModal';
+import AppModal from '@/components/base/AppModal';
+import AppAvatar from '@/components/base/Avatar';
+import { AppButton } from '@/components/base/Button';
+import { UploadZone } from '@/components/base/Input';
 import { useImageService, useUserService } from '@/domains';
 import { assertImageProxyUploadLimit } from '@/domains/Image';
 import { IDENTITY, USER_STATUS } from '@/domains/User';

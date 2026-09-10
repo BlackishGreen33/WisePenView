@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import GroupDefaultAccessPermissionModal from '@/components/Group/DefaultAccessPermissionModal';
+import { AppButton } from '@/components/base/Button';
+import GroupDefaultAccessPermissionModal from '@/components/business/Group/DefaultAccessPermissionModal';
 import type { GroupResConfig } from '@/domains/Group';
 import GroupMountPermissionModal from '@/views/app/group/_components/GroupPermissions/GroupMountPermissionModal';
 

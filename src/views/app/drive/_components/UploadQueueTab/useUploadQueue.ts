@@ -1,4 +1,4 @@
-import { useDriveUploadQueueStore } from '@/components/Drive/_store/useDriveUploadQueueStore';
+import { useDriveUploadQueueStore } from '@/components/business/Drive/_store/useDriveUploadQueueStore';
 import { useDocumentService } from '@/domains';
 import type { PendingDocItem } from '@/domains/Document';
 import { DOCUMENT_PROCESS, isDocumentTerminalStatus } from '@/domains/Document';

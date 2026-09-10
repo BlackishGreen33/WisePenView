@@ -1,6 +1,6 @@
-import { AppButton, AppIconButton } from '@/components/Button';
-import { getGroupDisplayConfig } from '@/components/Group/GroupDisplayConfig';
-import InviteUserModal from '@/components/Group/MemberList/Modals/InviteUserModal';
+import { AppButton, AppIconButton } from '@/components/base/Button';
+import { getGroupDisplayConfig } from '@/components/business/Group/GroupDisplayConfig';
+import InviteUserModal from '@/components/business/Group/MemberList/Modals/InviteUserModal';
 import { GROUP_TYPE } from '@/domains/Group';
 import { useAppRouteMeta } from '@/hooks/useAppRouteMeta';
 import { useGroupContext } from '@/layouts/Group/GroupContext';

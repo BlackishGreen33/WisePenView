@@ -1,4 +1,4 @@
-import { FormField, TextArea } from '@/components/Input';
+import { FormField, TextArea } from '@/components/base/Input';
 import { useTranslation } from 'react-i18next';
 import type { UpdateCourseEditorForm } from '../../model';
 import styles from '../../style.module.less';

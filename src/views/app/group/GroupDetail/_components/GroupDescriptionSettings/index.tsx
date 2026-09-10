@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { isAdmin, isOwner, type GroupRole } from '@/components/Group/GroupDisplayConfig';
+import { AppButton } from '@/components/base/Button';
+import { isAdmin, isOwner, type GroupRole } from '@/components/business/Group/GroupDisplayConfig';
 import type { Group, GroupResConfig } from '@/domains/Group';
 
 import { LogOut, Trash2 } from 'lucide-react';

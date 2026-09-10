@@ -1,4 +1,4 @@
-import AppAvatar from '@/components/Avatar';
+import AppAvatar from '@/components/base/Avatar';
 import { Separator } from '@heroui/react';
 import { useTranslation } from 'react-i18next';
 

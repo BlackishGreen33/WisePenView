@@ -1,6 +1,6 @@
 import { APP_HEADER_NAV_KEY, type AppHeaderNavKey } from '@/bootstrap/routeMeta';
-import { useCurrentChatSessionStore } from '@/components/ChatPanel/_store/useCurrentChatSessionStore';
-import { clearNewChatSessionStore } from '@/components/ChatPanel/_store/useNewChatSessionStore';
+import { useCurrentChatSessionStore } from '@/components/business/ChatPanel/_store/useCurrentChatSessionStore';
+import { clearNewChatSessionStore } from '@/components/business/ChatPanel/_store/useNewChatSessionStore';
 import { useDriveService, useNoteService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { useAppRouteMeta } from '@/hooks/useAppRouteMeta';

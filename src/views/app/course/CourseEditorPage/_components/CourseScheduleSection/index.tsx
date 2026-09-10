@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
-import { Input, Select } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { Input, Select } from '@/components/base/Input';
 import {
   FUDAN_COURSE_PERIODS,
   getCoursePeriodTimeRange,
