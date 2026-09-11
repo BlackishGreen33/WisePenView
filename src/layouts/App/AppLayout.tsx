@@ -1,22 +1,19 @@
-import type { AppRouteContentContainer } from '@/bootstrap/routeMeta';
+import NavigationControls from '@/components/business/Sidebar/_common/header/NavigationControls';
+import AppSidebar from '@/components/business/Sidebar/AppSidebar';
 import {
   APP_MAIN_MIN_WIDTH,
   APP_WEB_SIDEBAR_COLLAPSED_WIDTH,
+  clampSidebarWidth,
   LAYOUT_DENSITY,
   resolveLayoutDensity,
+  SIDEBAR_COLLAPSED_WIDTH,
+  SIDEBAR_MIN_WIDTH,
 } from '@/constants/layoutScale';
-import { useAppRouteMeta } from '@/hooks/useAppRouteMeta';
 import { useDesktopWindowState } from '@/hooks/useDesktopWindowState';
 import { useSystemLayoutStore } from '@/layouts/_common/_store/useSystemLayoutStore';
 import { focusVisibleSidebarToggle } from '@/layouts/_common/a11y/sidebarToggle';
 import SkipToMainLink, { MAIN_CONTENT_ID } from '@/layouts/_common/a11y/SkipToMainLink';
 import RouteOutletBoundary from '@/layouts/_common/RouteOutletBoundary';
-import AppSidebar from '@/layouts/_common/Sidebar/AppSidebar';
-import {
-  clampSidebarWidth,
-  SIDEBAR_COLLAPSED_WIDTH,
-  SIDEBAR_MIN_WIDTH,
-} from '@/layouts/_common/Sidebar/sidebarLayoutConfig';
 import {
   RESIZE_TARGET_MINIMUM_SIZE,
   SystemResizableHandle,
@@ -30,8 +27,8 @@ import {
   useSidebarCollapseMotion,
 } from '@/layouts/_common/useSidebarCollapseMotion';
 import { useAppNavigation } from '@/layouts/AppNavigation/AppNavigationContext';
-import AppNavigationControls from '@/layouts/AppNavigation/AppNavigationControls';
 import { cn } from '@/utils/cn';
+import { APP_ROUTE_PATH } from '@/utils/navigation/appRoute';
 import { memo, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type {
@@ -40,7 +37,7 @@ import type {
   PanelImperativeHandle,
   PanelSize,
 } from 'react-resizable-panels';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useMatch } from 'react-router-dom';
 import styles from './AppLayout.module.less';
 import AppResourceShell from './AppResourceShell';
 
@@ -52,7 +49,6 @@ type AppMainColumnProps = {
   titleBarInsetSide: 'start' | 'end' | null;
   showDesktopCollapsedChrome: boolean;
   isResourceRoute: boolean;
-  contentContainer?: AppRouteContentContainer | false | null;
   canGoBack: boolean;
   canGoForward: boolean;
   onGoBack: () => void;
@@ -68,7 +64,6 @@ const AppMainColumn = memo(function AppMainColumn({
   titleBarInsetSide,
   showDesktopCollapsedChrome,
   isResourceRoute,
-  contentContainer,
   canGoBack,
   canGoForward,
   onGoBack,
@@ -111,7 +106,7 @@ const AppMainColumn = memo(function AppMainColumn({
         >
           {showDesktopCollapsedChrome ? (
             <div className={styles.collapsedHeaderControls}>
-              <AppNavigationControls
+              <NavigationControls
                 sidebarCollapsed
                 canGoBack={canGoBack}
                 canGoForward={canGoForward}
@@ -126,24 +121,9 @@ const AppMainColumn = memo(function AppMainColumn({
       <main
         id={MAIN_CONTENT_ID}
         tabIndex={-1}
-        className={cn(
-          styles.middleContent,
-          isResourceRoute && styles.middleContentResource,
-          contentContainer && styles.middleContentContained
-        )}
+        className={cn(styles.middleContent, isResourceRoute && styles.middleContentResource)}
       >
-        {contentContainer ? (
-          <div
-            className={cn(
-              styles.appPageContainer,
-              contentContainer === 'fixed' && styles.appPageContainerFixed
-            )}
-          >
-            {content}
-          </div>
-        ) : (
-          content
-        )}
+        {content}
       </main>
     </SystemResizablePanel>
   );
@@ -152,7 +132,6 @@ const AppMainColumn = memo(function AppMainColumn({
 function AppLayout() {
   const { t } = useTranslation('shell');
   const appNavigation = useAppNavigation();
-  const routeMeta = useAppRouteMeta();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () =>
       typeof window !== 'undefined' &&
@@ -165,7 +144,7 @@ function AppLayout() {
   const pendingFocusSidebarToggleRef = useRef(false);
   const sidebarWidth = clampSidebarWidth(storedSidebarWidth);
   const desktopWindow = useDesktopWindowState();
-  const isResourceRoute = routeMeta?.pageKey === 'resource';
+  const isResourceRoute = useMatch(`${APP_ROUTE_PATH.RESOURCES}/:resourceType/:resourceId`) != null;
   const collapsedSidebarWidth =
     desktopWindow.isDesktop || isResourceRoute
       ? SIDEBAR_COLLAPSED_WIDTH
@@ -185,7 +164,6 @@ function AppLayout() {
   const [liveSidebarWidthPx, setLiveSidebarWidthPx] = useState(sidebarWidth);
   const showDesktopCollapsedChrome = sidebarCollapsed && !isResourceRoute;
   const showWebCollapsedChrome = sidebarCollapsed && !desktopWindow.isDesktop && !isResourceRoute;
-  const contentContainer = routeMeta?.contentContainer;
 
   const persistSidebarWidthFromPanel = () => {
     const currentWidth = sidebarPanelRef.current?.getSize().inPixels;
@@ -295,7 +273,7 @@ function AppLayout() {
         >
           {showWebCollapsedChrome ? (
             <header className={styles.webCollapsedSidebar}>
-              <AppNavigationControls
+              <NavigationControls
                 sidebarCollapsed
                 showHistory={false}
                 canGoBack={appNavigation.canGoBack}
@@ -344,7 +322,6 @@ function AppLayout() {
           titleBarInsetSide={desktopWindow.titleBarInsetSide}
           showDesktopCollapsedChrome={showDesktopCollapsedChrome}
           isResourceRoute={isResourceRoute}
-          contentContainer={contentContainer}
           canGoBack={appNavigation.canGoBack}
           canGoForward={appNavigation.canGoForward}
           onGoBack={appNavigation.goBack}

@@ -79,11 +79,11 @@ home 与 info 是同级路由。settings 只允许教师访问；无权限时保
 - 应用与管理端分别提供所属壳层的错误页，未匹配路由使用全局 404。
 - 管理端公告跳转地址的自由文本与历史失效示例暂不纳入本次约束。
 
-## Route Meta、Tab 与面包屑
+## 路由布局、Tab 与面包屑
 
-- App 路由通过 `handle.app` 声明 `pageKey`、`headerNav` 和 `sidebarTab`。
-- `useAppRouteMeta()` 从最深匹配读取元数据。顶部导航不保存额外选择状态；侧栏允许临时切换，但 pathname 变化时恢复路由默认面板。
-- 页面级 Tab 直接调用领域 route builder，不抽象 `useRouteTab`。
+- 需要共享内容容器的路由通过 `AppScrollablePageLayout` 或 `AppFixedPageLayout` 嵌套表达；不要使用 route `handle` 存放布局配置。
+- 路由通过 `handle.appSidebar.selectedHeaderNavKey` 声明一级侧栏选中项；使用 `null` 明确表示不选中任何入口，侧栏不反向解析 pathname。
+- 小组和课程页面使用 `useMatch` 判断当前子路由；页面级 Tab 直接调用领域 route builder，不抽象 `useRouteTab`。
 - 面包屑数据统一为 `{ key, label, to?, current? }`。祖先项必须有真实 `to` 并渲染 Link；当前项不可点击且带 `aria-current="page"`。
 - 拖放等领域交互通过面包屑 `renderItem` 扩展，不改变导航协议。
 
