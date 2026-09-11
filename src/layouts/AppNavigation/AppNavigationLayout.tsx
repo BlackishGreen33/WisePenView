@@ -1,4 +1,4 @@
-import CommandPalette from '@/components/CommandPalette';
+import CommandPalette from '@/components/business/CommandPalette';
 import { useAppAuth } from '@/layouts/App/AppAuthContext';
 import { useKeyPress } from 'ahooks';
 import { useState, useSyncExternalStore } from 'react';

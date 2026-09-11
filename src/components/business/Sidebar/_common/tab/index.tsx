@@ -1,4 +1,4 @@
-import CommandPaletteTrigger from '@/components/CommandPalette/Trigger';
+import CommandPaletteTrigger from '@/components/business/CommandPalette/Trigger';
 import { TOOLTIP_FOCUS_PASSTHROUGH_PROPS } from '@/layouts/_common/a11y/tooltipFocusPassthrough';
 import { useAppAuth } from '@/layouts/App/AppAuthContext';
 import { cn } from '@/utils/cn';
