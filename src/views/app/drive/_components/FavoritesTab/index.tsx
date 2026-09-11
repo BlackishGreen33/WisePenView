@@ -1,4 +1,4 @@
-import { Empty, Spin } from '@/components/Feedback';
+import { Empty, Spin } from '@/components/base/Feedback';
 import type { FavoriteCollection } from '@/domains/Interact';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

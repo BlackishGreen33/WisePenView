@@ -1,11 +1,11 @@
-import { replaceDriveTreeNodeChildren } from '@/components/Drive/common/buildDriveTreeData';
+import type { DataNode } from '@/components/base/Tree';
+import { replaceDriveTreeNodeChildren } from '@/components/business/Drive/common/buildDriveTreeData';
 import {
   buildDriveLoadingNode,
   getDriveScopeGroupId,
   type DriveViewNode,
-} from '@/components/Drive/common/driveComponentModel';
-import { useDrivePagedTreeChildren } from '@/components/Drive/common/useDrivePagedTreeChildren';
-import type { DataNode } from '@/components/Tree';
+} from '@/components/business/Drive/common/driveComponentModel';
+import { useDrivePagedTreeChildren } from '@/components/business/Drive/common/useDrivePagedTreeChildren';
 import { useDriveService } from '@/domains';
 import type { DriveNode, DriveNodeScope } from '@/domains/Drive';
 import { useDriveRefreshStore } from '@/domains/Drive/store/useDriveRefreshStore';

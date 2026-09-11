@@ -1,6 +1,6 @@
-import ChatPanel from '@/components/ChatPanel';
-import { useCurrentChatSessionStore } from '@/components/ChatPanel/_store/useCurrentChatSessionStore';
-import { clearNewChatSessionStore } from '@/components/ChatPanel/_store/useNewChatSessionStore';
+import ChatPanel from '@/components/business/ChatPanel';
+import { useCurrentChatSessionStore } from '@/components/business/ChatPanel/_store/useCurrentChatSessionStore';
+import { clearNewChatSessionStore } from '@/components/business/ChatPanel/_store/useNewChatSessionStore';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './style.module.less';

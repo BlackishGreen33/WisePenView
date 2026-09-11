@@ -1,10 +1,13 @@
-import { buildDriveTreeData } from '@/components/Drive/common/buildDriveTreeData';
+import { Empty, Spin } from '@/components/base/Feedback';
+import type { DataNode } from '@/components/base/Tree';
+import Tree from '@/components/base/Tree';
+import { buildDriveTreeData } from '@/components/business/Drive/common/buildDriveTreeData';
 import {
   getDriveNodeLabel,
   getDriveScopeGroupId,
   type DriveActionTarget,
   type DriveViewNode,
-} from '@/components/Drive/common/driveComponentModel';
+} from '@/components/business/Drive/common/driveComponentModel';
 import {
   DriveCreateModal,
   DriveDeleteModal,
@@ -12,14 +15,11 @@ import {
   TrashDeleteModal,
   UploadDocumentModal,
   type DriveCreateType,
-} from '@/components/Drive/Modals';
-import { Empty, Spin } from '@/components/Feedback';
+} from '@/components/business/Drive/Modals';
 import {
   MARKDOWN_NOTE_FILE_ACCEPT,
   useMarkdownNoteImport,
-} from '@/components/Note/useMarkdownNoteImport';
-import type { DataNode } from '@/components/Tree';
-import Tree from '@/components/Tree';
+} from '@/components/business/Note/useMarkdownNoteImport';
 import { useGroupService, useNoteService } from '@/domains';
 import type { DriveResourceLocation, FolderNode, RootNode } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';

@@ -1,5 +1,5 @@
-import AppBanner from '@/components/Overlay/AppBanner';
-import AppDisplayDialog from '@/components/Overlay/AppDisplayDialog';
+import AppBanner from '@/components/base/AppBanner';
+import AppDisplayDialog from '@/components/business/AppDisplayDialog';
 import { Alert } from '@heroui/react';
 import { CircleCheck, Info, TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

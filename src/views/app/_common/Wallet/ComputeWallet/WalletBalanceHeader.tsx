@@ -1,4 +1,4 @@
-import { AppButton } from '@/components/Button';
+import { AppButton } from '@/components/base/Button';
 import { Skeleton } from '@heroui/react';
 
 import { useTranslation } from 'react-i18next';

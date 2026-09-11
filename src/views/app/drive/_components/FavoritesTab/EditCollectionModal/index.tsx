@@ -1,5 +1,5 @@
-import { FormField, Input, TextArea } from '@/components/Input';
-import AppFormDialog from '@/components/Overlay/AppFormDialog';
+import { FormField, Input, TextArea } from '@/components/base/Input';
+import AppFormDialog from '@/components/business/AppFormDialog';
 import { useInteractService } from '@/domains';
 import type { FavoriteCollection } from '@/domains/Interact';
 import { useApi } from '@/hooks/useApi';

@@ -1,4 +1,4 @@
-import TableDrive from '@/components/Drive/TableDrive';
+import TableDrive from '@/components/business/Drive/TableDrive';
 import { useDriveService } from '@/domains';
 import { buildDriveNodeScope } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';

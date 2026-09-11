@@ -1,5 +1,5 @@
-import { Spin } from '@/components/Feedback';
-import Tree, { type TreeDataNode } from '@/components/Tree';
+import { Spin } from '@/components/base/Feedback';
+import Tree, { type TreeDataNode } from '@/components/base/Tree';
 import { useCourseService } from '@/domains';
 import type { CourseSummary } from '@/domains/Course';
 import { useApi } from '@/hooks/useApi';

@@ -1,4 +1,4 @@
-import { Spin } from '@/components/Feedback';
+import { Spin } from '@/components/base/Feedback';
 import { ServicesProvider } from '@/domains';
 import DesktopWindowControls from '@/layouts/_common/DesktopWindowControls';
 import { useViewportLayoutScale } from '@/layouts/_common/useViewportLayoutScale';

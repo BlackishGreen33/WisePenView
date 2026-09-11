@@ -6,10 +6,10 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/_shadcn';
-import { useCurrentChatSessionStore } from '@/components/ChatPanel/_store/useCurrentChatSessionStore';
-import { clearNewChatSessionStore } from '@/components/ChatPanel/_store/useNewChatSessionStore';
-import { DriveCreateModal, type DriveCreateType } from '@/components/Drive/Modals';
-import { Spin } from '@/components/Feedback';
+import { Spin } from '@/components/base/Feedback';
+import { useCurrentChatSessionStore } from '@/components/business/ChatPanel/_store/useCurrentChatSessionStore';
+import { clearNewChatSessionStore } from '@/components/business/ChatPanel/_store/useNewChatSessionStore';
+import { DriveCreateModal, type DriveCreateType } from '@/components/business/Drive/Modals';
 import { useDriveService, useNoteService } from '@/domains';
 import type { RootNode } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';

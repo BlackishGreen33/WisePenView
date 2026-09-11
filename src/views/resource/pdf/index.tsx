@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { ResultState, Spin } from '@/components/Feedback';
-import PdfViewer from '@/components/PdfViewer/index';
+import { AppButton } from '@/components/base/Button';
+import { ResultState, Spin } from '@/components/base/Feedback';
+import PdfViewer from '@/components/business/PdfViewer/index';
 import { useDocumentService, useInteractService } from '@/domains';
 import type { ResourceItem } from '@/domains/Resource';
 import { useApi } from '@/hooks/useApi';

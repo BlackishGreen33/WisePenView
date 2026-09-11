@@ -22,32 +22,32 @@ const heroUiOverlayPrimitiveImportRule = {
   name: '@heroui/react',
   importNames: ['Modal', 'AlertDialog'],
   message:
-    '业务浮层请使用 src/components/Overlay 下的 AppAlertDialog、AppFormDialog、AppDisplayDialog 或 AppModal；底层 Modal / AlertDialog 只允许 Overlay 封装内部使用。',
+    '业务浮层请使用 src/components/business 下的 AppAlertDialog、AppFormDialog、AppDisplayDialog 或 src/components/base/AppModal；底层 Modal / AlertDialog 只允许浮层封装内部使用。',
 };
 
 const heroUiButtonPrimitiveImportRule = {
   name: '@heroui/react',
   importNames: ['Button'],
   message:
-    '业务按钮请使用 src/components/Button 下的 AppButton；底层 Button 只允许 Button 封装内部使用。',
+    '业务按钮请使用 src/components/base/Button 下的 AppButton；底层 Button 只允许 Button 封装内部使用。',
 };
 
 const heroUiInputPrimitiveImportRule = {
   name: '@heroui/react',
   importNames: ['Input', 'TextArea', 'TextField', 'Select'],
   message:
-    '业务输入控件请使用 src/components/Input 下的 FormField、Input、TextArea 或 Select；底层输入控件只允许 Input 封装内部或明确特殊组件使用。',
+    '业务输入控件请使用 src/components/base/Input 下的 FormField、Input、TextArea 或 Select；底层输入控件只允许 Input 封装内部或明确特殊组件使用。',
 };
 
 const heroUiFeedbackPrimitiveImportRule = {
   name: '@heroui/react',
   importNames: ['Spinner'],
   message:
-    '业务加载反馈请使用 src/components/Feedback 下的 Spin 或 LoadingState；底层 Spinner 只允许 Feedback 封装内部使用。',
+    '业务加载反馈请使用 src/components/base/Feedback 下的 Spin 或 LoadingState；底层 Spinner 只允许 Feedback 封装内部使用。',
 };
 
 const projectOverlayModalImportRule = {
-  name: '@/components/Overlay',
+  name: '@/components/base/Modal',
   importNames: ['Modal'],
   message:
     '业务浮层请使用 AppAlertDialog、AppFormDialog、AppDisplayDialog 或 AppModal；直接使用底层 Modal 需要在 eslint 白名单中记录特殊原因。',
@@ -55,10 +55,10 @@ const projectOverlayModalImportRule = {
 
 const projectOverlayModalImportPattern = {
   group: [
-    '@/components/Overlay/Modal',
-    '@/components/Overlay/Modal.*',
-    '**/components/Overlay/Modal',
-    '**/components/Overlay/Modal.*',
+    '@/components/base/Modal',
+    '@/components/base/Modal.*',
+    '**/components/base/Modal',
+    '**/components/base/Modal.*',
   ],
   message:
     '业务浮层请使用 AppAlertDialog、AppFormDialog、AppDisplayDialog 或 AppModal；不要直接导入底层 Modal。',
@@ -408,21 +408,21 @@ export default defineConfig([
   },
   {
     // Feedback 封装内部允许直连 HeroUI Spinner，其它业务代码统一使用 Spin/LoadingState。
-    files: ['src/components/Feedback/**/*.{ts,tsx}'],
+    files: ['src/components/base/Feedback/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': buildRestrictedImportsRule({ allowFeedbackPrimitive: true }),
     },
   },
   {
     // Button 封装内部允许直连 HeroUI Button，其它业务代码统一使用 AppButton。
-    files: ['src/components/Button/**/*.{ts,tsx}'],
+    files: ['src/components/base/Button/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': buildRestrictedImportsRule({ allowButtonPrimitive: true }),
     },
   },
   {
     // Input 封装内部允许直连 HeroUI 输入原语，其它业务代码统一使用项目输入封装。
-    files: ['src/components/Input/**/*.{ts,tsx}'],
+    files: ['src/components/base/Input/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': buildRestrictedImportsRule({ allowInputPrimitive: true }),
     },
@@ -430,11 +430,11 @@ export default defineConfig([
   {
     // ChatInput 与富文本工具栏依赖底层 textarea/input 的特殊组合行为，单独留白名单。
     files: [
-      'src/components/ChatPanel/ChatInput/index.tsx',
-      'src/components/Note/CustomBlockNote/ui/toolbar/components/FileButtons.tsx',
-      'src/components/Note/CustomBlockNote/ui/toolbar/components/LinkButton.tsx',
-      'src/components/Resource/FavoriteCollectionPicker/CollectionPickerModal.tsx',
-      'src/components/UserSearchCombobox/index.tsx',
+      'src/components/business/ChatPanel/ChatInput/index.tsx',
+      'src/components/business/Note/CustomBlockNote/ui/toolbar/components/FileButtons.tsx',
+      'src/components/business/Note/CustomBlockNote/ui/toolbar/components/LinkButton.tsx',
+      'src/components/business/Resource/FavoriteCollectionPicker/CollectionPickerModal.tsx',
+      'src/components/business/UserSearchCombobox/index.tsx',
       'src/views/app/course/CourseEditorPage/_components/CourseEditorDateFields/index.tsx',
       'src/views/resource/agent/_components/AgentEditor/sections/MemorySection/index.tsx',
     ],
@@ -443,8 +443,17 @@ export default defineConfig([
     },
   },
   {
-    // Overlay 封装内部允许直连 HeroUI 浮层原语。
-    files: ['src/components/Overlay/**/*.{ts,tsx}'],
+    // 浮层封装内部允许直连 HeroUI / 项目底层浮层原语：base 提供 Modal、Popover 原子层与 App 级外壳，
+    // business 的语义弹窗统一组合 base/Modal。
+    files: [
+      'src/components/base/Modal/**/*.{ts,tsx}',
+      'src/components/base/Popover/**/*.{ts,tsx}',
+      'src/components/base/AppModal/**/*.{ts,tsx}',
+      'src/components/base/AppPopover/**/*.{ts,tsx}',
+      'src/components/business/AppAlertDialog/**/*.{ts,tsx}',
+      'src/components/business/AppDisplayDialog/**/*.{ts,tsx}',
+      'src/components/business/AppFormDialog/**/*.{ts,tsx}',
+    ],
     rules: {
       'no-restricted-imports': buildRestrictedImportsRule({ allowOverlayPrimitive: true }),
     },

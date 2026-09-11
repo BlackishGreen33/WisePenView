@@ -1,4 +1,4 @@
-import { Spin } from '@/components/Feedback';
+import { Spin } from '@/components/base/Feedback';
 import { useUserService } from '@/domains';
 import { IDENTITY } from '@/domains/User';
 import { useApi } from '@/hooks/useApi';

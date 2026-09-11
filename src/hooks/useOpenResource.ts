@@ -1,4 +1,4 @@
-import { usePdfPreviewProgressStore } from '@/components/PdfViewer/_store/usePdfPreviewProgressStore';
+import { usePdfPreviewProgressStore } from '@/components/business/PdfViewer/_store/usePdfPreviewProgressStore';
 import type { DriveResourceLocation } from '@/domains/Drive';
 import { buildResourcePath } from '@/utils/navigation/resourceRoute';
 import {

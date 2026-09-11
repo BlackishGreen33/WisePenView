@@ -1,16 +1,16 @@
-﻿import { AppButton } from '@/components/Button';
-import { Spin } from '@/components/Feedback';
-import InlineComment from '@/components/InlineComment';
-import { UnsavedChangesDialog } from '@/components/Overlay';
+﻿import { AppButton } from '@/components/base/Button';
+import { Spin } from '@/components/base/Feedback';
+import InlineComment from '@/components/business/InlineComment';
+import UnsavedChangesDialog from '@/components/business/UnsavedChangesDialog';
 import { useMemoizedFn, useUnmount } from 'ahooks';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CustomBlockNote from '@/components/Note/CustomBlockNote';
+import CustomBlockNote from '@/components/business/Note/CustomBlockNote';
 import type {
   NoteBodyEditorHandle,
   NoteOutlineItem,
-} from '@/components/Note/CustomBlockNote/index.type';
+} from '@/components/business/Note/CustomBlockNote/index.type';
 import type { NoteInfoDisplayData } from '@/domains/Note';
 import { encodeNoteClientContentSignature } from '@/domains/Note';
 import { useResourceDisplayName } from '@/hooks/useResourceDisplayName';

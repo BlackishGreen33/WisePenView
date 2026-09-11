@@ -3,8 +3,8 @@ import {
   getCurrentRouteSearch,
   readOptionalRedirectParam,
 } from '@/bootstrap/authContinuation';
-import { AppButton } from '@/components/Button';
-import AppDisplayDialog from '@/components/Overlay/AppDisplayDialog';
+import { AppButton } from '@/components/base/Button';
+import AppDisplayDialog from '@/components/business/AppDisplayDialog';
 import { useUserService } from '@/domains';
 import type { ConfirmEmailVerifyRequest } from '@/domains/User';
 import { useApi } from '@/hooks/useApi';

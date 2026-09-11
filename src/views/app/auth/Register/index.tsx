@@ -3,8 +3,8 @@ import {
   buildRegisterOnboardingPath,
   readRedirectParam,
 } from '@/bootstrap/authContinuation';
-import { AppButton } from '@/components/Button';
-import { Checkbox, FormField, Input, PasswordInput } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import { Checkbox, FormField, Input, PasswordInput } from '@/components/base/Input';
 import { useAuthService } from '@/domains';
 import type { RegisterRequest } from '@/domains/Auth';
 import { useApi } from '@/hooks/useApi';

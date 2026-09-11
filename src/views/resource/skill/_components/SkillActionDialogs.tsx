@@ -1,4 +1,4 @@
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import type { TFunction } from 'i18next';
 import type { useSkillFileActionsController } from '../_controllers/useSkillFileActionsController';
 import type { useSkillNavigationController } from '../_controllers/useSkillNavigationController';

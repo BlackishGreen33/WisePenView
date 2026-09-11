@@ -1,4 +1,4 @@
-import type { MarkdownResourceResolver } from '@/components/Markdown';
+import type { MarkdownResourceResolver } from '@/components/base/Markdown';
 import { useSkillService } from '@/domains';
 import type { SkillFileNode } from '@/domains/Skill';
 import { useLatest, useUnmount } from 'ahooks';

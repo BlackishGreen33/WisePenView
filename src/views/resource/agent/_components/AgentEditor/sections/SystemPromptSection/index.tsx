@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { FormField, TextArea } from '@/components/Input';
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import { AppButton } from '@/components/base/Button';
+import { FormField, TextArea } from '@/components/base/Input';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import { Switch, Tabs } from '@heroui/react';
 
 import { useState } from 'react';

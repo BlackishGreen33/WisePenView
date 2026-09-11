@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { FormField, Input } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input } from '@/components/base/Input';
 import { useAuthService } from '@/domains';
 import type { ResetPasswordRequest } from '@/domains/Auth';
 import { useApi } from '@/hooks/useApi';

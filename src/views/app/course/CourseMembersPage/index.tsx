@@ -1,6 +1,6 @@
-import { getGroupDisplayConfig } from '@/components/Group/GroupDisplayConfig';
-import MemberList from '@/components/Group/MemberList';
-import { DataTable, type DataTableColumn } from '@/components/Table';
+import { DataTable, type DataTableColumn } from '@/components/base/Table';
+import { getGroupDisplayConfig } from '@/components/business/Group/GroupDisplayConfig';
+import MemberList from '@/components/business/Group/MemberList';
 import { useCourseService, useGroupService } from '@/domains';
 import type { CourseMember } from '@/domains/Course';
 import { COURSE_ROLE } from '@/domains/Course';

@@ -1,7 +1,7 @@
-import AppIconButton from '@/components/Button/AppIconButton';
-import { FormField, Input } from '@/components/Input';
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
-import AppFormDialog from '@/components/Overlay/AppFormDialog';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { FormField, Input } from '@/components/base/Input';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
+import AppFormDialog from '@/components/business/AppFormDialog';
 import { useChatService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { toast } from '@heroui/react';

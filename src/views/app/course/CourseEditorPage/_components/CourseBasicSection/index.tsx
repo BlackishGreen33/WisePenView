@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { FormField, Input, TextArea } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input, TextArea } from '@/components/base/Input';
 import { TOOLTIP_FOCUS_PASSTHROUGH_PROPS } from '@/layouts/_common/a11y/tooltipFocusPassthrough';
 import { Tooltip } from '@heroui/react';
 

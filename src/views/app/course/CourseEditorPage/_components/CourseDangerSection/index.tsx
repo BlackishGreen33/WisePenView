@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import { AppButton } from '@/components/base/Button';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import { useCourseService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { APP_ROUTE_PATH } from '@/utils/navigation/appRoute';

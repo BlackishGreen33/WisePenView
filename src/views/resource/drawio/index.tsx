@@ -1,7 +1,7 @@
 import { DRAWIO_EMBED_URL } from '@/apis/clientUrls';
-import { AppButton } from '@/components/Button';
-import { ResultState, Spin } from '@/components/Feedback';
-import AppDisplayDialog from '@/components/Overlay/AppDisplayDialog';
+import { AppButton } from '@/components/base/Button';
+import { ResultState, Spin } from '@/components/base/Feedback';
+import AppDisplayDialog from '@/components/business/AppDisplayDialog';
 import { STORAGE_KEYS } from '@/constants/storageKeys';
 import { useInteractService, useNoteService, useUserService } from '@/domains';
 import type {

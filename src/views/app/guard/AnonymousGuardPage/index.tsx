@@ -1,4 +1,4 @@
-import { AppButton } from '@/components/Button';
+import { AppButton } from '@/components/base/Button';
 import { useAppAuth } from '@/layouts/App/AppAuthContext';
 import { COLOR_SCHEME_ICON_SRC, useColorScheme } from '@/theme';
 import { LogIn } from 'lucide-react';

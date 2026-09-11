@@ -1,6 +1,6 @@
 import { appendRedirectParam, readRedirectParam } from '@/bootstrap/authContinuation';
-import { AppButton } from '@/components/Button';
-import { FormField, Input, PasswordInput } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import { FormField, Input, PasswordInput } from '@/components/base/Input';
 import { useAuthService } from '@/domains';
 import type { LoginRequest } from '@/domains/Auth';
 import { useApi } from '@/hooks/useApi';

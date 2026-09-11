@@ -1,4 +1,4 @@
-import AppIconButton from '@/components/Button/AppIconButton';
+import AppIconButton from '@/components/base/Button/AppIconButton';
 import { useAppNavigation } from '@/layouts/AppNavigation/AppNavigationContext';
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

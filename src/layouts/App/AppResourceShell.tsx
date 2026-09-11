@@ -1,6 +1,6 @@
-import ChatPanel from '@/components/ChatPanel';
-import { useChatPanelStore } from '@/components/ChatPanel/_store/useChatPanelStore';
-import { createResourceChatStateProvider } from '@/components/ChatPanel/ResourceChatProtocol';
+import ChatPanel from '@/components/business/ChatPanel';
+import { useChatPanelStore } from '@/components/business/ChatPanel/_store/useChatPanelStore';
+import { createResourceChatStateProvider } from '@/components/business/ChatPanel/ResourceChatProtocol';
 import {
   CHAT_PANEL_MAX_WIDTH,
   CHAT_PANEL_MIN_WIDTH,

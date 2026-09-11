@@ -1,7 +1,7 @@
 import type {
   SkillFileDropPosition,
   SkillPendingCreate,
-} from '@/components/Skill/SkillFileTree/index.type';
+} from '@/components/business/Skill/SkillFileTree/index.type';
 import { useSkillService } from '@/domains';
 import type { SkillDetail, SkillFileNode } from '@/domains/Skill';
 import { useApi } from '@/hooks/useApi';

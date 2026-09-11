@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { useCurrentChatSessionStore } from '@/components/ChatPanel/_store/useCurrentChatSessionStore';
-import { useNewChatSessionStore } from '@/components/ChatPanel/_store/useNewChatSessionStore';
+import { AppButton } from '@/components/base/Button';
+import { useCurrentChatSessionStore } from '@/components/business/ChatPanel/_store/useCurrentChatSessionStore';
+import { useNewChatSessionStore } from '@/components/business/ChatPanel/_store/useNewChatSessionStore';
 import { useChatService } from '@/domains';
 import type { ChatSession, PageResult } from '@/domains/Chat';
 import { buildChatPath } from '@/utils/navigation/appRoute';

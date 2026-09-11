@@ -1,4 +1,4 @@
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import type { AgentAsset, AgentSpec } from '@/domains/Agent';
 import type { ChatModel, ToolOption } from '@/domains/Chat';
 import type { SkillSummary } from '@/domains/Skill';

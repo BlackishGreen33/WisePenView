@@ -1,4 +1,4 @@
-import { AppButton } from '@/components/Button';
+import { AppButton } from '@/components/base/Button';
 import { useInteractService } from '@/domains';
 import type { ResourceComment } from '@/domains/Interact';
 import { parseErrorMessage } from '@/utils/error';

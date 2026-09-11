@@ -1,4 +1,4 @@
-import type { NoteCollaborationUser } from '@/components/Note/CustomBlockNote/index.type';
+import type { NoteCollaborationUser } from '@/components/business/Note/CustomBlockNote/index.type';
 import type { NoteSaveStatus } from '@/domains/Note';
 import type { User } from '@/domains/User';
 import type { NoteTitleSaveStatus } from '../NoteTitle';

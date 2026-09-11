@@ -1,4 +1,4 @@
-import CommentInput, { type CommentInputImage } from '@/components/CommentInput';
+import CommentInput, { type CommentInputImage } from '@/components/business/CommentInput';
 import { useImageService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { parseErrorMessage } from '@/utils/error';

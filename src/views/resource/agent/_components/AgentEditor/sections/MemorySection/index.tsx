@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { FormField, TextArea } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import { FormField, TextArea } from '@/components/base/Input';
 import type { AgentSpec } from '@/domains/Agent';
 import { Label, NumberField, Slider } from '@heroui/react';
 

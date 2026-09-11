@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
-import { FormField, Input, Select } from '@/components/Input';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { FormField, Input, Select } from '@/components/base/Input';
 import { useUserService } from '@/domains';
 import type { UpdateUserInfoRequest } from '@/domains/User';
 import { DEGREE, SEX } from '@/domains/User';

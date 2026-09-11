@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/Input';
-import AppAlertDialog from '@/components/Overlay/AppAlertDialog';
+import { Checkbox } from '@/components/base/Input';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
 import { useInteractService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { toast } from '@heroui/react';

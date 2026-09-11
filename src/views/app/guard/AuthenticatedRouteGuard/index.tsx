@@ -1,5 +1,5 @@
 import { buildLoginPathForCurrentLocation } from '@/bootstrap/authContinuation';
-import { Spin } from '@/components/Feedback';
+import { Spin } from '@/components/base/Feedback';
 import { useUserService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 import { Navigate, Outlet } from 'react-router-dom';

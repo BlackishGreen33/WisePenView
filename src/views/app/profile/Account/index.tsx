@@ -1,4 +1,4 @@
-import { Spin } from '@/components/Feedback';
+import { Spin } from '@/components/base/Feedback';
 import { useUserService } from '@/domains';
 import type { UserAccountProfile } from '@/domains/User';
 import { IDENTITY } from '@/domains/User';

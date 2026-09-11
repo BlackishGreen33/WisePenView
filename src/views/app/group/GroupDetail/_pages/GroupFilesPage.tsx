@@ -1,5 +1,5 @@
-import TableDrive from '@/components/Drive/TableDrive';
-import { getGroupDisplayConfig } from '@/components/Group/GroupDisplayConfig';
+import TableDrive from '@/components/business/Drive/TableDrive';
+import { getGroupDisplayConfig } from '@/components/business/Group/GroupDisplayConfig';
 import { buildDriveNodeScope } from '@/domains/Drive';
 import { useGroupContext } from '@/layouts/Group/GroupContext';
 import { buildGroupFilesPath } from '@/utils/navigation/appRoute';

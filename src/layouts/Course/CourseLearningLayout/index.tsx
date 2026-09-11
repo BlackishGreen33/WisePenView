@@ -1,9 +1,9 @@
-import AppIconButton from '@/components/Button/AppIconButton';
-import ChatPanel from '@/components/ChatPanel';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import ChatPanel from '@/components/business/ChatPanel';
 import {
   createResourceChatStateProvider,
   type ResourceChatContext,
-} from '@/components/ChatPanel/ResourceChatProtocol';
+} from '@/components/business/ChatPanel/ResourceChatProtocol';
 import { COURSE_ROLE } from '@/domains/Course';
 import {
   RESIZE_TARGET_MINIMUM_SIZE,

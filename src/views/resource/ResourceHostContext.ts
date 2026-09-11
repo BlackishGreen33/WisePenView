@@ -1,8 +1,8 @@
-import type { ChatPanelAgentDebugConfig } from '@/components/ChatPanel/index.type';
+import type { ChatPanelAgentDebugConfig } from '@/components/business/ChatPanel/index.type';
 import type {
   ResourceChatContext,
   ResourceChatStateProvider,
-} from '@/components/ChatPanel/ResourceChatProtocol';
+} from '@/components/business/ChatPanel/ResourceChatProtocol';
 import type { DriveResourceLocation } from '@/domains/Drive';
 import type { ResourceItem } from '@/domains/Resource';
 import type { ResourceHeaderConfig } from '@/layouts/Resource/ResourceHeader/index.type';

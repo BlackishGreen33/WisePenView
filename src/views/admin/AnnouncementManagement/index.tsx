@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import { Select } from '@/components/Input';
-import { DataTable, type DataTableColumn } from '@/components/Table';
+import { AppButton } from '@/components/base/Button';
+import { Select } from '@/components/base/Input';
+import { DataTable, type DataTableColumn } from '@/components/base/Table';
 import { useUserService } from '@/domains';
 import type { AdminMessage } from '@/domains/User';
 import { useApi } from '@/hooks/useApi';

@@ -1,6 +1,6 @@
-import { AppButton } from '@/components/Button';
-import CourseCard from '@/components/Course/CourseCard';
-import { Empty, Spin } from '@/components/Feedback';
+import { AppButton } from '@/components/base/Button';
+import { Empty, Spin } from '@/components/base/Feedback';
+import CourseCard from '@/components/business/CourseCard';
 import { useCourseService, useUserService } from '@/domains';
 import { IDENTITY } from '@/domains/User';
 import { useApi } from '@/hooks/useApi';

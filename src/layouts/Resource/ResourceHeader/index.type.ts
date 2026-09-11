@@ -1,4 +1,4 @@
-import type { AppBreadcrumbItem } from '@/components/Navigation/AppBreadcrumb';
+import type { AppBreadcrumbItem } from '@/components/base/AppBreadcrumb';
 import type {
   ResourceAction,
   ResourceIconType,

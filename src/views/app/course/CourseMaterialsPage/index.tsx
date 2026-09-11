@@ -1,4 +1,4 @@
-import TableDrive from '@/components/Drive/TableDrive';
+import TableDrive from '@/components/business/Drive/TableDrive';
 import { COURSE_ROLE } from '@/domains/Course';
 import { useCourseContext } from '@/layouts/Course/CourseContext';
 import { useTranslation } from 'react-i18next';

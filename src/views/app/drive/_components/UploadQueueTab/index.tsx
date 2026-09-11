@@ -1,5 +1,5 @@
-import { AppButton } from '@/components/Button';
-import { DataTable, type DataTableColumn } from '@/components/Table';
+import { AppButton } from '@/components/base/Button';
+import { DataTable, type DataTableColumn } from '@/components/base/Table';
 import { formatFileSize } from '@/utils/format/formatFileSize';
 import { ProgressBar } from '@heroui/react';
 

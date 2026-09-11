@@ -1,10 +1,15 @@
-import { AppButton } from '@/components/Button';
-import AppIconButton from '@/components/Button/AppIconButton';
-import { UploadDocumentModal } from '@/components/Drive/Modals';
-import { Spin } from '@/components/Feedback';
-import { FormField, Input } from '@/components/Input';
-import { AppAlertDialog, AppFormDialog } from '@/components/Overlay';
-import Tree, { type DataNode, type TreeAllowDropInfo, type TreeDropInfo } from '@/components/Tree';
+import { AppButton } from '@/components/base/Button';
+import AppIconButton from '@/components/base/Button/AppIconButton';
+import { Spin } from '@/components/base/Feedback';
+import { FormField, Input } from '@/components/base/Input';
+import Tree, {
+  type DataNode,
+  type TreeAllowDropInfo,
+  type TreeDropInfo,
+} from '@/components/base/Tree';
+import AppAlertDialog from '@/components/business/AppAlertDialog';
+import AppFormDialog from '@/components/business/AppFormDialog';
+import { UploadDocumentModal } from '@/components/business/Drive/Modals';
 import type { CourseOutlineContainerNode, CourseOutlineNode } from '@/domains/Course';
 import ResourceShellHeader from '@/layouts/Resource/ResourceShellHeader';
 import { parseErrorMessage } from '@/utils/error';
