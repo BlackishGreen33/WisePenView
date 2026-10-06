@@ -194,7 +194,6 @@ function DriveTab() {
     handleLoadData,
     handleSelect,
     nodeMap,
-    refreshTree,
     selectedKeys,
     treeData,
     treeLoading,
@@ -297,7 +296,6 @@ function DriveTab() {
           onOpenChange={(open) => {
             if (!open) setUploadDocumentPathTagId(undefined);
           }}
-          onSuccess={refreshTree}
         />
       ) : null}
       {driveCreateTarget ? (
@@ -315,7 +313,6 @@ function DriveTab() {
             const target = driveCreateTarget.target;
             if (type === 'folder') {
               setDriveCreateTarget(null);
-              refreshTree();
               return;
             }
             setDriveCreateTarget(null);
@@ -333,7 +330,6 @@ function DriveTab() {
         onOpenChange={(open) => {
           if (!open) setRenameTarget(null);
         }}
-        onSuccess={refreshTree}
       />
       {isDeleteTargetInTrash ? (
         <TrashDeleteModal
@@ -342,7 +338,6 @@ function DriveTab() {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
-          onSuccess={refreshTree}
         />
       ) : (
         <DriveDeleteModal
@@ -351,7 +346,6 @@ function DriveTab() {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
-          onSuccess={refreshTree}
         />
       )}
     </div>

@@ -60,6 +60,9 @@ jobs:
       - name: Check editor runtime
         run: pnpm check:editor-runtime
 
+      - name: Check Drive refresh
+        run: pnpm check:drive-refresh
+
       - name: Check mock contract
         run: pnpm check:mock
 

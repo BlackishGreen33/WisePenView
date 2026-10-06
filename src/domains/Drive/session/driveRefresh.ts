@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createStore } from 'zustand/vanilla';
 
 import { registerStore } from '@/store/lifecycle';
 
@@ -11,13 +11,13 @@ const DEFAULT_DRIVE_REFRESH_STATE = {
   refreshVersion: 0,
 };
 
-const useDriveRefreshStore = create<DriveRefreshState>()((set) => ({
+export const driveRefreshStore = createStore<DriveRefreshState>()((set) => ({
   ...DEFAULT_DRIVE_REFRESH_STATE,
   requestRefresh: () => set((state) => ({ refreshVersion: state.refreshVersion + 1 })),
 }));
 
 const resetDriveRefreshStore = (): void => {
-  useDriveRefreshStore.setState(DEFAULT_DRIVE_REFRESH_STATE);
+  driveRefreshStore.setState(DEFAULT_DRIVE_REFRESH_STATE);
 };
 
 registerStore({
@@ -28,9 +28,5 @@ registerStore({
 
 /** 资源操作成功后通知所有 Drive 视图重新读取。 */
 export function requestDriveRefresh(): void {
-  useDriveRefreshStore.getState().requestRefresh();
-}
-
-export function useDriveRefreshVersion(): number {
-  return useDriveRefreshStore((state) => state.refreshVersion);
+  driveRefreshStore.getState().requestRefresh();
 }

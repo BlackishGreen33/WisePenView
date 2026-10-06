@@ -104,10 +104,9 @@ function TableDrive({
   // 初始化交互控制器
   const interaction = useTableDriveInteractionController({ dataSource: navigation.dataSource, t });
 
-  // 封装一个通用的节点操作成功回调，清理选中状态并刷新列表
+  // 操作成功后清理勾选，数据更新由 service 的统一通知触发。
   const handleNodeActionSuccess = () => {
     interaction.clearChecked();
-    navigation.refresh();
   };
 
   // 初始化拖拽控制器
@@ -151,7 +150,6 @@ function TableDrive({
     isTrashView: trash.isTrashView,
     rowMap: interaction.rowMap,
     pathNodes: navigation.pathNodes,
-    onUploadSuccess: navigation.refresh,
   });
 
   const actionsController = useTableDriveActionsController({

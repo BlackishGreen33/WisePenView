@@ -2,7 +2,6 @@ import { toast } from '@heroui/react';
 import { useTranslation } from 'react-i18next';
 
 import AppAlertDialog from '@/components/business/AppAlertDialog';
-import { requestDriveRefresh } from '@/components/business/Drive/driveRefresh';
 import { useDriveService } from '@/domains';
 import { useApi } from '@/hooks/useApi';
 
@@ -35,7 +34,6 @@ function DriveDeleteModal({
       } else {
         await driveService.moveNodesToTrash({ nodes: [node] });
       }
-      requestDriveRefresh();
     },
     {
       manual: true,

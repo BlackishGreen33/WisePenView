@@ -7,7 +7,6 @@ import {
   getSupportedDriveDocumentFiles,
   useDriveDocumentUpload,
 } from '@/components/business/Drive/common/useDriveDocumentUpload';
-import { requestDriveRefresh } from '@/components/business/Drive/driveRefresh';
 import {
   DriveCreateModal,
   type DriveCreateType,
@@ -112,7 +111,6 @@ export function useTableDriveActionsController({
       } else {
         await driveService.moveNodesToTrash({ nodes: selectedNodes });
       }
-      requestDriveRefresh();
     },
     {
       manual: true,
@@ -159,7 +157,6 @@ export function useTableDriveActionsController({
   } = useMarkdownNoteImport({
     getPathTagId: () => mountTagId,
     onSuccess: ({ resourceId, title }) => {
-      refresh();
       openResource({
         resourceId,
         resourceType: RESOURCE_KIND.NOTE,
@@ -169,7 +166,7 @@ export function useTableDriveActionsController({
     },
   });
   const documentFileInputRef = useRef<HTMLInputElement>(null);
-  const { queueDocuments } = useDriveDocumentUpload({ pathTagId: mountTagId, onSuccess: refresh });
+  const { queueDocuments } = useDriveDocumentUpload({ pathTagId: mountTagId });
 
   const { loading: creatingNote, run: runCreateNote } = useApi(
     async () => {
@@ -186,7 +183,6 @@ export function useTableDriveActionsController({
       manual: true,
       onSuccess: (resourceId) => {
         useNewNoteStore.getState().setNewNoteResourceId(resourceId);
-        refresh();
         openResource({
           resourceId,
           resourceType: RESOURCE_KIND.NOTE,
@@ -199,11 +195,9 @@ export function useTableDriveActionsController({
   const handleDriveCreateSuccess = (createdId: string, type: DriveCreateType) => {
     if (type === 'folder') {
       setDriveCreateType(null);
-      refresh();
       return;
     }
     setDriveCreateType(null);
-    refresh();
     openResource({
       resourceId: createdId,
       resourceType: type,
@@ -244,7 +238,6 @@ export function useTableDriveActionsController({
           isOpen={uploadOpen}
           groupId={groupId}
           onOpenChange={setUploadOpen}
-          onSuccess={refresh}
         />
       ) : null}
       {groupId && tagAccessPermissionTagId ? (
@@ -257,7 +250,6 @@ export function useTableDriveActionsController({
               setTagAccessPermissionTagId(undefined);
             }
           }}
-          onSuccess={refresh}
         />
       ) : null}
       {groupId && tagMountPermissionTagId ? (
@@ -270,7 +262,6 @@ export function useTableDriveActionsController({
               setTagMountPermissionTagId(undefined);
             }
           }}
-          onSuccess={refresh}
         />
       ) : null}
       {groupId && resourcePermissionTarget ? (
@@ -283,7 +274,6 @@ export function useTableDriveActionsController({
               setResourcePermissionTarget(null);
             }
           }}
-          onSuccess={refresh}
         />
       ) : null}
       {driveCreateType ? (
@@ -305,7 +295,6 @@ export function useTableDriveActionsController({
         onOpenChange={(open) => {
           if (!open) setRenameTarget(null);
         }}
-        onSuccess={refresh}
       />
       <MoveNodeModal
         isOpen={moveNodes.length > 0}

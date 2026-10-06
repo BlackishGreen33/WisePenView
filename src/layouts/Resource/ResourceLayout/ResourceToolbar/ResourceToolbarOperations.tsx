@@ -3,7 +3,6 @@ import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isDriveTrashFolderNode } from '@/components/business/Drive/common/driveComponentModel';
-import { requestDriveRefresh } from '@/components/business/Drive/driveRefresh';
 import {
   DriveDeleteModal,
   MoveNodeModal,
@@ -169,7 +168,6 @@ function ResourceToolbarOperations({
           .catch(() => undefined);
         throw error;
       }
-      requestDriveRefresh();
       return { newResourceId, target };
     },
     {
@@ -192,7 +190,6 @@ function ResourceToolbarOperations({
     async (target: DriveContainerNode) => {
       if (!node || target.type !== 'folder' || target.scope.type !== 'group') return;
       await driveService.addResourcesToGroup({ resourceIds: [node.resourceId], target });
-      requestDriveRefresh();
     },
     {
       manual: true,
@@ -207,7 +204,6 @@ function ResourceToolbarOperations({
     async (target: DriveContainerNode) => {
       if (target.type !== 'folder' || target.scope.type !== 'group') return;
       await driveService.addResourcesToGroup({ resourceIds: [resourceId], target });
-      requestDriveRefresh();
     },
     {
       manual: true,

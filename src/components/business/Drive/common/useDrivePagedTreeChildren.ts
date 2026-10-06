@@ -58,8 +58,10 @@ export function useDrivePagedTreeChildren({
   const { t } = useTranslation('drive');
   const [childrenMap, setChildrenMap] = useState<Map<string, DriveViewNode[]>>(new Map());
   const [pageStateMap, setPageStateMap] = useState<Map<string, DrivePagedTreePageState>>(new Map());
+  const childrenMapRef = useRef<Map<string, DriveViewNode[]>>(new Map());
   const pageStateMapRef = useRef<Map<string, DrivePagedTreePageState>>(new Map());
   const loadingMoreNodeIdsRef = useRef<Set<string>>(new Set());
+  const generationRef = useRef(0);
 
   const appendLoadMoreNode = (
     parent: DriveContainerNode,
@@ -80,7 +82,8 @@ export function useDrivePagedTreeChildren({
   };
 
   const setNodeChildren = (nodeId: string, children: DriveViewNode[]) => {
-    setChildrenMap((prev) => new Map(prev).set(nodeId, children));
+    childrenMapRef.current = new Map(childrenMapRef.current).set(nodeId, children);
+    setChildrenMap(childrenMapRef.current);
   };
 
   const setNodePageState = (nodeId: string, pageState: DrivePagedTreePageState) => {
@@ -92,6 +95,7 @@ export function useDrivePagedTreeChildren({
     parent: DriveContainerNode,
     options?: { refresh?: boolean }
   ): Promise<DriveViewNode[]> => {
+    const generation = generationRef.current;
     setNodeChildren(parent.id, [buildLoadingPlaceholder(parent, t('node.loading'))]);
     try {
       const result = await loadPage({
@@ -99,6 +103,7 @@ export function useDrivePagedTreeChildren({
         pageSize,
         refresh: options?.refresh,
       });
+      if (generation !== generationRef.current) return [];
       const pageState = {
         cursor: result.nextCursor,
         total: result.total,
@@ -109,6 +114,7 @@ export function useDrivePagedTreeChildren({
       setNodeChildren(parent.id, children);
       return children;
     } catch (err) {
+      if (generation !== generationRef.current) return [];
       toast.danger(parseErrorMessage(err));
       setNodeChildren(parent.id, []);
       return [];
@@ -116,8 +122,9 @@ export function useDrivePagedTreeChildren({
   };
 
   const loadMoreChildren = async (parent: DriveContainerNode): Promise<DriveViewNode[]> => {
+    const generation = generationRef.current;
     const pageState = pageStateMapRef.current.get(parent.id);
-    const currentChildren = childrenMap.get(parent.id) ?? [];
+    const currentChildren = childrenMapRef.current.get(parent.id) ?? [];
     if (!pageState?.cursor || loadingMoreNodeIdsRef.current.has(parent.id)) return currentChildren;
 
     loadingMoreNodeIdsRef.current.add(parent.id);
@@ -132,6 +139,7 @@ export function useDrivePagedTreeChildren({
         cursor: pageState.cursor,
         pageSize,
       });
+      if (generation !== generationRef.current) return [];
       const nextPageState = {
         cursor: result.nextCursor,
         total: result.total,
@@ -146,16 +154,20 @@ export function useDrivePagedTreeChildren({
       setNodeChildren(parent.id, nextChildren);
       return nextChildren;
     } catch (err) {
+      if (generation !== generationRef.current) return [];
       toast.danger(parseErrorMessage(err));
       setNodeChildren(parent.id, currentChildren);
       return currentChildren;
     } finally {
-      loadingMoreNodeIdsRef.current.delete(parent.id);
+      if (generation === generationRef.current) loadingMoreNodeIdsRef.current.delete(parent.id);
     }
   };
 
   const reset = () => {
-    setChildrenMap(new Map());
+    // 刷新或切换目录后，上一轮未完成请求不得回写当前分页数据。
+    generationRef.current += 1;
+    childrenMapRef.current = new Map();
+    setChildrenMap(childrenMapRef.current);
     setPageStateMap(new Map());
     pageStateMapRef.current.clear();
     loadingMoreNodeIdsRef.current.clear();

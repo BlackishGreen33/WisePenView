@@ -10,7 +10,6 @@ import { type ReactElement, type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AppBreadcrumbItem } from '@/components/base/AppBreadcrumb';
-import { requestDriveRefresh } from '@/components/business/Drive/driveRefresh';
 import { useDriveService } from '@/domains';
 import type { DriveNode } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';
@@ -105,7 +104,6 @@ export function useTableDriveDndController({
         return { requestedCount: 0, affectedCount: 0 };
       }
       const result = await driveService.moveNodes({ nodes, target });
-      requestDriveRefresh();
       return result;
     },
     {

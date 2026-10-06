@@ -1,5 +1,5 @@
 import { toast } from '@heroui/react';
-import { type Key, useState } from 'react';
+import { type Key, useRef, useState } from 'react';
 
 import type { DataNode } from '@/components/base/Tree';
 import { replaceDriveTreeNodeChildren } from '@/components/business/Drive/common/buildDriveTreeData';
@@ -9,10 +9,10 @@ import {
   getDriveScopeGroupId,
 } from '@/components/business/Drive/common/driveComponentModel';
 import { useDrivePagedTreeChildren } from '@/components/business/Drive/common/useDrivePagedTreeChildren';
-import { useDriveRefreshVersion } from '@/components/business/Drive/driveRefresh';
 import { useDriveService } from '@/domains';
 import type { DriveNode, DriveNodeScope } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';
+import { useDriveRefreshVersion } from '@/hooks/useDriveRefreshVersion';
 import { parseErrorMessage } from '@/utils/error';
 
 import { useSidebarDriveExpansionStore } from './_store/useSidebarDriveExpansionStore';
@@ -52,6 +52,8 @@ export function useSidebarDriveTreeController({
   const expansionScopeKey = scope.rootId;
   const groupId = getDriveScopeGroupId(scope);
   const refreshVersion = useDriveRefreshVersion();
+  const requestGenerationRef = useRef(0);
+  const loadedScopeKeyRef = useRef<string | undefined>(undefined);
   const [nodeMap, setNodeMap] = useState<Map<string, DriveViewNode>>(new Map());
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
@@ -93,13 +95,18 @@ export function useSidebarDriveTreeController({
     return replaceDriveTreeNodeChildren(currentTreeData, parentNodeId, childData);
   };
 
-  const { loading: treeLoading, refresh: refreshTree } = useApi(
+  const { loading: treeLoading } = useApi(
     async (): Promise<SidebarTreeLoadResult> => {
+      const generation = ++requestGenerationRef.current;
+      reset();
       const nextNodeMap = new Map<string, DriveViewNode>();
       const expandedNodeIds = new Set(
         useSidebarDriveExpansionStore.getState().expandedNodeIdsByScope[expansionScopeKey] ?? []
       );
       const rootNode = await driveService.getRoot({ rootId: scope.rootId, groupId });
+      if (generation !== requestGenerationRef.current) {
+        return { treeData: [], nodeMap: nextNodeMap, expandedKeys: [] };
+      }
       const rootChildren = await loadChildren(rootNode, { refresh: true });
       const baseRoot = buildTreeData([rootNode], nextNodeMap, treeControls)[0];
       if (!baseRoot) {
@@ -112,6 +119,7 @@ export function useSidebarDriveTreeController({
 
       const childrenByParent = new Map<string, DriveViewNode[]>([[rootNode.id, rootChildren]]);
       const loadExpandedChildren = async (nodes: DriveViewNode[]): Promise<void> => {
+        if (generation !== requestGenerationRef.current) return;
         await Promise.all(
           nodes.map(async (node) => {
             if (node.type !== 'folder' || !expandedNodeIds.has(node.id)) return;
@@ -148,7 +156,13 @@ export function useSidebarDriveTreeController({
         setNodeMap(result.nodeMap);
         setTreeData(result.treeData);
         setExpandedKeys(result.expandedKeys);
-        setSelectedKeys([]);
+        const restoreSelection = loadedScopeKeyRef.current === expansionScopeKey;
+        setSelectedKeys((current) =>
+          restoreSelection
+            ? current.filter((key) => isSidebarResourceNode(result.nodeMap.get(String(key))))
+            : []
+        );
+        loadedScopeKeyRef.current = expansionScopeKey;
         useSidebarDriveExpansionStore
           .getState()
           .setExpandedNodeIds(expansionScopeKey, result.expandedKeys.map(String));
@@ -162,11 +176,13 @@ export function useSidebarDriveTreeController({
   );
 
   const handleLoadData = async (treeNode: DataNode): Promise<void> => {
+    const generation = requestGenerationRef.current;
     const key = String(treeNode.key);
     const node = nodeMap.get(key);
     if (!node || (node.type !== 'root' && node.type !== 'folder')) return;
     try {
       const children = await loadChildren(node, { refresh: true });
+      if (generation !== requestGenerationRef.current) return;
       const childNodeMap = new Map<string, DriveViewNode>();
       const childData = buildTreeData(children, childNodeMap, treeControls);
       setNodeMap((currentNodeMap) => {
@@ -176,15 +192,18 @@ export function useSidebarDriveTreeController({
       });
       setTreeData((current) => replaceSidebarTreeChildren(current, node.id, childData));
     } catch (error) {
+      if (generation !== requestGenerationRef.current) return;
       toast.danger(parseErrorMessage(error));
     }
   };
   async function handleLoadMore(parentNodeId: string): Promise<void> {
+    const generation = requestGenerationRef.current;
     const parentNode = nodeMap.get(parentNodeId);
     if (!parentNode || (parentNode.type !== 'root' && parentNode.type !== 'folder')) return;
 
     try {
       const nextChildren = await loadMoreChildren(parentNode);
+      if (generation !== requestGenerationRef.current) return;
       const childNodeMap = new Map<string, DriveViewNode>();
       const childData = buildTreeData(nextChildren, childNodeMap, treeControls);
       setNodeMap((currentNodeMap) => {
@@ -194,6 +213,7 @@ export function useSidebarDriveTreeController({
       });
       setTreeData((current) => replaceSidebarTreeChildren(current, parentNode.id, childData));
     } catch (error) {
+      if (generation !== requestGenerationRef.current) return;
       toast.danger(parseErrorMessage(error));
     }
   }
@@ -220,7 +240,6 @@ export function useSidebarDriveTreeController({
     handleLoadData,
     handleSelect,
     nodeMap,
-    refreshTree,
     selectedKeys,
     treeData,
     treeLoading,

@@ -1,7 +1,6 @@
 import { toast } from '@heroui/react';
 import { useTranslation } from 'react-i18next';
 
-import { requestDriveRefresh } from '@/components/business/Drive/driveRefresh';
 import { useDriveService } from '@/domains';
 import type { DriveContainerNode } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';
@@ -46,7 +45,6 @@ function MoveNodeModal({
     async (target: DriveContainerNode) => {
       if (nodes.length === 0) return { requestedCount: 0, affectedCount: 0 };
       const result = await driveService.moveNodes({ nodes, target });
-      requestDriveRefresh();
       return result;
     },
     {

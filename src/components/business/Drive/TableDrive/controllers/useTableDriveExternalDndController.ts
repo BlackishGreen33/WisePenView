@@ -10,7 +10,6 @@ interface UseTableDriveExternalDndControllerParams {
   isTrashView: boolean;
   rowMap: Map<string, DriveTableRow>;
   pathNodes: DriveNode[];
-  onUploadSuccess: () => void;
 }
 
 interface ExternalFileDropTargetBase {
@@ -40,9 +39,8 @@ export function useTableDriveExternalDndController({
   isTrashView,
   rowMap,
   pathNodes,
-  onUploadSuccess,
 }: UseTableDriveExternalDndControllerParams) {
-  const { queueDocuments } = useDriveDocumentUpload({ pathTagId, onSuccess: onUploadSuccess });
+  const { queueDocuments } = useDriveDocumentUpload({ pathTagId });
   const [activeDropTarget, setActiveDropTarget] = useState<ExternalFileDropTarget | null>(null);
   const fileDragDepthRef = useRef(0);
 

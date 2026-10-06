@@ -1,6 +1,7 @@
 import { putOssPresignedUrl, SkillApi } from '@domain-apis';
 
 import type { AssetUploadTicketApiResponse } from '@/domains/_shared/apis/versionAssetApi.type';
+import type { DriveChangeDeps } from '@/domains/_shared/driveChange';
 import { createOssStsClientManager } from '@/domains/_shared/ossStsClient';
 import type { IResourceService } from '@/domains/Resource';
 import { RESOURCE_SORT_BY, RESOURCE_SORT_DIR } from '@/domains/Resource';
@@ -16,7 +17,7 @@ import type {
   UploadSkillAssetsOptions,
 } from './index.type';
 
-interface SkillServicesDeps {
+interface SkillServicesDeps extends DriveChangeDeps {
   resourceService: IResourceService;
 }
 
@@ -84,7 +85,7 @@ async function runWithConcurrency<T, R>(
 }
 
 export const createSkillServices = (deps: SkillServicesDeps): ISkillService => {
-  const { resourceService } = deps;
+  const { resourceService, onDriveChange } = deps;
   const assetClientManager = createOssStsClientManager<SkillAssetClientKey>({
     loadToken: ({ resourceId, targetVersion }) =>
       SkillApi.getSkillAssetStsToken({ resourceId, targetVersion }),
@@ -139,6 +140,7 @@ export const createSkillServices = (deps: SkillServicesDeps): ISkillService => {
     if (!resourceId) {
       throw createClientError(FRONTEND_CLIENT_ERROR.SKILL_CREATE_RESOURCE_ID_MISSING);
     }
+    onDriveChange();
     return resourceId;
   };
 
@@ -147,6 +149,7 @@ export const createSkillServices = (deps: SkillServicesDeps): ISkillService => {
     if (!resourceId) {
       throw createClientError(FRONTEND_CLIENT_ERROR.SKILL_COPY_RESOURCE_ID_MISSING);
     }
+    onDriveChange();
     return resourceId;
   };
 

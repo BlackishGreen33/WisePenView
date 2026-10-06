@@ -17,6 +17,7 @@ import { createChatServices } from '@/domains/Chat/service/ChatServices.impl';
 import { createCourseServices } from '@/domains/Course/service/CourseServices.impl';
 import { createDocumentServices } from '@/domains/Document/service/DocumentServices.impl';
 import { createDriveServices } from '@/domains/Drive/service/DriveServices.impl';
+import { requestDriveRefresh } from '@/domains/Drive/session/driveRefresh';
 import { createGroupServices } from '@/domains/Group/service/GroupServices.impl';
 import { createImageServices } from '@/domains/Image/service/ImageServices.impl';
 import { createInlineCommentServices } from '@/domains/InlineComment/service/InlineCommentServices.impl';
@@ -33,25 +34,29 @@ import { createWalletServices } from '@/domains/Wallet/service/WalletServices.im
 
 import type { ServicesContextValue } from './registry.types';
 
+// 写入通知统一注入，service 不依赖组件状态。
+const driveChangeDeps = { onDriveChange: requestDriveRefresh };
+
 // Level 0：无跨 service 依赖
 const adminService = createAdminServices();
-const agentService = createAgentServices();
+const agentService = createAgentServices(driveChangeDeps);
 const authService = createAuthServices();
-const documentService = createDocumentServices();
+const documentService = createDocumentServices(driveChangeDeps);
 const groupService = createGroupServices();
 const imageService = createImageServices();
 const inlineCommentService = createInlineCommentServices();
 const interactService = createInteractServices();
 const messageService = createMessageServices();
-const resourceService = createResourceServices();
+const resourceService = createResourceServices(driveChangeDeps);
 const speechService = createSpeechServices();
-const tagService = createTagServices();
+const tagService = createTagServices(driveChangeDeps);
 const userService = createUserServices();
 const walletService = createWalletServices();
 
 // Level 1：依赖 Level 0
-const noteService = createNoteServices({ resourceService: resourceService });
+const noteService = createNoteServices({ resourceService, ...driveChangeDeps });
 const skillService = createSkillServices({
+  ...driveChangeDeps,
   resourceService: resourceService,
 });
 const chatService = createChatServices({

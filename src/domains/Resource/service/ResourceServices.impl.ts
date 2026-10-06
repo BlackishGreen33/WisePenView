@@ -1,5 +1,7 @@
 import { ResourceItemApi, ResourcePlacementApi } from '@domain-apis';
 
+import type { DriveChangeDeps } from '@/domains/_shared/driveChange';
+
 import type { ListResourceItemsApiRequest } from '../apis/ResourceApi.type';
 import { ResourceServicesMap } from '../mapper/ResourceServices.map';
 import { setResourceDisplayName } from '../session/resourceDisplayNameCache';
@@ -38,88 +40,109 @@ const getGroupResources = async (params: GetGroupResourceRequest): Promise<Resou
   return requestResourceItemList(params, { groupId: params.groupId });
 };
 
-const renameResource = async (params: RenameResourceRequest): Promise<void> => {
-  await ResourceItemApi.renameResource(params);
-  setResourceDisplayName(params.resourceId, params.newName);
-};
-
-const removeResources = async (params: RemoveResourcesRequest): Promise<void> => {
-  await ResourceItemApi.removeResources(params);
-};
-
-const setPersonalResourcesPathTag = async (
-  params: SetPersonalResourcesPathTagRequest
-): Promise<number> => {
-  const request = ResourceServicesMap.mapSetPersonalResourcesPathTagRequest(params);
-  const data = await ResourcePlacementApi.setPersonalResourcesPathTag(request);
-  return ResourceServicesMap.mapResourcePlacementCountFromApi(data);
-};
-
-const movePersonalResourcesToTrash = async (
-  params: MovePersonalResourcesToTrashRequest
-): Promise<number> => {
-  const request = ResourceServicesMap.mapMovePersonalResourcesToTrashRequest(params);
-  const data = await ResourcePlacementApi.movePersonalResourcesToTrash(request);
-  return ResourceServicesMap.mapResourcePlacementCountFromApi(data);
-};
-
-const replacePersonalNormalTags = async (
-  params: ReplacePersonalNormalTagsRequest
-): Promise<number> => {
-  const request = ResourceServicesMap.mapReplacePersonalNormalTagsRequest(params);
-  const data = await ResourcePlacementApi.replacePersonalNormalTags(request);
-  return ResourceServicesMap.mapResourcePlacementCountFromApi(data);
-};
-
-const mountResourcesToGroup = async (params: MountResourcesToGroupRequest): Promise<number> => {
-  const request = ResourceServicesMap.mapMountResourcesToGroupRequest(params);
-  const data = await ResourcePlacementApi.mountResourcesToGroup(request);
-  return ResourceServicesMap.mapResourcePlacementCountFromApi(data);
-};
-
-const unmountResourcesToGroup = async (params: UnmountResourcesToGroupRequest): Promise<number> => {
-  const request = ResourceServicesMap.mapUnmountResourcesToGroupRequest(params);
-  const data = await ResourcePlacementApi.unmountResourcesToGroup(request);
-  return ResourceServicesMap.mapResourcePlacementCountFromApi(data);
-};
-
-const moveResourcesInGroup = async (params: MoveResourcesInGroupRequest): Promise<number> => {
-  const request = ResourceServicesMap.mapMoveResourcesInGroupRequest(params);
-  const data = await ResourcePlacementApi.moveResourcesInGroup(request);
-  return ResourceServicesMap.mapResourcePlacementCountFromApi(data);
-};
-
-const updateResourceActionPermission = async (
-  params: UpdateResourceActionPermissionRequest
-): Promise<void> => {
-  const request = ResourceServicesMap.mapChangeResourceActionPermissionRequest(params);
-  await ResourceItemApi.changeResourceActionPermission(request);
-};
-
-const updateResourcePermissionSubjects = async (
-  params: UpdateResourcePermissionSubjectsRequest
-): Promise<void> => {
-  const request = ResourceServicesMap.mapChangeResourceActionPermissionRequestFromSubjects(params);
-  await ResourceItemApi.changeResourceActionPermission(request);
-};
-
 const globalSearch = async (params: SearchQueryRequest): Promise<SearchResultPage> => {
   const data = await ResourceItemApi.globalSearch(params);
   return ResourceServicesMap.mapSearchResultPageFromApi(data);
 };
 
-export const createResourceServices = (): IResourceService => ({
-  getUserResources,
-  getGroupResources,
-  renameResource,
-  removeResources,
-  setPersonalResourcesPathTag,
-  movePersonalResourcesToTrash,
-  replacePersonalNormalTags,
-  mountResourcesToGroup,
-  unmountResourcesToGroup,
-  moveResourcesInGroup,
-  updateResourceActionPermission,
-  updateResourcePermissionSubjects,
-  globalSearch,
-});
+export const createResourceServices = ({ onDriveChange }: DriveChangeDeps): IResourceService => {
+  const renameResource = async (params: RenameResourceRequest): Promise<void> => {
+    await ResourceItemApi.renameResource(params);
+    setResourceDisplayName(params.resourceId, params.newName);
+    onDriveChange();
+  };
+
+  const removeResources = async (params: RemoveResourcesRequest): Promise<void> => {
+    await ResourceItemApi.removeResources(params);
+    onDriveChange();
+  };
+
+  const setPersonalResourcesPathTag = async (
+    params: SetPersonalResourcesPathTagRequest
+  ): Promise<number> => {
+    const request = ResourceServicesMap.mapSetPersonalResourcesPathTagRequest(params);
+    const data = await ResourcePlacementApi.setPersonalResourcesPathTag(request);
+    const affectedCount = ResourceServicesMap.mapResourcePlacementCountFromApi(data);
+    if (affectedCount > 0) onDriveChange();
+    return affectedCount;
+  };
+
+  const movePersonalResourcesToTrash = async (
+    params: MovePersonalResourcesToTrashRequest
+  ): Promise<number> => {
+    const request = ResourceServicesMap.mapMovePersonalResourcesToTrashRequest(params);
+    const data = await ResourcePlacementApi.movePersonalResourcesToTrash(request);
+    const affectedCount = ResourceServicesMap.mapResourcePlacementCountFromApi(data);
+    if (affectedCount > 0) onDriveChange();
+    return affectedCount;
+  };
+
+  const replacePersonalNormalTags = async (
+    params: ReplacePersonalNormalTagsRequest
+  ): Promise<number> => {
+    const request = ResourceServicesMap.mapReplacePersonalNormalTagsRequest(params);
+    const data = await ResourcePlacementApi.replacePersonalNormalTags(request);
+    const affectedCount = ResourceServicesMap.mapResourcePlacementCountFromApi(data);
+    if (affectedCount > 0) onDriveChange();
+    return affectedCount;
+  };
+
+  const mountResourcesToGroup = async (params: MountResourcesToGroupRequest): Promise<number> => {
+    const request = ResourceServicesMap.mapMountResourcesToGroupRequest(params);
+    const data = await ResourcePlacementApi.mountResourcesToGroup(request);
+    const affectedCount = ResourceServicesMap.mapResourcePlacementCountFromApi(data);
+    if (affectedCount > 0) onDriveChange();
+    return affectedCount;
+  };
+
+  const unmountResourcesToGroup = async (
+    params: UnmountResourcesToGroupRequest
+  ): Promise<number> => {
+    const request = ResourceServicesMap.mapUnmountResourcesToGroupRequest(params);
+    const data = await ResourcePlacementApi.unmountResourcesToGroup(request);
+    const affectedCount = ResourceServicesMap.mapResourcePlacementCountFromApi(data);
+    if (affectedCount > 0) onDriveChange();
+    return affectedCount;
+  };
+
+  const moveResourcesInGroup = async (params: MoveResourcesInGroupRequest): Promise<number> => {
+    const request = ResourceServicesMap.mapMoveResourcesInGroupRequest(params);
+    const data = await ResourcePlacementApi.moveResourcesInGroup(request);
+    const affectedCount = ResourceServicesMap.mapResourcePlacementCountFromApi(data);
+    if (affectedCount > 0) onDriveChange();
+    return affectedCount;
+  };
+
+  const updateResourceActionPermission = async (
+    params: UpdateResourceActionPermissionRequest
+  ): Promise<void> => {
+    const request = ResourceServicesMap.mapChangeResourceActionPermissionRequest(params);
+    await ResourceItemApi.changeResourceActionPermission(request);
+    onDriveChange();
+  };
+
+  const updateResourcePermissionSubjects = async (
+    params: UpdateResourcePermissionSubjectsRequest
+  ): Promise<void> => {
+    const request =
+      ResourceServicesMap.mapChangeResourceActionPermissionRequestFromSubjects(params);
+    await ResourceItemApi.changeResourceActionPermission(request);
+    onDriveChange();
+  };
+
+  return {
+    getUserResources,
+    getGroupResources,
+    renameResource,
+    removeResources,
+    setPersonalResourcesPathTag,
+    movePersonalResourcesToTrash,
+    replacePersonalNormalTags,
+    mountResourcesToGroup,
+    unmountResourcesToGroup,
+    moveResourcesInGroup,
+    updateResourceActionPermission,
+    updateResourcePermissionSubjects,
+    globalSearch,
+  };
+};

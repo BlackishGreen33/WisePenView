@@ -10,6 +10,7 @@ import { useDriveService, useGroupService } from '@/domains';
 import { buildDriveNodeScope, type DriveNode, type DriveNodeScope } from '@/domains/Drive';
 import type { IGroupService } from '@/domains/Group';
 import { useApi } from '@/hooks/useApi';
+import { useDriveRefreshVersion } from '@/hooks/useDriveRefreshVersion';
 import { parseErrorMessage } from '@/utils/error';
 
 import {
@@ -155,6 +156,7 @@ function DriveNavigator({
 }: DriveNavigatorProps) {
   const { t } = useTranslation('drive');
   const driveService = useDriveService();
+  const refreshVersion = useDriveRefreshVersion();
   const groupService = useGroupService();
   const singleScope = resolveDriveScope(scope, groupId, rootId);
   const finalRootId = singleScope.rootId;
@@ -164,6 +166,9 @@ function DriveNavigator({
   const rootLabelRef = useRef<Map<string, string>>(new Map());
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+  const requestGenerationRef = useRef(0);
+  const loadedViewKeyRef = useRef<string | undefined>(undefined);
   const scopePageStateRef = useRef({ page: 0, hasMore: false, loading: false });
   const renderableTypeKey = [...renderableTypes].sort().join('\u0001');
   const selectableTypeKey = [...selectableTypes].sort().join('\u0001');
@@ -179,7 +184,7 @@ function DriveNavigator({
     showsResources && !selectsResources ? resourcePreviewLimit : undefined;
   const navigatorResourcePageSize = effectiveResourceLimit ?? DEFAULT_SELECTABLE_RESOURCE_PAGE_SIZE;
   const disabledNodeIdSet = buildSetFromStableKey(disabledNodeIdKey);
-  const { loadChildren, loadMoreChildren, reset } = useDrivePagedTreeChildren({
+  const { childrenMap, loadChildren, loadMoreChildren, reset } = useDrivePagedTreeChildren({
     pageSize: navigatorResourcePageSize,
     loadPage: async ({ parent, cursor, pageSize, refresh }) => {
       const result = await driveService.loadNodeChildren({
@@ -242,12 +247,14 @@ function DriveNavigator({
     );
 
   async function handleLoadMoreChildren(parentNodeId: string): Promise<void> {
+    const generation = requestGenerationRef.current;
     const parent = [...nodeMapRef.current.values()].find(
       (node) => node.id === parentNodeId && (node.type === 'root' || node.type === 'folder')
     );
     if (!parent || (parent.type !== 'root' && parent.type !== 'folder')) return;
     const parentTreeKey = getTreeKey(parent);
     const nextChildren = await loadMoreChildren(parent);
+    if (generation !== requestGenerationRef.current) return;
     const childData = buildChildrenData(nextChildren);
     setTreeData((prev) => replaceDriveTreeNodeChildren(prev, parentTreeKey, childData));
     syncInitialSelectionForNodes(nextChildren);
@@ -342,11 +349,13 @@ function DriveNavigator({
   }
 
   const loadRootNode = async (option: DriveNavigatorScopeOption): Promise<DriveNode> => {
+    const generation = requestGenerationRef.current;
     const rootNode = await driveService.getRoot({
       rootId: option.rootId,
       groupId: option.groupId,
     });
-    rootLabelRef.current.set(rootNode.id, option.label);
+    if (generation === requestGenerationRef.current)
+      rootLabelRef.current.set(rootNode.id, option.label);
     return rootNode;
   };
 
@@ -359,6 +368,7 @@ function DriveNavigator({
 
   async function handleLoadMoreScopes(): Promise<void> {
     if (scopePageStateRef.current.loading || !scopePageStateRef.current.hasMore) return;
+    const generation = requestGenerationRef.current;
     scopePageStateRef.current.loading = true;
     const nextPage = scopePageStateRef.current.page + 1;
     try {
@@ -369,7 +379,9 @@ function DriveNavigator({
         excludedGroupIdSet,
         t
       );
+      if (generation !== requestGenerationRef.current) return;
       const rootNodes = await Promise.all(result.options.map(loadRootNode));
+      if (generation !== requestGenerationRef.current) return;
       scopePageStateRef.current = {
         page: nextPage,
         hasMore: result.hasMore,
@@ -389,65 +401,123 @@ function DriveNavigator({
         ...nextData,
       ]);
     } catch (err) {
+      if (generation !== requestGenerationRef.current) return;
       scopePageStateRef.current.loading = false;
       toast.danger(parseErrorMessage(err));
     }
   }
 
+  const viewKey = JSON.stringify([
+    scopeMode,
+    resourceType,
+    excludedGroupIdKey,
+    finalScopeKey,
+    finalRootId,
+    finalGroupId,
+    refreshTrigger,
+    navigatorResourcePageSize,
+    showsResources,
+    renderableTypeKey,
+    selectableTypeKey,
+    disabledNodeIdKey,
+    dimUnselectableNodes,
+  ]);
+
   const { loading } = useApi(
-    async (): Promise<DataNode[]> => {
+    async () => {
+      const generation = ++requestGenerationRef.current;
+      const restoreView = loadedViewKeyRef.current === viewKey;
+      const previousChildren = restoreView ? childrenMap : new Map<string, DriveViewNode[]>();
+      const scopePageCount = restoreView ? Math.max(1, scopePageStateRef.current.page) : 1;
+      const selectionToRestore = restoreView ? selectedKeys : (initialSelectedIds ?? []);
+      const expansionToRestore = restoreView ? expandedKeys : [];
       nodeMapRef.current.clear();
       rootLabelRef.current.clear();
       reset();
 
-      if (scopeMode === 'all' || scopeMode === 'public') {
-        const scopeResult = await fetchScopeOptionsPage(
-          groupService,
-          1,
-          scopeMode === 'all',
-          excludedGroupIdSet,
-          t
+      // 重读已加载的分支与页数，防止刷新后展开目录变空或已有选择消失。
+      const rebuildNodes = async (
+        nodes: DriveViewNode[],
+        loadRoot = false
+      ): Promise<DataNode[]> => {
+        if (generation !== requestGenerationRef.current) return [];
+        const data = buildChildrenData(nodes);
+        return Promise.all(
+          data.map(async (treeNode) => {
+            const node = nodeMapRef.current.get(String(treeNode.key));
+            if (!node || (node.type !== 'root' && node.type !== 'folder')) return treeNode;
+            const previous = previousChildren.get(node.id);
+            if (!loadRoot && !previous) return treeNode;
+            let children = await loadChildren(node, { refresh: true });
+            if (generation !== requestGenerationRef.current) return treeNode;
+            const previousResourceCount =
+              previous?.filter((child) => child.type === 'resource' || child.type === 'link')
+                .length ?? 0;
+            while (
+              children.some((child) => child.type === 'loading') &&
+              children.filter((child) => child.type === 'resource' || child.type === 'link')
+                .length < previousResourceCount
+            ) {
+              const loadedCount = children.filter(
+                (child) => child.type === 'resource' || child.type === 'link'
+              ).length;
+              const nextChildren = await loadMoreChildren(node);
+              if (generation !== requestGenerationRef.current) return treeNode;
+              children = nextChildren;
+              if (
+                children.filter((child) => child.type === 'resource' || child.type === 'link')
+                  .length <= loadedCount
+              )
+                break;
+            }
+            return { ...treeNode, children: await rebuildNodes(children) };
+          })
         );
-        scopePageStateRef.current = { page: 1, hasMore: scopeResult.hasMore, loading: false };
-        const rootNodes = await Promise.all(scopeResult.options.map(loadRootNode));
-        return buildChildrenData([
-          ...rootNodes,
-          ...(scopeResult.hasMore ? [buildScopeLoadMoreNode()] : []),
-        ]);
+      };
+
+      let nodes: DriveViewNode[];
+      if (scopeMode === 'all' || scopeMode === 'public') {
+        nodes = [];
+        for (let page = 1; page <= scopePageCount; page += 1) {
+          const scopeResult = await fetchScopeOptionsPage(
+            groupService,
+            page,
+            scopeMode === 'all' && page === 1,
+            excludedGroupIdSet,
+            t
+          );
+          if (generation !== requestGenerationRef.current) break;
+          const roots = await Promise.all(scopeResult.options.map(loadRootNode));
+          if (generation !== requestGenerationRef.current) break;
+          nodes.push(...roots);
+          scopePageStateRef.current = { page, hasMore: scopeResult.hasMore, loading: false };
+          if (!scopeResult.hasMore) break;
+        }
+        if (scopePageStateRef.current.hasMore) nodes.push(buildScopeLoadMoreNode());
+      } else {
+        nodes = [
+          await loadRootNode(
+            buildSingleScopeOption(singleScope.scope, finalRootId, t, finalGroupId)
+          ),
+        ];
       }
-
-      const rootNode = await loadRootNode(
-        buildSingleScopeOption(singleScope.scope, finalRootId, t, finalGroupId)
-      );
-      const baseRoot = buildChildrenData([rootNode])[0];
-      if (!baseRoot) return [];
-      if (rootNode.type !== 'root') return [baseRoot];
-
-      const children = await loadChildren(rootNode);
-      const childData = buildChildrenData(children);
-      return [{ ...baseRoot, children: childData }];
+      const data = await rebuildNodes(nodes, scopeMode === 'single');
+      return { data, viewKey, selectionToRestore, expansionToRestore, restoreView };
     },
     {
-      refreshDeps: [
-        scopeMode,
-        resourceType,
-        excludedGroupIdKey,
-        finalScopeKey,
-        finalRootId,
-        finalGroupId,
-        refreshTrigger,
-        navigatorResourcePageSize,
-        showsResources,
-        renderableTypeKey,
-        selectableTypeKey,
-        disabledNodeIdKey,
-        dimUnselectableNodes,
-      ],
-      onSuccess: (data) => {
-        setTreeData(data);
-        const initialKeys = normalizeSelectableKeys(initialSelectedIds ?? []);
-        const nextSelected = multiple ? initialKeys : initialKeys[0] ? [initialKeys[0]] : [];
+      refreshDeps: [viewKey, refreshVersion],
+      onSuccess: (result) => {
+        loadedViewKeyRef.current = result.viewKey;
+        setTreeData(result.data);
+        const validKeys = normalizeSelectableKeys(result.selectionToRestore);
+        const nextSelected = multiple ? validKeys : validKeys.slice(0, 1);
         setSelectedKeys(nextSelected);
+        const nextExpanded = result.restoreView
+          ? result.expansionToRestore.filter((key) => nodeMapRef.current.has(key))
+          : scopeMode === 'single' && result.data[0]
+            ? [String(result.data[0].key)]
+            : [];
+        setExpandedKeys(nextExpanded);
         emitSelectionChange(nextSelected);
       },
       onErrorEffect: () => {
@@ -460,10 +530,12 @@ function DriveNavigator({
 
   const handleLoadData = async (treeNode: DataNode) => {
     if (disabled) return;
+    const generation = requestGenerationRef.current;
     const key = String(treeNode.key);
     const node = nodeMapRef.current.get(key);
     if (!node || (node.type !== 'root' && node.type !== 'folder')) return;
     const children = await loadChildren(node, { refresh: true });
+    if (generation !== requestGenerationRef.current) return;
     const childData = buildChildrenData(children);
     setTreeData((prev) => replaceDriveTreeNodeChildren(prev, key, childData));
     syncInitialSelectionForNodes(children);
@@ -487,9 +559,6 @@ function DriveNavigator({
     setSelectedKeys(next);
     emitSelectionChange(next);
   };
-
-  const defaultExpandedKeys =
-    scopeMode === 'single' && treeData[0] ? [String(treeData[0].key)] : undefined;
 
   if (loading && treeData.length === 0) {
     return (
@@ -516,11 +585,12 @@ function DriveNavigator({
       <Tree
         treeData={treeData}
         className={styles.tree}
-        disabled={disabled}
+        disabled={disabled || loading}
         selectable
         multiple={multiple}
         selectedKeys={selectedKeys}
-        defaultExpandedKeys={defaultExpandedKeys}
+        expandedKeys={expandedKeys}
+        onExpand={(keys) => setExpandedKeys(keys.map(String))}
         expandAction="click"
         onSelect={handleSelect}
         loadData={handleLoadData}

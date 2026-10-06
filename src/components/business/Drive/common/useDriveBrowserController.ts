@@ -1,8 +1,9 @@
-import { startTransition, useState } from 'react';
+import { startTransition, useRef, useState } from 'react';
 
 import { useDriveService } from '@/domains';
 import type { DriveContainerNode, DriveNode, DriveNodeScope } from '@/domains/Drive';
 import { useApi } from '@/hooks/useApi';
+import { useDriveRefreshVersion } from '@/hooks/useDriveRefreshVersion';
 import { createClientError, FRONTEND_CLIENT_ERROR } from '@/utils/error';
 
 import type { DriveViewNode } from './driveComponentModel';
@@ -44,6 +45,8 @@ export function useDriveBrowserController({
   onExpandedNodeIdsRestored,
 }: UseDriveBrowserControllerParams) {
   const driveService = useDriveService();
+  const refreshVersion = useDriveRefreshVersion();
+  const requestGenerationRef = useRef(0);
   const rootId = scope.rootId;
   const groupId = scope.type === 'group' ? scope.groupId : undefined;
   const {
@@ -101,9 +104,13 @@ export function useDriveBrowserController({
 
   const { loading, refresh } = useApi(
     async (): Promise<DriveRowsResult> => {
+      const generation = ++requestGenerationRef.current;
       const expandedNodeIdsToRestore = getExpandedNodeIdsToRestore?.(locationKey);
       reset();
       const parent = await resolveCurrentParent();
+      if (generation !== requestGenerationRef.current) {
+        return { locationKey, parent, rows: [], totalCount: 0, restoredExpandedNodeIds: [] };
+      }
       const nextRows = await loadChildren(parent, { refresh: true });
       const pageState = getPageState(parent.id);
       if (!expandedNodeIdsToRestore?.size) {
@@ -118,6 +125,7 @@ export function useDriveBrowserController({
 
       const restoredExpandedNodeIds: string[] = [];
       const reloadExpandedChildren = async (nodes: DriveViewNode[]): Promise<void> => {
+        if (generation !== requestGenerationRef.current) return;
         await Promise.all(
           nodes.filter(isContainer).map(async (node) => {
             if (!expandedNodeIdsToRestore.has(node.id)) return;
@@ -138,7 +146,7 @@ export function useDriveBrowserController({
     },
     {
       ready,
-      refreshDeps: [currentNodeId, groupId, rootId],
+      refreshDeps: [currentNodeId, groupId, rootId, refreshVersion],
       onSuccess: (result) => {
         setCurrentParent(result.parent);
         setRows(result.rows);
@@ -154,12 +162,15 @@ export function useDriveBrowserController({
 
   const { loading: loadingMore, run: loadMore } = useApi(
     async () => {
-      if (!currentParent) return [];
-      return loadMorePagedChildren(currentParent);
+      const generation = requestGenerationRef.current;
+      const rows = currentParent ? await loadMorePagedChildren(currentParent) : [];
+      return { generation, rows };
     },
     {
       manual: true,
-      onSuccess: (nextRows) => setRows(nextRows),
+      onSuccess: (result) => {
+        if (result.generation === requestGenerationRef.current) setRows(result.rows);
+      },
     }
   );
 
@@ -170,7 +181,7 @@ export function useDriveBrowserController({
     }),
     {
       ready,
-      refreshDeps: [currentNodeId, groupId],
+      refreshDeps: [currentNodeId, groupId, rootId, refreshVersion],
       showErrorToast: !onPathError,
       onErrorEffect: (err) => {
         if (onPathError) {

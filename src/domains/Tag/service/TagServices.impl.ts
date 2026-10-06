@@ -1,6 +1,7 @@
 import { TagApi } from '@domain-apis';
 
 import { registerServiceCacheCleaner } from '@/domains/_shared/cacheRegistry';
+import type { DriveChangeDeps } from '@/domains/_shared/driveChange';
 import { createTtlCache } from '@/domains/_shared/ttlCache';
 import { TAG_META_SCHEMA, type TagTreeNode } from '@/domains/Tag';
 import { normalizeTagGroupId } from '@/domains/Tag/utils/normalizeTagGroupId';
@@ -57,7 +58,7 @@ const getTagGrantedActions: ITagService['getTagGrantedActions'] = async (groupId
   return TagServicesMap.mapTagGrantedActions(roots);
 };
 
-export const createTagServices = (): ITagService => {
+export const createTagServices = ({ onDriveChange }: DriveChangeDeps): ITagService => {
   /** 按 groupId 存储已拉取的原始标签树；写操作后清除，读缓存自动过期。 */
   const rawTagTreeCache = createTtlCache<string, TagTreeNode[]>(TAG_TREE_CACHE_TTL_MS);
   /** 扁平索引：cacheKey → (tagId → TagTreeNode)，与 rawTagTreeCache 同步维护并自动过期。 */
@@ -137,23 +138,27 @@ export const createTagServices = (): ITagService => {
     const payload = TagServicesMap.mapUpdateTagRequest(params);
     await TagApi.changeTag(payload);
     clearTagTreeCache(params.groupId);
+    onDriveChange();
   };
 
   const addTag = async (params: TagCreateRequest): Promise<string> => {
     const payload = TagServicesMap.mapAddTagRequest(params);
     const data = await TagApi.addTag(payload);
     clearTagTreeCache(params.groupId);
+    onDriveChange();
     return TagServicesMap.mapAddTagFromApi(data);
   };
 
   const removeTags = async (params: RemoveTagsRequest): Promise<void> => {
     await TagApi.removeTags(params);
     clearTagTreeCache(params.groupId);
+    onDriveChange();
   };
 
   const moveTags = async (params: MoveTagsRequest): Promise<void> => {
     await TagApi.moveTags(params);
     clearTagTreeCache(params.groupId);
+    onDriveChange();
   };
 
   const reorderSiblingTags = async (params: ReorderSiblingTagsRequest): Promise<void> => {
@@ -174,6 +179,7 @@ export const createTagServices = (): ITagService => {
       });
     }
 
+    let changed = false;
     try {
       for (const [index, node] of nodes.entries()) {
         if (!node) continue;
@@ -190,10 +196,12 @@ export const createTagServices = (): ITagService => {
             },
           })
         );
+        changed = true;
       }
     } finally {
       // Java 暂无批量排序接口；任一请求失败时也必须失效缓存以反映已成功的部分更新。
       clearTagTreeCache(normalizedGroupId);
+      if (changed) onDriveChange();
     }
   };
 

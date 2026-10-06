@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { FormField, Input } from '@/components/base/Input';
 import AppFormDialog from '@/components/business/AppFormDialog';
-import { requestDriveRefresh } from '@/components/business/Drive/driveRefresh';
 import { useDriveService } from '@/domains';
 import { validateReservedName } from '@/domains/Drive/validation/validateReservedName';
 import { useApi } from '@/hooks/useApi';
@@ -29,7 +28,6 @@ function RenameNodeModalContent({ isOpen, node, onOpenChange, onSuccess }: Renam
     async (trimmed: string) => {
       if (!node) return;
       await driveService.renameNode({ node, newName: trimmed });
-      requestDriveRefresh();
     },
     {
       manual: true,

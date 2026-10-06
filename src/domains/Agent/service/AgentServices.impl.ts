@@ -1,12 +1,13 @@
 import { AgentApi, putOssPresignedUrl } from '@domain-apis';
 
+import type { DriveChangeDeps } from '@/domains/_shared/driveChange';
 import { createClientError, FRONTEND_CLIENT_ERROR } from '@/utils/error';
 import { computeFileMd5 } from '@/utils/file/computeFileMd5';
 
 import { AgentServicesMap } from '../mapper/AgentServices.map';
 import type { IAgentService } from './index.type';
 
-export const createAgentServices = (): IAgentService => ({
+export const createAgentServices = ({ onDriveChange }: DriveChangeDeps): IAgentService => ({
   async createAgent(title, name, description, pathTagId) {
     const resourceId = await AgentApi.createAgent({
       title,
@@ -17,6 +18,7 @@ export const createAgentServices = (): IAgentService => ({
     if (!resourceId) {
       throw createClientError(FRONTEND_CLIENT_ERROR.AGENT_CREATE_RESOURCE_ID_MISSING);
     }
+    onDriveChange();
     return resourceId;
   },
   async getAgentDetail(resourceId, version) {

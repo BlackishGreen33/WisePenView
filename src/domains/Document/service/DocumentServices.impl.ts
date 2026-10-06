@@ -1,10 +1,13 @@
 import { DocumentApi, putOssPresignedUrl } from '@domain-apis';
 
+import { registerServiceCacheCleaner } from '@/domains/_shared/cacheRegistry';
+import type { DriveChangeDeps } from '@/domains/_shared/driveChange';
 import { createClientError, FRONTEND_CLIENT_ERROR } from '@/utils/error';
 import { computeFileMd5 } from '@/utils/file/computeFileMd5';
 import { parseExtension } from '@/utils/file/parseExtension';
 
 import type { UploadDocApiRequest, UploadDocApiResponse } from '../apis/DocumentApi.type';
+import { DOCUMENT_PROCESS } from '../enum';
 import { DocumentServicesMap } from '../mapper/DocumentServices.map';
 import type {
   DocDisplayInfoResponse,
@@ -40,76 +43,13 @@ const initUpload = async (body: UploadDocApiRequest): Promise<UploadDocApiRespon
   return res;
 };
 
-const uploadDocument = async (params: UploadDocumentParams): Promise<string> => {
-  const { file, pathTagId, onUploadInitialized, onUploadProgress } = params;
-  assertDocumentUploadAllowed(file);
-
-  const md5 = await computeFileMd5(file);
-  const extension = parseExtension(file.name);
-
-  const init = await initUpload(
-    DocumentServicesMap.mapUploadDocToApi({
-      filename: file.name,
-      extension,
-      md5,
-      expectedSize: file.size,
-      pathTagId,
-    })
-  );
-
-  onUploadInitialized?.({
-    documentId: init.documentId,
-    flashUploaded: init.flashUploaded,
-  });
-
-  if (init.flashUploaded) {
-    return init.documentId;
-  }
-
-  if (
-    init.putUrl == null ||
-    init.putUrl === '' ||
-    init.callbackHeader == null ||
-    init.callbackHeader === ''
-  ) {
-    throw createClientError(FRONTEND_CLIENT_ERROR.DOCUMENT_UPLOAD_URL_INVALID);
-  }
-
-  await putOssPresignedUrl({
-    putUrl: init.putUrl,
-    body: file,
-    callbackHeader: init.callbackHeader,
-    onProgress: onUploadProgress,
-  });
-
-  return init.documentId;
-};
-
-const listPendingDocs = async (): Promise<PendingDocItem[]> => {
-  const data = await DocumentApi.listPendingDocs();
-  return DocumentServicesMap.mapListPendingDocsFromApi(data);
-};
-
-const syncPendingDocStatus: IDocumentService['syncPendingDocStatus'] = async (documentId) => {
-  const data = await DocumentApi.syncDocStatus({ documentId });
-  return DocumentServicesMap.mapDocumentProcessStatusFromApi(data);
-};
-
 const retryPendingDoc = async (documentId: string): Promise<void> => {
   await DocumentApi.retryDocProcess({ documentId });
-};
-
-const cancelPendingDoc = async (documentId: string): Promise<void> => {
-  await DocumentApi.cancelDocProcess({ documentId });
 };
 
 const getDocInfo = async (resourceId: string): Promise<DocDisplayInfoResponse> => {
   const data = await DocumentApi.getDocInfo({ resourceId });
   return DocumentServicesMap.mapGetDocInfoFromApi(data);
-};
-
-const forkDocument: IDocumentService['forkDocument'] = async (params) => {
-  return DocumentApi.forkDocument(params);
 };
 
 const getDocPermissionOverview: IDocumentService['getDocPermissionOverview'] = async (
@@ -123,14 +63,101 @@ const getOnlyOfficeEditorConfig = async (resourceId: string) => {
   return await DocumentApi.getOnlyOfficeEditorConfig({ resourceId });
 };
 
-export const createDocumentServices = (): IDocumentService => ({
-  uploadDocument,
-  listPendingDocs,
-  syncPendingDocStatus,
-  retryPendingDoc,
-  cancelPendingDoc,
-  getDocInfo,
-  getDocPermissionOverview,
-  forkDocument,
-  getOnlyOfficeEditorConfig,
-});
+export const createDocumentServices = ({ onDriveChange }: DriveChangeDeps): IDocumentService => {
+  let readyDocumentIds = new Set<string>();
+  registerServiceCacheCleaner(() => readyDocumentIds.clear());
+
+  const listPendingDocs = async (): Promise<PendingDocItem[]> => {
+    const data = await DocumentApi.listPendingDocs();
+    const items = DocumentServicesMap.mapListPendingDocsFromApi(data);
+    const nextReadyIds = new Set(
+      items.flatMap((item) =>
+        item.documentId && item.documentStatus.status === DOCUMENT_PROCESS.READY
+          ? [item.documentId]
+          : []
+      )
+    );
+    const hasNewReadyDocument = [...nextReadyIds].some((id) => !readyDocumentIds.has(id));
+    readyDocumentIds = nextReadyIds;
+    // 本地等待超时后，上传队列仍可观察到后端注册完成。
+    if (hasNewReadyDocument) onDriveChange();
+    return items;
+  };
+
+  const uploadDocument = async (params: UploadDocumentParams): Promise<string> => {
+    const { file, pathTagId, onUploadInitialized, onUploadProgress } = params;
+    assertDocumentUploadAllowed(file);
+
+    const md5 = await computeFileMd5(file);
+    const extension = parseExtension(file.name);
+
+    const init = await initUpload(
+      DocumentServicesMap.mapUploadDocToApi({
+        filename: file.name,
+        extension,
+        md5,
+        expectedSize: file.size,
+        pathTagId,
+      })
+    );
+
+    onUploadInitialized?.({
+      documentId: init.documentId,
+      flashUploaded: init.flashUploaded,
+    });
+
+    if (init.flashUploaded) {
+      onDriveChange();
+      return init.documentId;
+    }
+
+    if (
+      init.putUrl == null ||
+      init.putUrl === '' ||
+      init.callbackHeader == null ||
+      init.callbackHeader === ''
+    ) {
+      throw createClientError(FRONTEND_CLIENT_ERROR.DOCUMENT_UPLOAD_URL_INVALID);
+    }
+
+    await putOssPresignedUrl({
+      putUrl: init.putUrl,
+      body: file,
+      callbackHeader: init.callbackHeader,
+      onProgress: onUploadProgress,
+    });
+
+    onDriveChange();
+    return init.documentId;
+  };
+
+  const syncPendingDocStatus: IDocumentService['syncPendingDocStatus'] = async (documentId) => {
+    const data = await DocumentApi.syncDocStatus({ documentId });
+    const result = DocumentServicesMap.mapDocumentProcessStatusFromApi(data);
+    if (result.status === DOCUMENT_PROCESS.READY) onDriveChange();
+    return result;
+  };
+
+  const cancelPendingDoc = async (documentId: string): Promise<void> => {
+    await DocumentApi.cancelDocProcess({ documentId });
+    onDriveChange();
+  };
+
+  const forkDocument: IDocumentService['forkDocument'] = async (params) => {
+    const resourceId = await DocumentApi.forkDocument(params);
+    onDriveChange();
+    return resourceId;
+  };
+
+  return {
+    uploadDocument,
+    listPendingDocs,
+    syncPendingDocStatus,
+    retryPendingDoc,
+    cancelPendingDoc,
+    getDocInfo,
+    getDocPermissionOverview,
+    forkDocument,
+    getOnlyOfficeEditorConfig,
+  };
+};
