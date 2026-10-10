@@ -12,7 +12,6 @@ const COLLAPSE_EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
  */
 export function useCollapseHeight(open: boolean) {
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const initializedRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(open);
 
   /**
@@ -41,13 +40,7 @@ export function useCollapseHeight(open: boolean) {
       return;
     }
 
-    if (initializedRef.current !== element) {
-      // 元素刚挂载，初始高度已由 ref 回调写好
-      initializedRef.current = element;
-      openRef.current = open;
-      return;
-    }
-
+    // ref 已负责挂载初始化；后挂载面板的首次展开也必须走状态切换，不能再跳过一次。
     if (openRef.current === open) return;
     openRef.current = open;
 
@@ -74,6 +67,11 @@ export function useCollapseHeight(open: boolean) {
       // 强制 reflow，再开启动画
       void element.offsetHeight;
       const target = element.scrollHeight;
+      if (target === 0) {
+        // 子节点尚未完成布局时 scrollHeight 可能暂时为 0，不能把已展开面板锁死。
+        element.style.height = 'auto';
+        return;
+      }
       element.style.transition = `height ${COLLAPSE_MS}ms ${COLLAPSE_EASE}`;
       element.style.height = `${target}px`;
       endTimer = window.setTimeout(() => {
@@ -95,6 +93,9 @@ export function useCollapseHeight(open: boolean) {
     return () => {
       cancelled = true;
       window.clearTimeout(endTimer);
+      // 动画被重新执行或卸载打断时，先落到本次目标态，避免保留临时像素高度。
+      element.style.height = open ? 'auto' : '0px';
+      element.style.transition = '';
     };
   }, [open]);
 
