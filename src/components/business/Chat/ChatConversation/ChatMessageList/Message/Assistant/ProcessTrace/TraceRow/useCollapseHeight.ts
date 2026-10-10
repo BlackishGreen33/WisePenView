@@ -1,34 +1,61 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 const COLLAPSE_MS = 200;
 const COLLAPSE_EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
 
+/**
+ * 折叠面板的高度控制，返回挂到面板上的 ref。
+ *
+ * 面板会在折叠状态下后挂载：流式时先只有单节点正文，随后才切成多节点的明细列表。
+ * 因此初始高度必须由 ref 回调在元素挂载当帧补齐——只依赖 open 的副作用不会因为元素出现而重跑，
+ * 漏掉初始化时面板会一直保持 auto 高度，折叠态看起来始终是展开的。
+ */
 export function useCollapseHeight(open: boolean) {
-  const ref = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const initializedRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(open);
-  const initializedRef = useRef(false);
+
+  /**
+   * @wisepen-manual-memo
+   * 为什么：ref 回调的身份是 React 的挂载契约，身份变化时 React 会先以 null 卸载再重新挂载，
+   * 直接把刚写好的折叠高度重置成 auto；而展开/收起恰好发生在组件重渲染期间。
+   * 收益：回调只在面板挂载、卸载时执行，可以在元素后挂载当帧补齐初始高度，同时不打断收起动画。
+   * 失效条件：改用 useRef 对象或让回调依赖 open 时，元素后挂载不会再执行初始化，
+   * 折叠态会一直保持 auto 高度而始终展开。
+   */
+  const attachPanel = useCallback((element: HTMLDivElement | null) => {
+    elementRef.current = element;
+    if (!element) return;
+
+    element.style.overflow = 'hidden';
+    element.style.transition = 'none';
+    element.style.height = openRef.current ? 'auto' : '0px';
+  }, []);
 
   useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const element = elementRef.current;
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!initializedRef.current) {
-      initializedRef.current = true;
+    if (!element) {
+      // 面板尚未挂载：只记录最新展开态，等挂载当帧由 ref 回调初始化高度
       openRef.current = open;
-      el.style.overflow = 'hidden';
-      el.style.height = open ? 'auto' : '0px';
-      el.style.transition = 'none';
+      return;
+    }
+
+    if (initializedRef.current !== element) {
+      // 元素刚挂载，初始高度已由 ref 回调写好
+      initializedRef.current = element;
+      openRef.current = open;
       return;
     }
 
     if (openRef.current === open) return;
     openRef.current = open;
 
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     if (reduceMotion) {
-      el.style.transition = 'none';
-      el.style.height = open ? 'auto' : '0px';
+      element.style.transition = 'none';
+      element.style.height = open ? 'auto' : '0px';
       return;
     }
 
@@ -37,31 +64,31 @@ export function useCollapseHeight(open: boolean) {
 
     const clearTransition = () => {
       if (cancelled) return;
-      el.style.transition = '';
+      element.style.transition = '';
     };
 
     if (open) {
-      el.style.overflow = 'hidden';
-      el.style.height = '0px';
-      el.style.transition = 'none';
+      element.style.overflow = 'hidden';
+      element.style.height = '0px';
+      element.style.transition = 'none';
       // 强制 reflow，再开启动画
-      void el.offsetHeight;
-      const target = el.scrollHeight;
-      el.style.transition = `height ${COLLAPSE_MS}ms ${COLLAPSE_EASE}`;
-      el.style.height = `${target}px`;
+      void element.offsetHeight;
+      const target = element.scrollHeight;
+      element.style.transition = `height ${COLLAPSE_MS}ms ${COLLAPSE_EASE}`;
+      element.style.height = `${target}px`;
       endTimer = window.setTimeout(() => {
         if (cancelled || !openRef.current) return;
-        el.style.height = 'auto';
+        element.style.height = 'auto';
         clearTransition();
       }, COLLAPSE_MS);
     } else {
-      const current = el.scrollHeight;
-      el.style.overflow = 'hidden';
-      el.style.height = `${current}px`;
-      el.style.transition = 'none';
-      void el.offsetHeight;
-      el.style.transition = `height ${COLLAPSE_MS}ms ${COLLAPSE_EASE}`;
-      el.style.height = '0px';
+      const current = element.scrollHeight;
+      element.style.overflow = 'hidden';
+      element.style.height = `${current}px`;
+      element.style.transition = 'none';
+      void element.offsetHeight;
+      element.style.transition = `height ${COLLAPSE_MS}ms ${COLLAPSE_EASE}`;
+      element.style.height = '0px';
       endTimer = window.setTimeout(clearTransition, COLLAPSE_MS);
     }
 
@@ -71,5 +98,5 @@ export function useCollapseHeight(open: boolean) {
     };
   }, [open]);
 
-  return ref;
+  return attachPanel;
 }
