@@ -9,10 +9,83 @@
 ) {
   --app-popover-surface: var(--background);
 
+  /* HeroUI Select 自带 radius-3xl，显式接入应用浮层 token。 */
+  border-radius: var(--app-radius-popover, var(--radius-overlay)) !important;
+  overflow: clip;
+
   color: var(--muted);
   font-family: var(--app-font-family);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-sm);
+}
+
+/* 按钮采用 8px，字段、选项和侧栏等紧凑控件继续采用 6px。 */
+:is(.button, .toggle-button) {
+  border-radius: var(--radius-button, var(--radius-content));
+}
+
+/* 按钮组保留连接关系，只让最外侧边缘使用交互圆角。 */
+:is(.button-group, .toggle-button-group) > :is(.button, .toggle-button) {
+  border-radius: 0;
+}
+
+:is(.button-group, .toggle-button-group):is(
+    .button-group--horizontal,
+    .toggle-button-group--horizontal
+  )
+  > :is(.button, .toggle-button):first-child {
+  border-start-start-radius: var(--radius-button, var(--radius-content));
+  border-end-start-radius: var(--radius-button, var(--radius-content));
+}
+
+:is(.button-group, .toggle-button-group):is(
+    .button-group--horizontal,
+    .toggle-button-group--horizontal
+  )
+  > :is(.button, .toggle-button):last-child {
+  border-start-end-radius: var(--radius-button, var(--radius-content));
+  border-end-end-radius: var(--radius-button, var(--radius-content));
+}
+
+:is(.button-group, .toggle-button-group):is(
+    .button-group--vertical,
+    .toggle-button-group--vertical
+  )
+  > :is(.button, .toggle-button):first-child {
+  border-start-start-radius: var(--radius-button, var(--radius-content));
+  border-start-end-radius: var(--radius-button, var(--radius-content));
+}
+
+:is(.button-group, .toggle-button-group):is(
+    .button-group--vertical,
+    .toggle-button-group--vertical
+  )
+  > :is(.button, .toggle-button):last-child {
+  border-end-start-radius: var(--radius-button, var(--radius-content));
+  border-end-end-radius: var(--radius-button, var(--radius-content));
+}
+
+:is(.button-group, .toggle-button-group):is(
+    .button-group--horizontal,
+    .toggle-button-group--horizontal,
+    .button-group--vertical,
+    .toggle-button-group--vertical
+  )
+  > :is(.button, .toggle-button):only-child {
+  border-radius: var(--radius-button, var(--radius-content));
+}
+
+:is(.toggle-button-group--detached) > .toggle-button {
+  border-radius: var(--radius-button, var(--radius-content));
+}
+
+/* Modal 使用 12px 浮层圆角，与内容区和 footer 保持完整外壳关系。 */
+:is(.modal__dialog, .alert-dialog__dialog):not(
+    .modal__dialog--full,
+    .alert-dialog__dialog--full
+  ) {
+  border-radius: var(--radius-modal, var(--radius-overlay)) !important;
+  overflow: clip;
 }
 
 .dropdown__popover .header {
@@ -138,6 +211,10 @@
   font: inherit;
 }
 
-.table-root :is(.button, [data-slot='button'], .select__trigger) {
-  border-radius: var(--table-control-radius, var(--table-shell-radius, var(--radius-xl)));
+.table-root :is(.button, [data-slot='button']) {
+  border-radius: var(--radius-button, var(--radius-content));
+}
+
+.table-root .select__trigger {
+  border-radius: var(--table-control-radius, var(--radius-interactive));
 }

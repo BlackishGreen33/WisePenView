@@ -6,6 +6,20 @@
 
 ## 分层
 
+### 圆角与操作区
+
+Modal 和 Popover 都是 12px 外壳，但语义不同的内部控件不跟随外壳机械放大：Modal footer 中的 Button 使用 8px，输入字段使用 6px，菜单或 Picker 的选中项使用 6px。外壳、内容 inset 和内部控件需要保持同心关系；不要在业务调用方重新覆盖圆角。
+
+| Overlay 层级                     | 圆角 | 规范 token         |
+| -------------------------------- | ---- | ------------------ |
+| Popover / Dropdown / Select 外壳 | 12px | `--radius-overlay` |
+| Modal / AlertDialog 外壳         | 12px | `--radius-modal`   |
+| Footer Button / IconButton       | 8px  | `--radius-button`  |
+| Input / Select trigger           | 6px  | `--radius-field`   |
+| 菜单选中项                       | 6px  | `--radius-md`      |
+
+HeroUI 的 `radius-3xl` 不得作为 Overlay 默认值。全屏 Modal 的容器继续使用直角，以便贴合窗口边缘。
+
 Overlay 组件按复用范围分开放：
 
 - `src/components/base/Modal`、`src/components/base/Popover`：底层原子层，统一 HeroUI 浮层的挂载时机与延迟渲染。
