@@ -1,3 +1,8 @@
+import { invalidApiResponse, isFiniteNumber, isRecord } from '@/apis/runtimeContract';
+import {
+  mapVersionResourceInfo,
+  validateVersionBundle,
+} from '@/domains/_shared/mapper/versionAsset.map';
 import type { ResourcePermissionOverview } from '@/domains/Resource';
 import { ResourceServicesMap } from '@/domains/Resource/mapper/ResourceServices.map';
 import { normalizeNonNegativeNumber } from '@/utils/normalize/normalizeNumber';
@@ -19,9 +24,12 @@ const AGENT_SPEC_FALLBACK: AgentSpec = {
   autoGenerateTitle: true,
   modelPolicy: { defaultModelId: '', defaultProviderId: '', allowRequestOverride: true },
   toolAndSkillPolicy: {
+    enableUseTool: true,
     toolSelectionDefaultEnabled: true,
     toolSelectionOverrides: {},
+    enableUseSkill: true,
     onDemandSkillIds: [],
+    skillMatchTopK: 3,
   },
   memoryPolicy: {
     enableChatMemory: true,
@@ -36,52 +44,100 @@ const AGENT_SPEC_FALLBACK: AgentSpec = {
   },
 };
 
-const mapSpec = (spec?: AgentSpecApi | null): AgentSpec => ({
-  systemPrompt: spec?.systemPrompt ?? AGENT_SPEC_FALLBACK.systemPrompt,
-  autoGenerateTitle: spec?.autoGenerateTitle ?? AGENT_SPEC_FALLBACK.autoGenerateTitle,
-  modelPolicy: {
-    defaultModelId: spec?.modelPolicy?.defaultModelId ?? '',
-    defaultProviderId: spec?.modelPolicy?.defaultProviderId ?? '',
-    allowRequestOverride:
-      spec?.modelPolicy?.allowRequestOverride ??
-      AGENT_SPEC_FALLBACK.modelPolicy.allowRequestOverride,
-  },
-  toolAndSkillPolicy: {
-    toolSelectionDefaultEnabled:
-      spec?.toolAndSkillPolicy?.toolSelectionDefaultEnabled ??
-      AGENT_SPEC_FALLBACK.toolAndSkillPolicy.toolSelectionDefaultEnabled,
-    toolSelectionOverrides: { ...(spec?.toolAndSkillPolicy?.toolSelectionOverrides ?? {}) },
-    onDemandSkillIds: [...(spec?.toolAndSkillPolicy?.onDemandSkillIds ?? [])],
-  },
-  memoryPolicy: {
-    enableChatMemory:
-      spec?.memoryPolicy?.enableChatMemory ?? AGENT_SPEC_FALLBACK.memoryPolicy.enableChatMemory,
-    enablePersistenceChatMemory:
-      spec?.memoryPolicy?.enablePersistenceChatMemory ??
-      AGENT_SPEC_FALLBACK.memoryPolicy.enablePersistenceChatMemory,
-    enableChatMemorySummary:
-      spec?.memoryPolicy?.enableChatMemorySummary ??
-      AGENT_SPEC_FALLBACK.memoryPolicy.enableChatMemorySummary,
-    highWatermarkRatio:
-      spec?.memoryPolicy?.highWatermarkRatio ?? AGENT_SPEC_FALLBACK.memoryPolicy.highWatermarkRatio,
-    lowWatermarkRatio:
-      spec?.memoryPolicy?.lowWatermarkRatio ?? AGENT_SPEC_FALLBACK.memoryPolicy.lowWatermarkRatio,
-    summaryPrompt: spec?.memoryPolicy?.summaryPrompt ?? '',
-    enableLongTermMemory:
-      spec?.memoryPolicy?.enableLongTermMemory ??
-      AGENT_SPEC_FALLBACK.memoryPolicy.enableLongTermMemory,
-    longTermMemoryLimit:
-      spec?.memoryPolicy?.longTermMemoryLimit ??
-      AGENT_SPEC_FALLBACK.memoryPolicy.longTermMemoryLimit,
-    longTermMemoryScoreThreshold:
-      spec?.memoryPolicy?.longTermMemoryScoreThreshold ??
-      AGENT_SPEC_FALLBACK.memoryPolicy.longTermMemoryScoreThreshold,
-  },
-});
+const mapSpec = (spec?: AgentSpecApi | null): AgentSpec => {
+  if (spec != null && !isRecord(spec)) invalidApiResponse('Agent spec 契约无效');
+  const value = spec as AgentSpecApi | undefined;
+  const modelPolicy = isRecord(value?.modelPolicy)
+    ? (value?.modelPolicy as NonNullable<AgentSpecApi['modelPolicy']>)
+    : undefined;
+  const toolPolicy = isRecord(value?.toolAndSkillPolicy)
+    ? (value?.toolAndSkillPolicy as NonNullable<AgentSpecApi['toolAndSkillPolicy']>)
+    : undefined;
+  const memoryPolicy = isRecord(value?.memoryPolicy)
+    ? (value?.memoryPolicy as NonNullable<AgentSpecApi['memoryPolicy']>)
+    : undefined;
+  const string = (value: unknown): string | undefined =>
+    typeof value === 'string' ? value : undefined;
+  const boolean = (value: unknown): boolean | undefined =>
+    typeof value === 'boolean' ? value : undefined;
+  const number = (value: unknown): number | undefined =>
+    isFiniteNumber(value) ? value : undefined;
+  return {
+    systemPrompt: string(value?.systemPrompt) ?? AGENT_SPEC_FALLBACK.systemPrompt,
+    agentMd: string(value?.agentMd),
+    autoGenerateTitle: boolean(value?.autoGenerateTitle) ?? AGENT_SPEC_FALLBACK.autoGenerateTitle,
+    billingGroupId: string(value?.billingGroupId),
+    agentMaxIterations:
+      number(value?.agentMaxIterations) !== undefined &&
+      Number.isInteger(number(value?.agentMaxIterations)) &&
+      (number(value?.agentMaxIterations) as number) >= 1
+        ? number(value?.agentMaxIterations)
+        : undefined,
+    modelPolicy: {
+      defaultModelId: string(modelPolicy?.defaultModelId) ?? '',
+      defaultProviderId: string(modelPolicy?.defaultProviderId) ?? '',
+      allowRequestOverride:
+        boolean(modelPolicy?.allowRequestOverride) ??
+        AGENT_SPEC_FALLBACK.modelPolicy.allowRequestOverride,
+    },
+    toolAndSkillPolicy: {
+      enableUseTool:
+        boolean(toolPolicy?.enableUseTool) ?? AGENT_SPEC_FALLBACK.toolAndSkillPolicy.enableUseTool,
+      toolSelectionDefaultEnabled:
+        boolean(toolPolicy?.toolSelectionDefaultEnabled) ??
+        AGENT_SPEC_FALLBACK.toolAndSkillPolicy.toolSelectionDefaultEnabled,
+      toolSelectionOverrides: isRecord(toolPolicy?.toolSelectionOverrides)
+        ? Object.fromEntries(
+            Object.entries(toolPolicy.toolSelectionOverrides).filter(
+              (entry): entry is [string, boolean] => typeof entry[1] === 'boolean'
+            )
+          )
+        : {},
+      enableUseSkill:
+        boolean(toolPolicy?.enableUseSkill) ??
+        AGENT_SPEC_FALLBACK.toolAndSkillPolicy.enableUseSkill,
+      onDemandSkillIds: Array.isArray(toolPolicy?.onDemandSkillIds)
+        ? toolPolicy.onDemandSkillIds.filter((id): id is string => typeof id === 'string')
+        : [],
+      skillMatchTopK:
+        number(toolPolicy?.skillMatchTopK) ?? AGENT_SPEC_FALLBACK.toolAndSkillPolicy.skillMatchTopK,
+    },
+    memoryPolicy: {
+      enableChatMemory:
+        boolean(memoryPolicy?.enableChatMemory) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.enableChatMemory,
+      enablePersistenceChatMemory:
+        boolean(memoryPolicy?.enablePersistenceChatMemory) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.enablePersistenceChatMemory,
+      enableChatMemorySummary:
+        boolean(memoryPolicy?.enableChatMemorySummary) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.enableChatMemorySummary,
+      highWatermarkRatio:
+        number(memoryPolicy?.highWatermarkRatio) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.highWatermarkRatio,
+      lowWatermarkRatio:
+        number(memoryPolicy?.lowWatermarkRatio) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.lowWatermarkRatio,
+      summaryPrompt: string(memoryPolicy?.summaryPrompt) ?? '',
+      enableLongTermMemory:
+        boolean(memoryPolicy?.enableLongTermMemory) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.enableLongTermMemory,
+      longTermMemoryLimit:
+        number(memoryPolicy?.longTermMemoryLimit) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.longTermMemoryLimit,
+      longTermMemoryScoreThreshold:
+        number(memoryPolicy?.longTermMemoryScoreThreshold) ??
+        AGENT_SPEC_FALLBACK.memoryPolicy.longTermMemoryScoreThreshold,
+    },
+  };
+};
 
 const mapAgentSpecToApi = (spec: AgentSpec): AgentSpecApi => ({
   systemPrompt: spec.systemPrompt,
+  agentMd: spec.agentMd,
   autoGenerateTitle: spec.autoGenerateTitle,
+  billingGroupId: spec.billingGroupId,
+  agentMaxIterations: spec.agentMaxIterations,
   modelPolicy: { ...spec.modelPolicy },
   toolAndSkillPolicy: {
     ...spec.toolAndSkillPolicy,
@@ -127,27 +183,32 @@ const mapAgentDetail = (params: {
   info?: AgentInfoApiResponse;
   bundle?: AgentVersionBundleApiResponse;
 }): AgentDetail => {
-  const resource = params.info?.resourceInfo
-    ? ResourceServicesMap.mapResourceItemFromApi(params.info.resourceInfo)
+  if (params.info != null && !isRecord(params.info)) invalidApiResponse('Agent 信息契约无效');
+  if (params.bundle != null) validateVersionBundle(params.bundle);
+  const info = params.info as AgentInfoApiResponse | undefined;
+  const bundle = params.bundle as AgentVersionBundleApiResponse | undefined;
+  const resource = info?.resourceInfo
+    ? ResourceServicesMap.mapResourceItemFromApi(info.resourceInfo)
     : undefined;
-  const publishedVersion = params.info?.agentInfo?.version ?? 0;
-  const version = params.bundle?.version ?? publishedVersion;
+  const agentInfo = info?.agentInfo ? mapVersionResourceInfo(info.agentInfo) : undefined;
+  const publishedVersion = agentInfo?.version ?? 0;
+  const version = bundle?.version ?? publishedVersion;
   return {
     resourceId: params.resourceId,
     resourceInfo: resource,
     title: resource?.resourceName ?? 'Agent',
-    name: params.info?.agentInfo?.name ?? '',
-    description: params.info?.agentInfo?.description ?? '',
+    name: agentInfo?.name ?? '',
+    description: agentInfo?.description ?? '',
     publishedVersion,
     draftVersion: publishedVersion + 1,
     version,
-    status: params.bundle?.status ?? (publishedVersion > 0 ? 'PUBLISHED' : 'DRAFT'),
-    spec: mapSpec(params.bundle?.spec),
-    assets: (params.bundle?.assets ?? []).map((asset) => ({
+    status: bundle?.status ?? (publishedVersion > 0 ? 'PUBLISHED' : 'DRAFT'),
+    spec: mapSpec(bundle?.spec),
+    assets: (bundle?.assets ?? []).map((asset) => ({
       id: asset.id ?? '',
       name: asset.name ?? '',
       path: asset.path ?? '/',
-      objectKey: asset.objectKey,
+      objectKey: typeof asset.objectKey === 'string' ? asset.objectKey : undefined,
       assetResourceType: asset.assetResourceType ?? 'TEXT',
       uploadStatus: asset.uploadStatus ?? 'UPLOADING',
       size: normalizeNonNegativeNumber(asset.size) ?? 0,

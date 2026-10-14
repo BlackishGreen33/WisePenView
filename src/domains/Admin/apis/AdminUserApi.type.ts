@@ -36,17 +36,17 @@ export interface GetAdminUserInfoApiRequest {
 }
 
 export interface GetAdminUserInfoApiResponse {
-  sex?: UserSexApiValue;
-  university?: string;
-  college?: string;
-  major?: string;
-  className?: string;
-  enrollmentYear?: number;
-  degreeLevel?: UserDegreeLevelApiValue;
-  academicTitle?: string;
-  userId?: string | number;
-  createTime?: string;
-  updateTime?: string;
+  userId: string | number;
+  sex?: UserSexApiValue | null;
+  university?: string | null;
+  college?: string | null;
+  major?: string | null;
+  className?: string | null;
+  enrollmentYear?: number | null;
+  degreeLevel?: UserDegreeLevelApiValue | null;
+  academicTitle?: string | null;
+  createTime?: string | null;
+  updateTime?: string | null;
 }
 
 export interface ChangeAdminUserInfoApiRequest {
