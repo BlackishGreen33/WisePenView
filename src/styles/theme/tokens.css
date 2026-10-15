@@ -102,7 +102,7 @@
   --radius-4xl: calc(var(--radius) * 4);
   --radius-full: 999px;
   /* 应用圆角 */
-  --app-radius-field: var(--radius-md);
+  --app-radius-field: var(--radius-lg);
   --app-radius-tooltip: var(--radius-md);
   --app-radius-menu-item: var(--radius-md);
   --app-radius-button: var(--radius-lg);

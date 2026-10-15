@@ -64,7 +64,7 @@ ComponentName/
 
 | 语义     | Token                                                        | 当前值 | 使用范围                                                                 |
 | -------- | ------------------------------------------------------------ | ------ | ------------------------------------------------------------------------ |
-| 字段控件 | `--app-radius-field`                                         | 6px    | Input、Select trigger、ComboBox/Autocomplete trigger、Tooltip            |
+| 字段控件 | `--app-radius-field`                                         | 8px    | Input、Select trigger、ComboBox/Autocomplete trigger                     |
 | 菜单项   | `--app-radius-menu-item`                                     | 6px    | Dropdown、Popover、Select 等选项                                         |
 | 按钮     | `--app-radius-button`                                        | 8px    | Button、ToggleButton、IconButton、按钮组首尾边缘                         |
 | 内容容器 | `--app-radius-content`                                       | 8px    | 卡片、面板、表格外壳                                                     |

@@ -15,7 +15,7 @@ Modal 和 Popover 都是 12px 外壳，但语义不同的内部控件不跟随�
 | Popover / Dropdown / Select 展开面板外壳                         | 12px | `--app-radius-popover`   |
 | Modal / AlertDialog 外壳                                         | 12px | `--app-radius-modal`     |
 | Footer Button / IconButton                                       | 8px  | `--app-radius-button`    |
-| Input / Select trigger / ComboBox trigger / Autocomplete trigger | 6px  | `--app-radius-field`     |
+| Input / Select trigger / ComboBox trigger / Autocomplete trigger | 8px  | `--app-radius-field`     |
 | 菜单选中项                                                       | 6px  | `--app-radius-menu-item` |
 | Tooltip 气泡本体                                                 | 6px  | `--app-radius-tooltip`   |
 
