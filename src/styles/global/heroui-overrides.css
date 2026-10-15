@@ -1,6 +1,6 @@
 /* 第三方组件的全局覆盖集中放在 bootstrap，业务样式只保留上下文差异。 */
 
-/* 所有选项浮层沿用 HeroUI 结构与交互，只将视觉语义接入 WisePen 的 Radix 主题。 */
+/* 选项浮层 */
 :is(
   .dropdown__popover,
   .select__popover,
@@ -9,8 +9,7 @@
 ) {
   --app-popover-surface: var(--background);
 
-  /* HeroUI Select 展开面板自带 radius-3xl，显式接入应用浮层外壳 token。 */
-  border-radius: var(--app-radius-popover, var(--radius-overlay)) !important;
+  border-radius: var(--app-radius-popover) !important;
   overflow: clip;
 
   color: var(--muted);
@@ -19,17 +18,17 @@
   line-height: var(--line-height-sm);
 }
 
-/* 按钮采用 8px；输入框、菜单选项和侧栏内部字段采用 6px，侧栏导航背景采用 8px。 */
+/* 按钮 */
 :is(.button, .toggle-button) {
-  border-radius: var(--radius-button, var(--radius-content));
+  border-radius: var(--app-radius-button);
 }
 
-/* Tooltip 指提示气泡本体；触发控件继续使用各自的字段或按钮圆角。 */
+/* Tooltip */
 .tooltip {
-  border-radius: var(--radius-field, var(--radius-interactive));
+  border-radius: var(--app-radius-tooltip);
 }
 
-/* 按钮组保留连接关系，只让最外侧边缘使用交互圆角。 */
+/* 按钮组 */
 :is(.button-group, .toggle-button-group) > :is(.button, .toggle-button) {
   border-radius: 0;
 }
@@ -39,8 +38,8 @@
     .toggle-button-group--horizontal
   )
   > :is(.button, .toggle-button):first-child {
-  border-start-start-radius: var(--radius-button, var(--radius-content));
-  border-end-start-radius: var(--radius-button, var(--radius-content));
+  border-start-start-radius: var(--app-radius-button);
+  border-end-start-radius: var(--app-radius-button);
 }
 
 :is(.button-group, .toggle-button-group):is(
@@ -48,8 +47,8 @@
     .toggle-button-group--horizontal
   )
   > :is(.button, .toggle-button):last-child {
-  border-start-end-radius: var(--radius-button, var(--radius-content));
-  border-end-end-radius: var(--radius-button, var(--radius-content));
+  border-start-end-radius: var(--app-radius-button);
+  border-end-end-radius: var(--app-radius-button);
 }
 
 :is(.button-group, .toggle-button-group):is(
@@ -57,8 +56,8 @@
     .toggle-button-group--vertical
   )
   > :is(.button, .toggle-button):first-child {
-  border-start-start-radius: var(--radius-button, var(--radius-content));
-  border-start-end-radius: var(--radius-button, var(--radius-content));
+  border-start-start-radius: var(--app-radius-button);
+  border-start-end-radius: var(--app-radius-button);
 }
 
 :is(.button-group, .toggle-button-group):is(
@@ -66,8 +65,8 @@
     .toggle-button-group--vertical
   )
   > :is(.button, .toggle-button):last-child {
-  border-end-start-radius: var(--radius-button, var(--radius-content));
-  border-end-end-radius: var(--radius-button, var(--radius-content));
+  border-end-start-radius: var(--app-radius-button);
+  border-end-end-radius: var(--app-radius-button);
 }
 
 :is(.button-group, .toggle-button-group):is(
@@ -77,19 +76,19 @@
     .toggle-button-group--vertical
   )
   > :is(.button, .toggle-button):only-child {
-  border-radius: var(--radius-button, var(--radius-content));
+  border-radius: var(--app-radius-button);
 }
 
 :is(.toggle-button-group--detached) > .toggle-button {
-  border-radius: var(--radius-button, var(--radius-content));
+  border-radius: var(--app-radius-button);
 }
 
-/* Modal 使用 12px 浮层圆角，与内容区和 footer 保持完整外壳关系。 */
+/* Modal */
 :is(.modal__dialog, .alert-dialog__dialog):not(
     .modal__dialog--full,
     .alert-dialog__dialog--full
   ) {
-  border-radius: var(--radius-modal, var(--radius-overlay)) !important;
+  border-radius: var(--app-radius-modal) !important;
   overflow: clip;
 }
 
@@ -217,9 +216,9 @@
 }
 
 .table-root :is(.button, [data-slot='button']) {
-  border-radius: var(--radius-button, var(--radius-content));
+  border-radius: var(--app-radius-button);
 }
 
 .table-root .select__trigger {
-  border-radius: var(--table-control-radius, var(--radius-interactive));
+  border-radius: var(--app-radius-field);
 }
