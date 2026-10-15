@@ -17,9 +17,10 @@ try {
     absWorkingDir: root,
     stdin: {
       contents: `
-        export { isApiResponseEnvelope } from '@/apis/runtimeContract';
+        export { assertApiPage, isApiResponseEnvelope } from '@/apis/runtimeContract';
         export { ChatServicesMap } from '@/domains/Chat/mapper/ChatServices.map';
         export { AdminUserServicesMap } from '@/domains/Admin/mapper/AdminUserServices.map';
+        export { AgentServicesMap } from '@/domains/Agent/mapper/AgentServices.map';
         export { AdminMessageServicesMap } from '@/domains/Admin/mapper/AdminMessageServices.map';
         export { DocumentServicesMap } from '@/domains/Document/mapper/DocumentServices.map';
         export { GroupServicesMap } from '@/domains/Group/mapper/GroupServices.map';
@@ -45,9 +46,11 @@ try {
   });
 
   const {
+    assertApiPage,
     isApiResponseEnvelope,
     ChatServicesMap,
     AdminUserServicesMap,
+    AgentServicesMap,
     AdminMessageServicesMap,
     DocumentServicesMap,
     GroupServicesMap,
@@ -78,7 +81,27 @@ try {
 
   const rejects = (run) =>
     assert.throws(run, (error) => error.name === 'WisePenError' && error.code === 16);
-  const page = (list) => ({ list, total: list.length, page: 1, size: 20, total_page: 1 });
+  const page = (list) => ({
+    list,
+    total: list.length,
+    page: 1,
+    size: 20,
+    total_page: Math.ceil(list.length / 20),
+  });
+  assert.doesNotThrow(() =>
+    assertApiPage({ list: [], total: 0, page: 1, size: 20, totalPage: 0 }, () => true)
+  );
+  for (const payload of [
+    { list: [], total: -1, page: 1, size: 20, totalPage: 0 },
+    { list: [], total: 0, page: 0, size: 20, totalPage: 0 },
+    { list: [], total: 0, page: 1.5, size: 20, totalPage: 0 },
+    { list: [], total: 0, page: 1, size: 0, totalPage: 0 },
+    { list: [], total: 1, page: 1, size: 2, totalPage: 2 },
+    { list: [1, 2, 3], total: 3, page: 1, size: 2, totalPage: 2 },
+    { list: [1], total: 1, page: 2, size: 1, totalPage: 1 },
+  ]) {
+    rejects(() => assertApiPage(payload, (value) => typeof value === 'number'));
+  }
   const history = { id: 'message-1', role: 'assistant', parts: [{ type: 'text', text: 'ok' }] };
   const mapHistory = (payload) => ChatServicesMap.mapListHistoryMessagesFromApi(payload);
   assert.deepEqual(mapHistory(page([history])).list[0].parts, [{ type: 'text', text: 'ok' }]);
@@ -214,15 +237,31 @@ try {
     ...session,
     agent_id: 4,
     agent_version: '2',
-    agent: [],
+    agent: null,
     last_tool_selection_default_enabled: 1,
     temporary_attachment_refs: [{ ...session.temporary_attachment_refs[0], mime_type: 42 }],
   });
   assert.equal(optionalSession.agentId, undefined);
   assert.equal(optionalSession.agentVersion, undefined);
-  assert.equal(optionalSession.agent, undefined);
+  assert.equal(optionalSession.agent, null);
   assert.equal(optionalSession.lastToolSelectionDefaultEnabled, undefined);
   assert.equal(optionalSession.temporaryAttachmentRefs[0].mimeType, undefined);
+  for (const agent of [[], 'invalid', 1]) rejects(() => mapSession({ ...session, agent }));
+  rejects(() =>
+    mapSession({
+      ...sessionWithAgent,
+      agent: {
+        ...sessionWithAgent.agent,
+        spec: {
+          ...agentSpec,
+          tool_and_skill_policy: {
+            ...agentSpec.tool_and_skill_policy,
+            on_demand_skill_ids: 'not-an-array',
+          },
+        },
+      },
+    })
+  );
   assert.equal(ChatServicesMap.mapListSessionsFromApi(page([session])).list.length, 1);
   rejects(() => ChatServicesMap.mapListSessionsFromApi({ ...page([]), page: '1' }));
   rejects(() => ChatServicesMap.mapRenameSessionFromApi({}));
@@ -379,6 +418,22 @@ try {
     }).userProfile,
     { userId: '42' }
   );
+  assert.deepEqual(
+    AdminUserServicesMap.mapFetchAdminUserListRequest({
+      page: 1,
+      size: 20,
+      keyword: '',
+      status: -2,
+      identityType: 0,
+    }),
+    { page: 1, size: 20, keyword: '', userStatus: 'BANNED' }
+  );
+  assert.equal(
+    AdminUserServicesMap.mapAdminUserListFromApi([
+      { userId: '42', username: 'person', userStatus: 'BANNED' },
+    ])[0].status,
+    -2
+  );
 
   const emptyPage = { list: [], total: 0, page: 1, size: 20, totalPage: 0 };
   assert.equal(AdminMessageServicesMap.mapListAdminMessagesFromApi(emptyPage).total, 0);
@@ -387,6 +442,26 @@ try {
   rejects(() => DocumentServicesMap.mapListPendingDocsFromApi(null));
   assert.equal(GroupServicesMap.mapFetchGroupListFromApi(emptyPage).groups.length, 0);
   rejects(() => GroupServicesMap.mapFetchGroupListFromApi({ list: [] }));
+  assert.equal(
+    GroupServicesMap.mapFetchGroupMembersFromApi({
+      list: [
+        {
+          role: 0,
+          joinTime: 1791993600000,
+          tokenLimit: '0',
+          tokenUsed: '0',
+          groupId: 'group-1',
+          memberId: 'user-1',
+          memberInfo: { nickname: 'member' },
+        },
+      ],
+      total: 1,
+      page: 1,
+      size: 20,
+      totalPage: 1,
+    }).members[0].joinTime,
+    '1791993600000'
+  );
   assert.equal(
     ImageServicesMap.mapImageUploadFromApi({ domain: 'https://img.test', objectKey: 'a.png' })
       .record.objectKey,
@@ -449,7 +524,69 @@ try {
   assert.deepEqual(TagServicesMap.mapTagTreeFromApi([]), []);
   rejects(() => TagServicesMap.mapTagTreeFromApi([{}]));
   assert.deepEqual(UserServicesMap.mapSearchUsersFromApi([]), []);
+  assert.equal(
+    UserServicesMap.mapSearchUsersFromApi([{ userId: 'u1', username: 'user.one' }])[0].userId,
+    'u1'
+  );
+  for (const user of [
+    null,
+    {},
+    { userId: '', username: 'user.one' },
+    { userId: 'u1' },
+    { userId: 'u1', username: '' },
+    { userId: {}, username: 'user.one' },
+  ]) {
+    rejects(() => UserServicesMap.mapSearchUsersFromApi([user]));
+  }
   rejects(() => UserServicesMap.mapTaskStatusesFromApi([{}]));
+  const validAgentSpec = {
+    systemPrompt: 'system',
+    autoGenerateTitle: true,
+    modelPolicy: { allowRequestOverride: true },
+    toolAndSkillPolicy: {
+      enableUseTool: true,
+      toolSelectionDefaultEnabled: true,
+      enableUseSkill: true,
+    },
+    memoryPolicy: {
+      enableChatMemory: true,
+      enablePersistenceChatMemory: true,
+      enableChatMemorySummary: true,
+      enableLongTermMemory: true,
+    },
+  };
+  const mappedAgentSpec = AgentServicesMap.mapSpec(validAgentSpec);
+  assert.equal(mappedAgentSpec.systemPrompt, 'system');
+  assert.equal(mappedAgentSpec.toolAndSkillPolicy.skillMatchTopK, 3);
+  const fallbackSpec = AgentServicesMap.mapSpec(null);
+  const secondFallbackSpec = AgentServicesMap.mapSpec(undefined);
+  assert.notEqual(fallbackSpec.modelPolicy, secondFallbackSpec.modelPolicy);
+  assert.notEqual(fallbackSpec.toolAndSkillPolicy, secondFallbackSpec.toolAndSkillPolicy);
+  assert.notEqual(fallbackSpec.memoryPolicy, secondFallbackSpec.memoryPolicy);
+  for (const spec of [
+    {},
+    { ...validAgentSpec, systemPrompt: undefined },
+    { ...validAgentSpec, autoGenerateTitle: undefined },
+    { ...validAgentSpec, modelPolicy: undefined },
+    { ...validAgentSpec, toolAndSkillPolicy: undefined },
+    { ...validAgentSpec, memoryPolicy: undefined },
+    {
+      ...validAgentSpec,
+      toolAndSkillPolicy: { ...validAgentSpec.toolAndSkillPolicy, enableUseTool: undefined },
+    },
+    { ...validAgentSpec, agentMaxIterations: 10 },
+    { ...validAgentSpec, agentMaxIterations: 1.5 },
+    {
+      ...validAgentSpec,
+      toolAndSkillPolicy: { ...validAgentSpec.toolAndSkillPolicy, skillMatchTopK: 30 },
+    },
+    {
+      ...validAgentSpec,
+      toolAndSkillPolicy: { ...validAgentSpec.toolAndSkillPolicy, skillMatchTopK: -1 },
+    },
+  ]) {
+    rejects(() => AgentServicesMap.mapSpec(spec));
+  }
   // 后端固定字段、SDK 已知事件及从中间帧重放的边界。
   const sseEvents = [
     { type: 'start', messageId: 'm1' },
@@ -494,12 +631,23 @@ try {
   ];
   for (const event of sseEvents) {
     assert(normalizeChatSseData(JSON.stringify(event)).length > 0);
-    for (const key of Object.keys(event).filter((key) => key !== 'type')) {
+    for (const key of Object.keys(event).filter(
+      (key) =>
+        key !== 'type' &&
+        !(
+          (event.type === 'start' && key === 'messageId') ||
+          (event.type === 'abort' && key === 'reason')
+        )
+    )) {
       const missing = { ...event };
       delete missing[key];
       rejects(() => normalizeChatSseData(JSON.stringify(missing)));
     }
   }
+  assert.deepEqual(normalizeChatSseData('{"type":"start"}'), ['{"type":"start"}']);
+  assert.deepEqual(normalizeChatSseData('{"type":"abort"}'), ['{"type":"abort"}']);
+  rejects(() => normalizeChatSseData('{"type":"start","messageId":1}'));
+  rejects(() => normalizeChatSseData('{"type":"abort","reason":1}'));
   for (const payload of ['invalid', 'null', '[]', '{}', '{"type":1}', '{"type":""}'])
     rejects(() => normalizeChatSseData(payload));
   const future = '{"type":"future-event","value":1}';
@@ -544,6 +692,12 @@ try {
     (error) => error.code === 16
   );
   await assert.rejects(stream(['invalid']).text(), (error) => error.code === 16);
+  await assert.rejects(
+    normalizeChatSseResponse(
+      new Response('retry: invalid\n\n', { headers: { 'content-type': 'text/event-stream' } })
+    ).text(),
+    (error) => error.code === 16
+  );
 
   console.log('API response envelope、领域 mapper 与 Chat SSE DTO 契约离线检查通过');
 } finally {
@@ -584,7 +738,7 @@ let methodCount = 0;
 const domains = new Set();
 for (const source of program.getSourceFiles()) {
   const relative = source.fileName.split('/src/domains/')[1];
-  if (!relative || !relative.includes('/apis/')) continue;
+  if (!relative) continue;
   domains.add(relative.split('/')[0]);
   const visit = (node) => {
     if (ts.isPropertySignature(node) && node.type && broad(checker.getTypeAtLocation(node.type))) {
@@ -596,7 +750,7 @@ for (const source of program.getSourceFiles()) {
     }
     ts.forEachChild(node, visit);
   };
-  if (relative.endsWith('Api.type.ts')) visit(source);
+  if (relative.includes('/apis/') && relative.endsWith('Api.type.ts')) visit(source);
   const module = checker.getSymbolAtLocation(source);
   if (!module) continue;
   for (const symbol of checker.getExportsOfModule(module)) {
