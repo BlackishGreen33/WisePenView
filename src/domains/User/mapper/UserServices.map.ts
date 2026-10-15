@@ -3,6 +3,7 @@ import {
   assertApiPage,
   assertApiRecord,
   invalidApiResponse,
+  isApiId,
   isRecord,
 } from '@/apis/runtimeContract';
 import type {
@@ -141,8 +142,14 @@ const mapSearchUserFromApi = (data: UserSearchUserApiResponse): UserSearchUser =
   };
 };
 
+const isSearchUserApiResponse = (value: unknown): value is UserSearchUserApiResponse =>
+  isRecord(value) &&
+  isApiId(value.userId) &&
+  typeof value.username === 'string' &&
+  value.username.trim().length > 0;
+
 const mapSearchUsersFromApi = (data: UserSearchUserApiResponse[]): UserSearchUser[] => {
-  assertApiArray(data, isRecord, '用户搜索响应契约无效');
+  assertApiArray(data, isSearchUserApiResponse, '用户搜索响应契约无效');
   return data.map(mapSearchUserFromApi);
 };
 

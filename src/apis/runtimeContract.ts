@@ -59,10 +59,24 @@ export const assertApiPage = <T = unknown>(
   message = 'API 分页响应契约无效'
 ): { list: T[]; total: number; page: number; size: number; totalPage: number } => {
   const record = assertApiRecord(value, message);
+  const integer = (item: unknown): number => {
+    if (!isFiniteNumber(item) || !Number.isSafeInteger(item)) invalidApiResponse(message);
+    return item as number;
+  };
+  const total = integer(record.total);
+  const page = integer(record.page);
+  const size = integer(record.size);
+  const totalPage = integer(record.totalPage);
   if (
     !Array.isArray(record.list) ||
     !record.list.every(predicate) ||
-    !['total', 'page', 'size', 'totalPage'].every((key) => isFiniteNumber(record[key]))
+    record.list.length > Number(record.size) ||
+    total < 0 ||
+    page < 1 ||
+    size < 1 ||
+    totalPage < 0 ||
+    totalPage !== Math.ceil(total / size) ||
+    (total === 0 ? page !== 1 : page > totalPage)
   ) {
     invalidApiResponse(message);
   }
