@@ -1,5 +1,6 @@
 import type { DynamicToolUIPart, ToolUIPart, UITool, UIToolInvocation } from 'ai';
 
+import { isFiniteNumber, isRecord } from '@/apis/runtimeContract';
 import { FRONTEND_NETWORK_ERROR } from '@/utils/error/codes';
 import { WisePenError } from '@/utils/error/WisePenError';
 
@@ -57,9 +58,6 @@ const PROVIDER_KEY_HINTS: Array<{ key: string; patterns: string[] }> = [
   { key: 'qwen', patterns: ['qwen', 'tongyi', 'dashscope', 'alibaba'] },
 ];
 
-const isFiniteNumber = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value);
-
 const optionalString = (value: unknown): string | null | undefined =>
   value === null || typeof value === 'string' ? value : undefined;
 
@@ -68,9 +66,6 @@ const optionalNumber = (value: unknown): number | null | undefined =>
 
 const optionalBoolean = (value: unknown): boolean | null | undefined =>
   value === null || typeof value === 'boolean' ? value : undefined;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const invalidChatResponse = (): never => {
   throw new WisePenError({
@@ -117,6 +112,9 @@ const isChatAgentSpec = (value: unknown): boolean => {
     ) &&
     isRecord(tool.tool_selection_overrides) &&
     Object.values(tool.tool_selection_overrides).every((item) => typeof item === 'boolean') &&
+    (tool.on_demand_skill_ids == null ||
+      (Array.isArray(tool.on_demand_skill_ids) &&
+        tool.on_demand_skill_ids.every((item) => typeof item === 'string'))) &&
     isRecord(memory) &&
     [
       'enable_chat_memory',
@@ -139,7 +137,8 @@ const isChatSessionAgentResponse = (value: unknown): boolean =>
 
 const isChatSessionResponse = (value: unknown): value is CreateSessionApiResponse => {
   if (!isRecord(value)) return false;
-  if (isRecord(value.agent) && !isChatSessionAgentResponse(value.agent)) return false;
+  if (value.agent !== undefined && value.agent !== null && !isChatSessionAgentResponse(value.agent))
+    return false;
   return (
     typeof value.id === 'string' &&
     typeof value.user_id === 'string' &&

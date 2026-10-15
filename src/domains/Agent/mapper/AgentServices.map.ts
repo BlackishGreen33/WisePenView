@@ -45,88 +45,146 @@ const AGENT_SPEC_FALLBACK: AgentSpec = {
 };
 
 const mapSpec = (spec?: AgentSpecApi | null): AgentSpec => {
-  if (spec != null && !isRecord(spec)) invalidApiResponse('Agent spec 契约无效');
-  const value = spec as AgentSpecApi | undefined;
-  const modelPolicy = isRecord(value?.modelPolicy)
-    ? (value?.modelPolicy as NonNullable<AgentSpecApi['modelPolicy']>)
-    : undefined;
-  const toolPolicy = isRecord(value?.toolAndSkillPolicy)
-    ? (value?.toolAndSkillPolicy as NonNullable<AgentSpecApi['toolAndSkillPolicy']>)
-    : undefined;
-  const memoryPolicy = isRecord(value?.memoryPolicy)
-    ? (value?.memoryPolicy as NonNullable<AgentSpecApi['memoryPolicy']>)
-    : undefined;
-  const string = (value: unknown): string | undefined =>
-    typeof value === 'string' ? value : undefined;
-  const boolean = (value: unknown): boolean | undefined =>
-    typeof value === 'boolean' ? value : undefined;
-  const number = (value: unknown): number | undefined =>
-    isFiniteNumber(value) ? value : undefined;
+  if (spec == null) {
+    return {
+      ...AGENT_SPEC_FALLBACK,
+      modelPolicy: { ...AGENT_SPEC_FALLBACK.modelPolicy },
+      toolAndSkillPolicy: {
+        ...AGENT_SPEC_FALLBACK.toolAndSkillPolicy,
+        toolSelectionOverrides: {
+          ...AGENT_SPEC_FALLBACK.toolAndSkillPolicy.toolSelectionOverrides,
+        },
+        onDemandSkillIds: [...AGENT_SPEC_FALLBACK.toolAndSkillPolicy.onDemandSkillIds],
+      },
+      memoryPolicy: { ...AGENT_SPEC_FALLBACK.memoryPolicy },
+    };
+  }
+  if (!isRecord(spec)) invalidApiResponse('Agent spec 契约无效');
+
+  const value = spec as unknown as Record<string, unknown>;
+  const modelPolicy = value.modelPolicy;
+  const toolPolicy = value.toolAndSkillPolicy;
+  const memoryPolicy = value.memoryPolicy;
+  if (!isRecord(modelPolicy) || !isRecord(toolPolicy) || !isRecord(memoryPolicy)) {
+    invalidApiResponse('Agent spec 策略契约无效');
+  }
+  const model = modelPolicy as Record<string, unknown>;
+  const tool = toolPolicy as Record<string, unknown>;
+  const memory = memoryPolicy as Record<string, unknown>;
+
+  const requiredString = (value: unknown, message: string): string => {
+    if (typeof value !== 'string') return invalidApiResponse(message);
+    return value;
+  };
+  const requiredBoolean = (value: unknown, message: string): boolean => {
+    if (typeof value !== 'boolean') return invalidApiResponse(message);
+    return value;
+  };
+  const optionalString = (value: unknown, message: string): string | undefined => {
+    if (value == null) return undefined;
+    if (typeof value !== 'string') return invalidApiResponse(message);
+    return value;
+  };
+  const optionalNumber = (value: unknown, message: string): number | undefined => {
+    if (value == null) return undefined;
+    if (!isFiniteNumber(value)) return invalidApiResponse(message);
+    return value;
+  };
+  const boundedInteger = (
+    value: unknown,
+    minimum: number,
+    exclusiveMaximum: number,
+    message: string
+  ): number | undefined => {
+    if (value == null) return undefined;
+    if (!isFiniteNumber(value)) return invalidApiResponse(message);
+    if (!Number.isInteger(value) || value < minimum || value >= exclusiveMaximum)
+      return invalidApiResponse(message);
+    return value;
+  };
+
+  const defaultModelId = optionalString(model.defaultModelId, 'Agent 模型策略契约无效') ?? '';
+  const defaultProviderId = optionalString(model.defaultProviderId, 'Agent 模型策略契约无效') ?? '';
+  const toolSelectionOverrides = tool.toolSelectionOverrides;
+  if (
+    toolSelectionOverrides != null &&
+    (!isRecord(toolSelectionOverrides) ||
+      !Object.values(toolSelectionOverrides).every((value) => typeof value === 'boolean'))
+  ) {
+    invalidApiResponse('Agent 工具策略契约无效');
+  }
+  const onDemandSkillIds = tool.onDemandSkillIds;
+  if (
+    onDemandSkillIds != null &&
+    (!Array.isArray(onDemandSkillIds) ||
+      !onDemandSkillIds.every((value) => typeof value === 'string'))
+  ) {
+    invalidApiResponse('Agent Skill 策略契约无效');
+  }
+  const normalizedToolSelectionOverrides = isRecord(toolSelectionOverrides)
+    ? (toolSelectionOverrides as Record<string, boolean>)
+    : {};
+  const normalizedOnDemandSkillIds = Array.isArray(onDemandSkillIds)
+    ? (onDemandSkillIds as string[])
+    : [];
   return {
-    systemPrompt: string(value?.systemPrompt) ?? AGENT_SPEC_FALLBACK.systemPrompt,
-    agentMd: string(value?.agentMd),
-    autoGenerateTitle: boolean(value?.autoGenerateTitle) ?? AGENT_SPEC_FALLBACK.autoGenerateTitle,
-    billingGroupId: string(value?.billingGroupId),
-    agentMaxIterations:
-      number(value?.agentMaxIterations) !== undefined &&
-      Number.isInteger(number(value?.agentMaxIterations)) &&
-      (number(value?.agentMaxIterations) as number) >= 1
-        ? number(value?.agentMaxIterations)
-        : undefined,
+    systemPrompt: requiredString(value.systemPrompt, 'Agent spec systemPrompt 契约无效'),
+    agentMd: optionalString(value.agentMd, 'Agent spec agentMd 契约无效'),
+    autoGenerateTitle: requiredBoolean(
+      value.autoGenerateTitle,
+      'Agent spec autoGenerateTitle 契约无效'
+    ),
+    billingGroupId: optionalString(value.billingGroupId, 'Agent spec billingGroupId 契约无效'),
+    agentMaxIterations: boundedInteger(
+      value.agentMaxIterations,
+      1,
+      10,
+      'Agent spec agentMaxIterations 契约无效'
+    ),
     modelPolicy: {
-      defaultModelId: string(modelPolicy?.defaultModelId) ?? '',
-      defaultProviderId: string(modelPolicy?.defaultProviderId) ?? '',
-      allowRequestOverride:
-        boolean(modelPolicy?.allowRequestOverride) ??
-        AGENT_SPEC_FALLBACK.modelPolicy.allowRequestOverride,
+      defaultModelId,
+      defaultProviderId,
+      allowRequestOverride: requiredBoolean(
+        model.allowRequestOverride,
+        'Agent 模型策略 allowRequestOverride 契约无效'
+      ),
     },
     toolAndSkillPolicy: {
-      enableUseTool:
-        boolean(toolPolicy?.enableUseTool) ?? AGENT_SPEC_FALLBACK.toolAndSkillPolicy.enableUseTool,
-      toolSelectionDefaultEnabled:
-        boolean(toolPolicy?.toolSelectionDefaultEnabled) ??
-        AGENT_SPEC_FALLBACK.toolAndSkillPolicy.toolSelectionDefaultEnabled,
-      toolSelectionOverrides: isRecord(toolPolicy?.toolSelectionOverrides)
-        ? Object.fromEntries(
-            Object.entries(toolPolicy.toolSelectionOverrides).filter(
-              (entry): entry is [string, boolean] => typeof entry[1] === 'boolean'
-            )
-          )
-        : {},
-      enableUseSkill:
-        boolean(toolPolicy?.enableUseSkill) ??
-        AGENT_SPEC_FALLBACK.toolAndSkillPolicy.enableUseSkill,
-      onDemandSkillIds: Array.isArray(toolPolicy?.onDemandSkillIds)
-        ? toolPolicy.onDemandSkillIds.filter((id): id is string => typeof id === 'string')
-        : [],
+      enableUseTool: requiredBoolean(tool.enableUseTool, 'Agent 工具策略契约无效'),
+      toolSelectionDefaultEnabled: requiredBoolean(
+        tool.toolSelectionDefaultEnabled,
+        'Agent 工具策略契约无效'
+      ),
+      toolSelectionOverrides: { ...normalizedToolSelectionOverrides },
+      enableUseSkill: requiredBoolean(tool.enableUseSkill, 'Agent Skill 策略契约无效'),
+      onDemandSkillIds: [...normalizedOnDemandSkillIds],
       skillMatchTopK:
-        number(toolPolicy?.skillMatchTopK) ?? AGENT_SPEC_FALLBACK.toolAndSkillPolicy.skillMatchTopK,
+        boundedInteger(tool.skillMatchTopK, 0, 30, 'Agent spec skillMatchTopK 契约无效') ??
+        AGENT_SPEC_FALLBACK.toolAndSkillPolicy.skillMatchTopK,
     },
     memoryPolicy: {
-      enableChatMemory:
-        boolean(memoryPolicy?.enableChatMemory) ??
-        AGENT_SPEC_FALLBACK.memoryPolicy.enableChatMemory,
-      enablePersistenceChatMemory:
-        boolean(memoryPolicy?.enablePersistenceChatMemory) ??
-        AGENT_SPEC_FALLBACK.memoryPolicy.enablePersistenceChatMemory,
-      enableChatMemorySummary:
-        boolean(memoryPolicy?.enableChatMemorySummary) ??
-        AGENT_SPEC_FALLBACK.memoryPolicy.enableChatMemorySummary,
+      enableChatMemory: requiredBoolean(memory.enableChatMemory, 'Agent 记忆策略契约无效'),
+      enablePersistenceChatMemory: requiredBoolean(
+        memory.enablePersistenceChatMemory,
+        'Agent 记忆策略契约无效'
+      ),
+      enableChatMemorySummary: requiredBoolean(
+        memory.enableChatMemorySummary,
+        'Agent 记忆策略契约无效'
+      ),
       highWatermarkRatio:
-        number(memoryPolicy?.highWatermarkRatio) ??
+        optionalNumber(memory.highWatermarkRatio, 'Agent 记忆策略契约无效') ??
         AGENT_SPEC_FALLBACK.memoryPolicy.highWatermarkRatio,
       lowWatermarkRatio:
-        number(memoryPolicy?.lowWatermarkRatio) ??
+        optionalNumber(memory.lowWatermarkRatio, 'Agent 记忆策略契约无效') ??
         AGENT_SPEC_FALLBACK.memoryPolicy.lowWatermarkRatio,
-      summaryPrompt: string(memoryPolicy?.summaryPrompt) ?? '',
-      enableLongTermMemory:
-        boolean(memoryPolicy?.enableLongTermMemory) ??
-        AGENT_SPEC_FALLBACK.memoryPolicy.enableLongTermMemory,
+      summaryPrompt: optionalString(memory.summaryPrompt, 'Agent 记忆策略契约无效') ?? '',
+      enableLongTermMemory: requiredBoolean(memory.enableLongTermMemory, 'Agent 记忆策略契约无效'),
       longTermMemoryLimit:
-        number(memoryPolicy?.longTermMemoryLimit) ??
+        optionalNumber(memory.longTermMemoryLimit, 'Agent 记忆策略契约无效') ??
         AGENT_SPEC_FALLBACK.memoryPolicy.longTermMemoryLimit,
       longTermMemoryScoreThreshold:
-        number(memoryPolicy?.longTermMemoryScoreThreshold) ??
+        optionalNumber(memory.longTermMemoryScoreThreshold, 'Agent 记忆策略契约无效') ??
         AGENT_SPEC_FALLBACK.memoryPolicy.longTermMemoryScoreThreshold,
     },
   };

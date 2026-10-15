@@ -30,9 +30,9 @@ function validateKnownEvent(event: Record<string, unknown>): void {
   const valid = (() => {
     switch (event.type) {
       case 'start':
-        return hasString(event, 'messageId');
+        return event.messageId === undefined || hasString(event, 'messageId');
       case 'abort':
-        return hasString(event, 'reason');
+        return event.reason === undefined || hasString(event, 'reason');
       case 'error':
         return typeof event.errorText === 'string';
       case 'text-start':
@@ -196,7 +196,7 @@ export function normalizeChatSseResponse(response: Response): Response {
     .pipeThrough(new TextDecoderStream())
     .pipeThrough(
       new EventSourceParserStream({
-        onError: 'terminate',
+        onError: () => invalidApiResponse('Chat SSE parser 契约无效'),
         maxBufferSize: CHAT_SSE_MAX_EVENT_SIZE,
       })
     )
