@@ -23,7 +23,10 @@ export const mapGroupMemberFromApi = (raw: GroupMemberApiResponse): GroupMember 
     !isApiId(raw.groupId) ||
     !isRecord(raw.memberInfo) ||
     typeof raw.memberInfo.nickname !== 'string' ||
-    typeof raw.joinTime !== 'string' ||
+    !(
+      (typeof raw.joinTime === 'string' && raw.joinTime.length > 0) ||
+      (typeof raw.joinTime === 'number' && Number.isFinite(raw.joinTime))
+    ) ||
     !['0', '1', '2', '-1'].includes(String(raw.role))
   )
     invalidApiResponse('小组成员契约无效');
@@ -31,10 +34,10 @@ export const mapGroupMemberFromApi = (raw: GroupMemberApiResponse): GroupMember 
     userId: normalizeId(raw.memberId),
     realname: optionalApiString(raw.memberInfo.realName) ?? '',
     nickname: raw.memberInfo.nickname,
-    campusNo: optionalApiString(raw.memberInfo.campusNo) ?? undefined,
-    email: optionalApiString(raw.memberInfo.email) ?? undefined,
+    campusNo: optionalApiString(raw.memberInfo.campusNo),
+    email: optionalApiString(raw.memberInfo.email),
     role: normalizeRoleFromApi(raw.role),
-    joinTime: raw.joinTime,
+    joinTime: String(raw.joinTime),
     avatar: optionalApiString(raw.memberInfo.avatar) ?? '',
     limit: normalizeNonNegativeNumber(raw.tokenLimit) ?? 0,
     used: normalizeNonNegativeNumber(raw.tokenUsed) ?? 0,

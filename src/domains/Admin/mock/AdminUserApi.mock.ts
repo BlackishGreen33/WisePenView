@@ -17,7 +17,7 @@ const users: AdminUserApiModel[] = [
     email: `mock${index + 1}@example.com`,
     mobile: `1380001${String(index + 1).padStart(4, '0')}`,
     verificationMode: 'EDU_EMAIL' as const,
-    status: (index % 4 === 0 ? 'BANNED' : 'NORMAL') as AdminUserApiModel['status'],
+    userStatus: (index % 4 === 0 ? 'BANNED' : 'NORMAL') as AdminUserApiModel['userStatus'],
     createTime: '2026-05-03 10:00:00',
     updateTime: '2026-05-12 12:00:00',
   })),
@@ -31,7 +31,7 @@ const filterUsers = (params: FetchAdminUserListApiRequest): AdminUserApiModel[] 
       [user.userId, user.username, user.nickname, user.realName, user.campusNo].some(
         (value) => value != null && String(value).toLowerCase().includes(keyword)
       );
-    const matchesStatus = !params.status || user.status === params.status;
+    const matchesStatus = !params.userStatus || user.userStatus === params.userStatus;
     const matchesIdentity = !params.identityType || user.identityType === params.identityType;
     return matchesKeyword && matchesStatus && matchesIdentity;
   });

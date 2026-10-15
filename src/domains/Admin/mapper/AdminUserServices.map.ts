@@ -61,7 +61,7 @@ const mapAdminUserApiModelToEntity = (raw: AdminUserApiModel): AdminUser => {
     email: raw.email ?? undefined,
     mobile: raw.mobile ?? undefined,
     verificationMode: raw.verificationMode ?? null,
-    status: raw.status == null ? 0 : normalizeUserStatusFromApi(raw.status),
+    status: raw.userStatus == null ? 0 : normalizeUserStatusFromApi(raw.userStatus),
     createTime: raw.createTime ?? undefined,
     updateTime: raw.updateTime ?? undefined,
   };
@@ -77,7 +77,7 @@ const mapFetchAdminUserListRequest = (
     page: params.page,
     size: params.size,
     keyword: params.keyword,
-    ...(status ? { status } : {}),
+    ...(status ? { userStatus: status } : {}),
     ...(identityType ? { identityType } : {}),
   };
 };
@@ -97,7 +97,13 @@ const mapFetchAdminUserListFromApi = (
 
 const mapAdminUserListFromApi = (data: AdminUserApiModel[]): AdminUser[] =>
   assertApiPage(
-    { list: data, total: data.length, page: 1, size: data.length, totalPage: 1 },
+    {
+      list: data,
+      total: data.length,
+      page: 1,
+      size: Math.max(data.length, 1),
+      totalPage: data.length ? 1 : 0,
+    },
     isAdminUserApiModel,
     'Admin 用户列表契约无效'
   ).list.map(mapAdminUserApiModelToEntity);
@@ -151,7 +157,7 @@ const mapChangeAdminUserInfoRequest = (
 ): ChangeAdminUserInfoApiRequest => ({
   ...params,
   identityType: mapIdentityTypeToApi(params.identityType),
-  status: mapUserStatusToApi(params.status),
+  userStatus: mapUserStatusToApi(params.status),
 });
 
 const mapChangeAdminUserProfileRequest = (

@@ -18,14 +18,14 @@ export interface AdminUserApiModel {
   email?: string;
   mobile?: string;
   verificationMode?: UserVerificationMode;
-  status?: UserStatusApiValue;
+  userStatus?: UserStatusApiValue;
   createTime?: string;
   updateTime?: string;
 }
 
 export interface FetchAdminUserListApiRequest extends PageApiRequest {
   keyword: string;
-  status?: string;
+  userStatus?: string;
   identityType?: string;
 }
 
@@ -56,7 +56,7 @@ export interface ChangeAdminUserInfoApiRequest {
   avatar?: string;
   email?: string | null;
   mobile?: string | null;
-  status?: string;
+  userStatus?: string;
   identityType?: string;
 }
 
