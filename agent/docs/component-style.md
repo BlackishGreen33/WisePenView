@@ -62,18 +62,20 @@ ComponentName/
 
 圆角必须通过语义 token 表达，避免在业务样式中直接恢复 HeroUI 的大圆角默认值。当前基础圆角为 8px，语义层级如下：
 
-| 语义         | Token                                     | 当前值 | 使用范围                                                                             |
-| ------------ | ----------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
-| 紧凑字段控件 | `--radius-interactive` / `--radius-field` | 6px    | Input、Select trigger、ComboBox、Autocomplete、菜单选中项、Tooltip、Sidebar 内部字段 |
-| 独立操作控件 | `--radius-button`                         | 8px    | Button、ToggleButton、IconButton、按钮组首尾边缘                                     |
-| 内容容器     | `--radius-content`                        | 8px    | 卡片、面板、表格外壳、Sidebar 选中/hover 项                                          |
-| 浮层外壳     | `--radius-overlay`                        | 12px   | Popover、Dropdown、Select、ComboBox、Autocomplete、EmojiPicker、SlashMenu            |
-| Modal 外壳   | `--radius-modal`                          | 12px   | Modal、AlertDialog、FormDialog、DisplayDialog；全屏 Modal 保持直角                   |
+| 语义         | Token                                     | 当前值 | 使用范围                                                                                                        |
+| ------------ | ----------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
+| 紧凑字段控件 | `--radius-interactive` / `--radius-field` | 6px    | Input、Select trigger（收起状态的输入框）、ComboBox/Autocomplete trigger、菜单选中项、Tooltip、Sidebar 内部字段 |
+| 独立操作控件 | `--radius-button`                         | 8px    | Button、ToggleButton、IconButton、按钮组首尾边缘                                                                |
+| 内容容器     | `--radius-content`                        | 8px    | 卡片、面板、表格外壳、Sidebar 选中/hover 项                                                                     |
+| 浮层外壳     | `--radius-overlay`                        | 12px   | Popover、Dropdown、Select 展开后的选项面板、ComboBox/Autocomplete 展开面板、EmojiPicker、SlashMenu              |
+| Modal 外壳   | `--radius-modal`                          | 12px   | Modal、AlertDialog、FormDialog、DisplayDialog；全屏 Modal 保持直角                                              |
 
 规则：
 
 - Button 与 Input 不强行共享同一圆角：Button 是独立操作项使用 8px，Input 是连续字段控件使用 6px。
 - Popover / Modal 外壳使用 12px，内部选中项和操作控件分别遵循 6px / 8px，不得使用 HeroUI `radius-3xl` 作为默认值。
+- Select 的 6px 指收起状态的 trigger 输入框；展开后的选项面板外壳为 12px，面板内部选项为 6px。ComboBox、Autocomplete 遵循相同拆分。
+- Tooltip 指提示气泡本体使用 6px；触发它的按钮或字段仍按自身语义使用 8px 或 6px。
 - Sidebar 的主要导航项、hover 和 selected 背景使用 8px；头像、状态点、滚动条、胶囊标签等具有明确圆形语义的元素可以继续使用 `50%` 或 `999px`。
 - 嵌套浮层按外壳半径和内容 inset 计算内层半径，状态切换（hover、selected、focus-visible）不得改变同一控件的圆角。
 - 新增圆角先选择语义 token；只有明确的大型容器或特殊视觉场景才可以使用 `radius-2xl` 以上的 token，并在组件样式旁说明原因。

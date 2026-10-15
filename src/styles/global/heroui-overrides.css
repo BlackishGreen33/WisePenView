@@ -9,7 +9,7 @@
 ) {
   --app-popover-surface: var(--background);
 
-  /* HeroUI Select 自带 radius-3xl，显式接入应用浮层 token。 */
+  /* HeroUI Select 展开面板自带 radius-3xl，显式接入应用浮层外壳 token。 */
   border-radius: var(--app-radius-popover, var(--radius-overlay)) !important;
   overflow: clip;
 
@@ -19,9 +19,14 @@
   line-height: var(--line-height-sm);
 }
 
-/* 按钮采用 8px，字段、选项和侧栏等紧凑控件继续采用 6px。 */
+/* 按钮采用 8px；输入框、菜单选项和侧栏内部字段采用 6px，侧栏导航背景采用 8px。 */
 :is(.button, .toggle-button) {
   border-radius: var(--radius-button, var(--radius-content));
+}
+
+/* Tooltip 指提示气泡本体；触发控件继续使用各自的字段或按钮圆角。 */
+.tooltip {
+  border-radius: var(--radius-field, var(--radius-interactive));
 }
 
 /* 按钮组保留连接关系，只让最外侧边缘使用交互圆角。 */

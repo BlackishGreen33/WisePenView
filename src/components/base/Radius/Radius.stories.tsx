@@ -16,7 +16,7 @@ const OPTIONS = [
 
 function SelectExample() {
   return (
-    <Select label="选择范围" defaultSelectedKey="all">
+    <Select label="Select trigger 6px / 展开面板 12px" defaultSelectedKey="all">
       <Select.Trigger>
         <Select.Value />
         <Select.Indicator />
