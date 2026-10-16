@@ -1,6 +1,7 @@
 import { Dropdown, ListBox } from '@heroui/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
 import AppModal from '@/components/base/AppModal';
@@ -185,37 +186,67 @@ export const SidebarStates: Story = {
   ),
 };
 
+function ModalRadiusStory() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
+        打开普通 Modal（12px 圆角）
+      </AppButton>
+      <AppModal isOpen={isOpen} onOpenChange={setIsOpen} title="普通 Modal" description="12px 圆角">
+        普通尺寸弹窗内容
+      </AppModal>
+    </>
+  );
+}
+
 export const ModalRadius: Story = {
-  render: () => (
-    <AppModal isOpen onOpenChange={() => undefined} title="普通 Modal" description="12px 圆角">
-      普通尺寸弹窗内容
-    </AppModal>
-  ),
+  render: () => <ModalRadiusStory />,
 };
+
+function FullCoverModalRadiusStory() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
+        打开 Full / cover Modal（保持直角）
+      </AppButton>
+      <AppModal
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        title="Full / cover Modal"
+        size="full"
+        placement="center"
+      >
+        全屏覆盖弹窗内容
+      </AppModal>
+    </>
+  );
+}
 
 export const FullCoverModalRadius: Story = {
-  render: () => (
-    <AppModal
-      isOpen
-      onOpenChange={() => undefined}
-      title="Full / cover Modal"
-      size="full"
-      placement="center"
-    >
-      全屏覆盖弹窗内容
-    </AppModal>
-  ),
+  render: () => <FullCoverModalRadiusStory />,
 };
 
+function AlertDialogRadiusStory() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
+        打开 AlertDialog（12px 圆角）
+      </AppButton>
+      <AppAlertDialog
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        title="AlertDialog"
+        description="确认操作并验证弹窗圆角。"
+      >
+        AlertDialog 内容
+      </AppAlertDialog>
+    </>
+  );
+}
+
 export const AlertDialogRadius: Story = {
-  render: () => (
-    <AppAlertDialog
-      isOpen
-      onOpenChange={() => undefined}
-      title="AlertDialog"
-      description="确认操作并验证弹窗圆角。"
-    >
-      AlertDialog 内容
-    </AppAlertDialog>
-  ),
+  render: () => <AlertDialogRadiusStory />,
 };
