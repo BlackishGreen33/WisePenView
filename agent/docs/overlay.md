@@ -19,7 +19,7 @@ Modal 和 Popover 都是 12px 外壳，但语义不同的内部控件不跟随�
 | 菜单选中项                                                       | 6px  | `--app-radius-menu-item` |
 | Tooltip 气泡本体                                                 | 6px  | `--app-radius-tooltip`   |
 
-Select 的 trigger 是收起状态下用户看到的输入框，圆角与 Input、ComboBox 和 Autocomplete trigger 一致，为 6px。展开后的 Select 面板是独立浮层外壳，为 12px；面板内部的选项按菜单选中项规则处理。
+Select 的 trigger 是收起状态下用户看到的字段控件，圆角与 Input、ComboBox 和 Autocomplete trigger 一致，使用 `--app-radius-field`，当前为 8px。展开后的 Select 面板是独立浮层外壳，为 12px；面板内部的选项按菜单选中项规则处理，为 6px。
 
 HeroUI 的 `radius-3xl` 不得作为 Overlay 默认值。全屏 Modal 的容器继续使用直角，以便贴合窗口边缘。
 

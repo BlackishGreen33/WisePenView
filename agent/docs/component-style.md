@@ -76,7 +76,7 @@ ComponentName/
 
 - Button 与 Input 分别使用 `--app-radius-button` 和 `--app-radius-field`。
 - Popover / Modal 外壳使用 12px，内部选中项和操作控件分别遵循 6px / 8px，不得使用 HeroUI `radius-3xl` 作为默认值。
-- Select 的 6px 指收起状态的 trigger 输入框；展开后的选项面板外壳为 12px，面板内部选项为 6px。ComboBox、Autocomplete 遵循相同拆分。
+- Select 收起状态的 trigger 属于字段控件，使用 `--app-radius-field`（8px）；展开后的选项面板外壳为 12px，面板内部选项为 6px。ComboBox、Autocomplete trigger 遵循相同拆分。
 - Tooltip 指提示气泡本体使用 6px；触发它的按钮或字段仍按自身语义使用 8px 或 6px。
 - Sidebar 的主要导航项、hover 和 selected 背景使用 8px；头像、状态点、滚动条、胶囊标签等具有明确圆形语义的元素可以继续使用 `50%` 或 `999px`。
 - 嵌套浮层按外壳半径和内容 inset 计算内层半径，状态切换（hover、selected、focus-visible）不得改变同一控件的圆角。
