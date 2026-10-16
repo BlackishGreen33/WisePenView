@@ -1,14 +1,13 @@
 import { useMemoizedFn, useUnmount } from 'ahooks';
 import { useRef } from 'react';
 
-import {
-  NOTE_ANCHOR_HIGHLIGHT_CLASS,
-  NOTE_ANCHOR_HIGHLIGHT_DURATION_MS,
-} from '@/components/editors/note/noteAnchorNavigationModel';
-
 import { findInlineCommentAnchorElement } from '../engines/inlineComments/extension';
 import type { NoteEditorAnchor, NoteScrollAnchorOptions } from '../index.type';
 import type { CustomBlockNoteEditor } from '../registry/noteEditorComposition';
+import {
+  NOTE_ANCHOR_HIGHLIGHT_CLASS,
+  NOTE_ANCHOR_HIGHLIGHT_DURATION_MS,
+} from './noteEditorAnchorHighlight';
 import {
   type NoteScrollTargetResolver,
   scrollNoteEditorTargetIntoView,

@@ -33,8 +33,8 @@ import NoteOutline, { NOTE_OUTLINE_TITLE_ID } from '../NoteOutline';
 import NoteTitle, { type NoteTitleHandle, type NoteTitleSaveStatus } from '../NoteTitle';
 import { resolveNoteHeaderSaveStatus } from './noteWorkspaceModel';
 import { useNoteActionsController } from './useNoteActionsController';
-import { useNoteAnchorNavigationController } from './useNoteAnchorNavigationController';
 import { useNoteCommentsController } from './useNoteCommentsController';
+import { useNoteExternalNavigationController } from './useNoteExternalNavigationController';
 
 interface NoteWorkspaceProps {
   resourceId: string;
@@ -110,7 +110,7 @@ function NoteWorkspace({ resourceId, noteInfoDisplay, onRefreshNoteInfo }: NoteW
   };
 
   // chat 原文链接的定位请求：命中时滚动并高亮，超时后提示
-  useNoteAnchorNavigationController({ bodyEditorRef, resourceId });
+  useNoteExternalNavigationController({ bodyEditorRef, resourceId });
 
   const handleOutlineNavigate = (id: string) => {
     if (id !== NOTE_OUTLINE_TITLE_ID) {

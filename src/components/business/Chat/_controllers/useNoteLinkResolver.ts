@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { matchPath, useLocation } from 'react-router-dom';
 
 import type { MarkdownResourceResolver } from '@/components/base/Markdown';
-import { useNoteAnchorNavigationStore } from '@/components/editors/note/_store/useNoteAnchorNavigationStore';
+import { useNoteExternalNavigationStore } from '@/components/editors/note/_store/useNoteExternalNavigationStore';
 import {
   parseNoteLinkUrl,
   resolveNoteLinkAction,
@@ -29,7 +29,9 @@ function readOpenNoteId(pathname: string): string | null {
 export function useNoteLinkResolver(): MarkdownResourceResolver {
   const location = useLocation();
   const openResource = useOpenResource();
-  const requestNoteAnchor = useNoteAnchorNavigationStore((state) => state.requestNoteAnchor);
+  const requestExternalNavigation = useNoteExternalNavigationStore(
+    (state) => state.requestExternalNavigation
+  );
 
   const resolveUrl = useMemoizedFn((url: string, kind: 'link' | 'image') =>
     kind === 'link' && parseNoteLinkUrl(url) ? url : undefined
@@ -44,7 +46,7 @@ export function useNoteLinkResolver(): MarkdownResourceResolver {
       targetNoteId: target.resourceId,
     });
     // 先派发定位请求再打开笔记，保证新挂载的笔记能立刻消费到这次定位
-    requestNoteAnchor(target);
+    requestExternalNavigation(target);
     if (action === 'open') {
       openResource({ resourceId: target.resourceId, resourceType: RESOURCE_KIND.NOTE });
     }

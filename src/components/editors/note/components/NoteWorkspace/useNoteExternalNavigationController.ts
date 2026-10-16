@@ -2,31 +2,31 @@ import { toast } from '@heroui/react';
 import { type RefObject, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useNoteAnchorNavigationStore } from '@/components/editors/note/_store/useNoteAnchorNavigationStore';
+import { useNoteExternalNavigationStore } from '@/components/editors/note/_store/useNoteExternalNavigationStore';
 import type { NoteBodyEditorHandle } from '@/components/editors/note/CustomBlockNote/index.type';
 import {
-  isNoteAnchorRequestExpired,
-  NOTE_ANCHOR_RETRY_INTERVAL_MS,
-  NOTE_ANCHOR_RETRY_TIMEOUT_MS,
-} from '@/components/editors/note/noteAnchorNavigationModel';
+  isNoteExternalNavigationRequestExpired,
+  NOTE_EXTERNAL_NAVIGATION_RETRY_INTERVAL_MS,
+  NOTE_EXTERNAL_NAVIGATION_RETRY_TIMEOUT_MS,
+} from '@/components/editors/note/noteExternalNavigationModel';
 
-interface UseNoteAnchorNavigationOptions {
+interface UseNoteExternalNavigationOptions {
   resourceId: string;
   bodyEditorRef: RefObject<NoteBodyEditorHandle | null>;
 }
 
 /**
- * 消费 chat 派发的原文定位请求。
+ * 消费外部（chat）派发的原文定位请求。
  *
  * 正文可能仍在协同同步或等待用户信息，因此在命中目标块之前按固定间隔重试；
  * 只有属于当前笔记、未过期的请求才会被消费，超时后提示定位失败。
  */
-export function useNoteAnchorNavigationController({
+export function useNoteExternalNavigationController({
   resourceId,
   bodyEditorRef,
-}: UseNoteAnchorNavigationOptions) {
+}: UseNoteExternalNavigationOptions) {
   const { t } = useTranslation('note');
-  const pending = useNoteAnchorNavigationStore((state) => state.pending);
+  const pending = useNoteExternalNavigationStore((state) => state.pending);
 
   /**
    * @wisepen-manual-effect
@@ -37,10 +37,11 @@ export function useNoteAnchorNavigationController({
   useEffect(() => {
     if (!pending || pending.resourceId !== resourceId) return;
 
-    const consumeNoteAnchor = useNoteAnchorNavigationStore.getState().consumeNoteAnchor;
+    const consumeExternalNavigation =
+      useNoteExternalNavigationStore.getState().consumeExternalNavigation;
     const requestId = pending.requestId;
-    if (isNoteAnchorRequestExpired(pending, Date.now())) {
-      consumeNoteAnchor(requestId);
+    if (isNoteExternalNavigationRequestExpired(pending, Date.now())) {
+      consumeExternalNavigation(requestId);
       return;
     }
 
@@ -50,7 +51,7 @@ export function useNoteAnchorNavigationController({
 
     const attempt = () => {
       if (cancelled) return;
-      const store = useNoteAnchorNavigationStore.getState();
+      const store = useNoteExternalNavigationStore.getState();
       const request = store.pending;
       // 已被新请求覆盖或已被消费时直接结束
       if (!request || request.requestId !== requestId) return;
@@ -60,20 +61,20 @@ export function useNoteAnchorNavigationController({
         { highlight: true }
       );
       if (matched) {
-        store.consumeNoteAnchor(requestId);
+        store.consumeExternalNavigation(requestId);
         return;
       }
 
       const now = Date.now();
       if (
-        now - startedAt >= NOTE_ANCHOR_RETRY_TIMEOUT_MS ||
-        isNoteAnchorRequestExpired(request, now)
+        now - startedAt >= NOTE_EXTERNAL_NAVIGATION_RETRY_TIMEOUT_MS ||
+        isNoteExternalNavigationRequestExpired(request, now)
       ) {
-        store.consumeNoteAnchor(requestId);
+        store.consumeExternalNavigation(requestId);
         toast.warning(t('workspace.anchorNotFound'));
         return;
       }
-      timer = window.setTimeout(attempt, NOTE_ANCHOR_RETRY_INTERVAL_MS);
+      timer = window.setTimeout(attempt, NOTE_EXTERNAL_NAVIGATION_RETRY_INTERVAL_MS);
     };
 
     attempt();

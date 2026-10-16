@@ -23,15 +23,18 @@ async function bundle(entryPoint) {
 }
 
 const protocolModule = await bundle('src/components/editors/note/noteLinkProtocol.ts');
-const modelModule = await bundle('src/components/editors/note/noteAnchorNavigationModel.ts');
+const modelModule = await bundle('src/components/editors/note/noteExternalNavigationModel.ts');
 const storeModule = await bundle(
-  'src/components/editors/note/_store/useNoteAnchorNavigationStore.ts'
+  'src/components/editors/note/_store/useNoteExternalNavigationStore.ts'
 );
 
 const { buildNoteLinkUrl, parseNoteLinkUrl, resolveNoteLinkAction } = protocolModule;
-const { NOTE_ANCHOR_REQUEST_TTL_MS, createNoteAnchorRequest, isNoteAnchorRequestExpired } =
-  modelModule;
-const { useNoteAnchorNavigationStore } = storeModule;
+const {
+  NOTE_EXTERNAL_NAVIGATION_REQUEST_TTL_MS,
+  createNoteExternalNavigationRequest,
+  isNoteExternalNavigationRequestExpired,
+} = modelModule;
+const { useNoteExternalNavigationStore } = storeModule;
 
 test('解析合法原文链接：单段 id、锚点前缀与编码', () => {
   assert.deepEqual(parseNoteLinkUrl('wisepen://note/mock-note-2#p_linear-list-array'), {
@@ -93,35 +96,39 @@ test('动作判定：当前笔记相同只滚动，否则先打开', () => {
 });
 
 test('定位请求按有效期判定过期', () => {
-  const request = createNoteAnchorRequest({ resourceId: 'n-1', blockId: 'blk' }, 1, 1_000);
-  assert.equal(request.expiresAt, 1_000 + NOTE_ANCHOR_REQUEST_TTL_MS);
-  assert.equal(isNoteAnchorRequestExpired(request, 1_000), false);
-  assert.equal(isNoteAnchorRequestExpired(request, request.expiresAt - 1), false);
-  assert.equal(isNoteAnchorRequestExpired(request, request.expiresAt), true);
-  assert.equal(isNoteAnchorRequestExpired(request, request.expiresAt + 5_000), true);
+  const request = createNoteExternalNavigationRequest(
+    { resourceId: 'n-1', blockId: 'blk' },
+    1,
+    1_000
+  );
+  assert.equal(request.expiresAt, 1_000 + NOTE_EXTERNAL_NAVIGATION_REQUEST_TTL_MS);
+  assert.equal(isNoteExternalNavigationRequestExpired(request, 1_000), false);
+  assert.equal(isNoteExternalNavigationRequestExpired(request, request.expiresAt - 1), false);
+  assert.equal(isNoteExternalNavigationRequestExpired(request, request.expiresAt), true);
+  assert.equal(isNoteExternalNavigationRequestExpired(request, request.expiresAt + 5_000), true);
 });
 
 test('定位请求被新请求覆盖，且只能消费自身 requestId', () => {
-  const store = useNoteAnchorNavigationStore.getState();
+  const store = useNoteExternalNavigationStore.getState();
   assert.equal(store.pending, null);
 
-  const first = store.requestNoteAnchor({ resourceId: 'n-1', blockId: 'blk-1' });
-  const second = useNoteAnchorNavigationStore
+  const first = store.requestExternalNavigation({ resourceId: 'n-1', blockId: 'blk-1' });
+  const second = useNoteExternalNavigationStore
     .getState()
-    .requestNoteAnchor({ resourceId: 'n-2', blockId: 'blk-2' });
+    .requestExternalNavigation({ resourceId: 'n-2', blockId: 'blk-2' });
   assert.equal(second.requestId, first.requestId + 1);
   assert.deepEqual(
     {
-      resourceId: useNoteAnchorNavigationStore.getState().pending?.resourceId,
-      blockId: useNoteAnchorNavigationStore.getState().pending?.blockId,
+      resourceId: useNoteExternalNavigationStore.getState().pending?.resourceId,
+      blockId: useNoteExternalNavigationStore.getState().pending?.blockId,
     },
     { resourceId: 'n-2', blockId: 'blk-2' }
   );
 
   // 旧请求的消费不能清掉新请求
-  useNoteAnchorNavigationStore.getState().consumeNoteAnchor(first.requestId);
-  assert.equal(useNoteAnchorNavigationStore.getState().pending?.requestId, second.requestId);
+  useNoteExternalNavigationStore.getState().consumeExternalNavigation(first.requestId);
+  assert.equal(useNoteExternalNavigationStore.getState().pending?.requestId, second.requestId);
 
-  useNoteAnchorNavigationStore.getState().consumeNoteAnchor(second.requestId);
-  assert.equal(useNoteAnchorNavigationStore.getState().pending, null);
+  useNoteExternalNavigationStore.getState().consumeExternalNavigation(second.requestId);
+  assert.equal(useNoteExternalNavigationStore.getState().pending, null);
 });
