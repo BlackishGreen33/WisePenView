@@ -11,7 +11,7 @@ import { CHAT_SESSION_QUERY_KEY } from '@/utils/navigation/chatRoute';
  * 会话切换（chat 参数变化）只是面板内状态，不改变资源位置，
  * 否则首次发送消息创建会话的导航会被离开守卫截停，导致首次发送被丢弃。
  */
-const withoutChatSessionQuery = (search: string): string => {
+const stripChatSessionParam = (search: string): string => {
   const params = new URLSearchParams(search);
   params.delete(CHAT_SESSION_QUERY_KEY);
   return params.toString();
@@ -32,8 +32,7 @@ export function useResourceEditorNavigation(
       if (!host.getSnapshot()) return false;
       if (currentLocation.pathname !== nextLocation.pathname) return true;
       return (
-        withoutChatSessionQuery(currentLocation.search) !==
-        withoutChatSessionQuery(nextLocation.search)
+        stripChatSessionParam(currentLocation.search) !== stripChatSessionParam(nextLocation.search)
       );
     }
   );
