@@ -11,12 +11,9 @@ import type { ChangePasswordRequest } from '@/domains/Auth';
 import { useApi } from '@/hooks/useApi';
 import { authSessionCoordinator } from '@/utils/auth/authSessionCoordinator';
 import { APP_ROUTE_PATH } from '@/utils/navigation/appRoute';
-import {
-  type FieldErrors,
-  hasFieldErrors,
-  runFieldValidation,
-} from '@/utils/validation/formValidation';
+import { type FieldErrors, hasFieldErrors } from '@/utils/validation/formValidation';
 
+import { validateConfirmPasswordField, validatePasswordField } from '../_common/passwordValidation';
 import auth from '../_common/style.module.less';
 
 type ChangePasswordFormValues = ChangePasswordRequest & {
@@ -48,47 +45,78 @@ function ChangePassword() {
     }
   );
 
+  const isFieldEmpty = (field: ChangePasswordField, values: ChangePasswordFormValues): boolean => {
+    switch (field) {
+      case 'oldPassword':
+        return values.oldPassword.length === 0;
+      case 'newPassword':
+        return values.newPassword.length === 0;
+      case 'confirmPassword':
+        return values.confirmPassword.length === 0;
+      default:
+        return false;
+    }
+  };
+
+  const validateField = (
+    field: ChangePasswordField,
+    values: ChangePasswordFormValues,
+    options: { withRequired?: boolean } = {}
+  ): string | undefined => {
+    if (!options.withRequired && isFieldEmpty(field, values)) return undefined;
+
+    switch (field) {
+      case 'oldPassword':
+        return values.oldPassword.length > 0 ? undefined : t('changePassword.oldPasswordRequired');
+      case 'newPassword':
+        return validatePasswordField(
+          values.newPassword,
+          {
+            required: t('changePassword.passwordRequired'),
+            minLength: t('changePassword.passwordMinLength'),
+            containsLetter: t('changePassword.passwordContainsLetter'),
+            containsNumber: t('changePassword.passwordContainsNumber'),
+          },
+          options
+        );
+      case 'confirmPassword':
+        return validateConfirmPasswordField(
+          values.confirmPassword,
+          values.newPassword,
+          {
+            required: t('changePassword.confirmPasswordRequired'),
+            mismatch: t('changePassword.confirmPasswordMismatch'),
+          },
+          options
+        );
+      default:
+        return undefined;
+    }
+  };
+
   const updateFormValue = (field: ChangePasswordField, value: string) => {
-    setFormValues((prev) => ({ ...prev, [field]: value }));
-    setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+    const nextValues = { ...formValues, [field]: value };
+    setFormValues(nextValues);
+    const fieldsToValidate: ChangePasswordField[] =
+      field === 'newPassword' ? ['newPassword', 'confirmPassword'] : [field];
+    setFormErrors((prev) => {
+      const nextErrors = { ...prev };
+      fieldsToValidate.forEach((key) => {
+        nextErrors[key] = validateField(key, nextValues);
+      });
+      return nextErrors;
+    });
+  };
+
+  const handleFieldBlur = (field: ChangePasswordField) => {
+    setFormErrors((prev) => ({ ...prev, [field]: validateField(field, formValues) }));
   };
 
   const validateForm = () => {
     const nextErrors: FieldErrors<ChangePasswordField> = {
-      oldPassword: runFieldValidation([
-        {
-          test: () => formValues.oldPassword.length > 0,
-          message: t('changePassword.oldPasswordRequired'),
-        },
-      ]),
-      newPassword: runFieldValidation([
-        {
-          test: () => formValues.newPassword.length > 0,
-          message: t('changePassword.passwordRequired'),
-        },
-        {
-          test: () => formValues.newPassword.length >= 9,
-          message: t('newPassword.passwordMinLength'),
-        },
-        {
-          test: () => /[a-zA-Z]/.test(formValues.newPassword),
-          message: t('newPassword.passwordContainsLetter'),
-        },
-        {
-          test: () => /[0-9]/.test(formValues.newPassword),
-          message: t('newPassword.passwordContainsNumber'),
-        },
-      ]),
-      confirmPassword: runFieldValidation([
-        {
-          test: () => formValues.confirmPassword.length > 0,
-          message: t('changePassword.confirmPasswordRequired'),
-        },
-        {
-          test: () => formValues.confirmPassword === formValues.newPassword,
-          message: t('newPassword.confirmPasswordMismatch'),
-        },
-      ]),
+      oldPassword: validateField('oldPassword', formValues, { withRequired: true }),
+      newPassword: validateField('newPassword', formValues, { withRequired: true }),
+      confirmPassword: validateField('confirmPassword', formValues, { withRequired: true }),
     };
     setFormErrors(nextErrors);
     return !hasFieldErrors(nextErrors);
@@ -113,6 +141,7 @@ function ChangePassword() {
           name="oldPassword"
           value={formValues.oldPassword}
           onChange={(value) => updateFormValue('oldPassword', value)}
+          onBlur={() => handleFieldBlur('oldPassword')}
           errorMessage={formErrors.oldPassword}
           isRequired
         >
@@ -125,17 +154,17 @@ function ChangePassword() {
         </FormField>
 
         <FormField
-          aria-label={t('newPassword.passwordLabel')}
-          label={t('newPassword.passwordLabel')}
+          aria-label={t('changePassword.passwordLabel')}
+          label={t('changePassword.passwordLabel')}
           name="newPassword"
           value={formValues.newPassword}
           onChange={(value) => updateFormValue('newPassword', value)}
-          description={t('common.passwordRules')}
+          onBlur={() => handleFieldBlur('newPassword')}
           errorMessage={formErrors.newPassword}
           isRequired
         >
           <PasswordInput
-            placeholder={t('newPassword.passwordPlaceholder')}
+            placeholder={t('changePassword.passwordPlaceholder')}
             autoComplete="new-password"
             showPasswordLabel={t('common.showPassword')}
             hidePasswordLabel={t('common.hidePassword')}
@@ -143,16 +172,17 @@ function ChangePassword() {
         </FormField>
 
         <FormField
-          aria-label={t('newPassword.confirmPasswordLabel')}
-          label={t('newPassword.confirmPasswordLabel')}
+          aria-label={t('changePassword.confirmPasswordLabel')}
+          label={t('changePassword.confirmPasswordLabel')}
           name="confirmPassword"
           value={formValues.confirmPassword}
           onChange={(value) => updateFormValue('confirmPassword', value)}
+          onBlur={() => handleFieldBlur('confirmPassword')}
           errorMessage={formErrors.confirmPassword}
           isRequired
         >
           <PasswordInput
-            placeholder={t('newPassword.confirmPasswordPlaceholder')}
+            placeholder={t('changePassword.confirmPasswordPlaceholder')}
             autoComplete="new-password"
             showPasswordLabel={t('common.showPassword')}
             hidePasswordLabel={t('common.hidePassword')}
@@ -170,7 +200,7 @@ function ChangePassword() {
             {t('changePassword.submit')}
           </AppButton>
           <div className={auth.centerLinks}>
-            <Link to={APP_ROUTE_PATH.AUTH_LOGIN}>{t('newPassword.backToLogin')}</Link>
+            <Link to={APP_ROUTE_PATH.AUTH_LOGIN}>{t('changePassword.backToLogin')}</Link>
           </div>
         </div>
       </Form>
