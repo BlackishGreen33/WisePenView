@@ -60,30 +60,35 @@ ComponentName/
 
 ## 六、圆角层级
 
-圆角按“8px 基准 → 基础圆角 → 应用圆角”单向定义。基准圆角（`--radius`）和基础圆角（`--radius-xs` 到 `--radius-4xl`）只是把数值参数化，不表达业务含义，组件和业务样式不得直接引用；组件和业务样式只使用应用圆角，缺少匹配语义时先在应用层补 token。
+圆角按“8px 基准 → 基础圆角 → 应用圆角”单向定义，三层变量集中在 `src/styles/theme/radius.css`，其他 token 文件不再定义圆角；规范示例 story 放在 `src/styles/_stories/`。后续新增其他 token 家族时沿用同一形态（基准、刻度、应用语义三层，一处源头）。
 
-| 语义     | Token                                                        | 当前值 | 使用范围                                                                 |
-| -------- | ------------------------------------------------------------ | ------ | ------------------------------------------------------------------------ |
-| 字段控件 | `--app-radius-field`                                         | 8px    | Input、Select trigger、ComboBox/Autocomplete trigger                     |
-| 勾选控件 | `--app-radius-checkbox`                                      | 4px    | Checkbox 控件本体（含表格选择框、Tree、Markdown/BlockNote 任务列表）     |
-| 菜单项   | `--app-radius-menu-item`                                     | 6px    | Dropdown、Popover、Select 等选项                                         |
-| 按钮     | `--app-radius-button`                                        | 8px    | Button、ToggleButton、IconButton、按钮组首尾边缘                         |
-| 内容容器 | `--app-radius-content`                                       | 8px    | 卡片、面板、表格外壳                                                     |
-| 导航项   | `--app-radius-sidebar-item` / `--app-radius-breadcrumb-item` | 8px    | Sidebar 与 Breadcrumb 导航项                                             |
-| 浮层     | `--app-radius-popover`                                       | 12px   | Popover、Dropdown、Select、ComboBox/Autocomplete、EmojiPicker、SlashMenu |
-| Modal    | `--app-radius-modal`                                         | 12px   | Modal、AlertDialog、FormDialog、DisplayDialog；全屏 Modal 保持直角       |
+基准圆角（`--radius`）和基础圆角（`--radius-xs` 到 `--radius-4xl`）只是把数值参数化，不表达业务含义，组件与业务样式不得直接引用；组件与业务样式只使用应用圆角，缺少匹配语义时先在应用层补 token。
+
+| 语义     | Token                                                        | 当前值 | 使用范围                                                                                             |
+| -------- | ------------------------------------------------------------ | ------ | ---------------------------------------------------------------------------------------------------- |
+| 装饰细节 | `--app-radius-detail`                                        | 2px    | 图表图例色块、Tab 指示线、行内文本高亮、分隔块                                                       |
+| 行内小面 | `--app-radius-inline`                                        | 4px    | 行内 code、内联公式、嵌入预览块、骨架块                                                              |
+| 勾选控件 | `--app-radius-checkbox`                                      | 4px    | Checkbox 控件本体（含表格选择框、Tree、Markdown/BlockNote 任务列表）                                 |
+| 菜单项   | `--app-radius-menu-item`                                     | 6px    | Dropdown、Popover、Select 等选项                                                                     |
+| 字段控件 | `--app-radius-field`                                         | 8px    | Input、Select trigger、ComboBox/Autocomplete trigger                                                 |
+| 按钮     | `--app-radius-button`                                        | 8px    | Button、ToggleButton、IconButton、按钮组首尾边缘                                                     |
+| 内容容器 | `--app-radius-content`                                       | 8px    | 卡片、面板、表格外壳、正文内嵌块（代码块、Mermaid、拖拽预览、拖拽区）                                |
+| 导航项   | `--app-radius-sidebar-item` / `--app-radius-breadcrumb-item` | 8px    | Sidebar 与 Breadcrumb 导航项                                                                         |
+| 浮层     | `--app-radius-popover`                                       | 12px   | Popover、Dropdown、Select、ComboBox/Autocomplete、EmojiPicker、SlashMenu、编辑器浮动工具条与内联面板 |
+| Modal    | `--app-radius-modal`                                         | 12px   | Modal、AlertDialog、FormDialog、DisplayDialog；全屏 Modal 保持直角                                   |
 
 规则：
 
 - Button 与 Input 分别使用 `--app-radius-button` 和 `--app-radius-field`。
 - Checkbox 使用 `--app-radius-checkbox`（4px）；它不是字段控件，不得复用 `--app-radius-field`，否则 16px 控件会被裁成正圆。
+- 非交互的小面按场景取 `--app-radius-detail`（2px，装饰细节）或 `--app-radius-inline`（4px，行内及内嵌小面）；它们与 `--app-radius-checkbox` 数值相同但语义不同，不要互相复用。
 - Popover / Modal 外壳使用 12px，内部选中项和操作控件分别遵循 6px / 8px，不得使用 HeroUI `radius-3xl` 作为默认值。
 - Select 收起状态的 trigger 属于字段控件，使用 `--app-radius-field`（8px）；展开后的选项面板外壳为 12px，面板内部选项为 6px。ComboBox、Autocomplete trigger 遵循相同拆分。
 - Tooltip 指提示气泡本体使用 6px；触发它的按钮或字段仍按自身语义使用 8px 或 6px。
 - Sidebar 的主要导航项、hover 和 selected 背景使用 8px；头像、状态点、滚动条、胶囊标签等具有明确圆形语义的元素可以继续使用 `50%` 或 `999px`。
 - 嵌套浮层按外壳半径和内容 inset 计算内层半径，状态切换（hover、selected、focus-visible）不得改变同一控件的圆角。
-- 新增圆角先选择语义 token；语义 token 缺失时在 `src/styles/theme/tokens.css` 的应用圆角区补一个，再让组件引用。
-- 组件样式不得直接引用 `--radius-*`，需要更大或更小的几何值时报给应用圆角区处理；存量直连基础圆角的用法按域逐步收敛，不做无差别批量替换。
+- 新增圆角先选择语义 token；语义 token 缺失时在 `src/styles/theme/radius.css` 的应用语义层补一个，再让组件引用。
+- 组件样式不得直接引用 `--radius-*`，需要更大或更小的几何值时报给应用语义层处理；唯一例外是第三方 iframe 等外部契约（如 drawio 主题透传）按对方的变量名给值，并在代码旁注明原因。
 
 ## 七、组件库使用
 
