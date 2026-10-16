@@ -34,6 +34,7 @@ import NoteTitle, { type NoteTitleHandle, type NoteTitleSaveStatus } from '../No
 import { resolveNoteHeaderSaveStatus } from './noteWorkspaceModel';
 import { useNoteActionsController } from './useNoteActionsController';
 import { useNoteCommentsController } from './useNoteCommentsController';
+import { useNoteExternalNavigationController } from './useNoteExternalNavigationController';
 
 interface NoteWorkspaceProps {
   resourceId: string;
@@ -107,6 +108,9 @@ function NoteWorkspace({ resourceId, noteInfoDisplay, onRefreshNoteInfo }: NoteW
   const focusBody = () => {
     bodyEditorRef.current?.focus();
   };
+
+  // chat 原文链接的定位请求：命中时滚动并高亮，超时后提示
+  useNoteExternalNavigationController({ bodyEditorRef, resourceId });
 
   const handleOutlineNavigate = (id: string) => {
     if (id !== NOTE_OUTLINE_TITLE_ID) {

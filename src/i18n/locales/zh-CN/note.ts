@@ -12,6 +12,7 @@ const zhCNNote = {
     imageUploadLeaveTitle: '图片仍在上传',
     imageUploadLeaveDescription: '请等待 {{count}} 张图片上传完成后再离开此笔记。',
     imageUploadContinue: '继续上传',
+    anchorNotFound: '无法定位到原文，可能已被删除或移动',
   },
   title: {
     untitled: '未命名笔记',

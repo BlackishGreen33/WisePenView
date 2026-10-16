@@ -14,6 +14,7 @@ const enUSNote = {
     imageUploadLeaveDescription:
       'Wait for {{count}} image upload to finish before leaving this note.',
     imageUploadContinue: 'Continue uploading',
+    anchorNotFound: 'Unable to locate the referenced text. It may have been deleted or moved.',
   },
   title: { untitled: 'Untitled note', placeholder: 'Enter a title' },
   info: {
