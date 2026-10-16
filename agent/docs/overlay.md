@@ -23,6 +23,10 @@ Select 的 trigger 是收起状态下用户看到的输入框，圆角与 Input�
 
 HeroUI 的 `radius-3xl` 不得作为 Overlay 默认值。全屏 Modal 的容器继续使用直角，以便贴合窗口边缘。
 
+### 层级
+
+浮层层级统一取 `--app-z-index-*`：Popover、Dropdown、Select 展开面板外壳用 `--app-z-index-popover`，Tooltip 用 `--app-z-index-tooltip`，Modal 外壳与遮罩用 `--app-z-index-modal`，Toast 用 `--app-z-index-toast`。业务代码不得自行为浮层写数字层级，完整层级表见 `agent/docs/component-style.md` 第七节。
+
 Overlay 组件按复用范围分开放：
 
 - `src/components/base/Modal`、`src/components/base/Popover`：底层原子层，统一 HeroUI 浮层的挂载时机与延迟渲染。
