@@ -91,11 +91,11 @@ ComponentName/
 - Select 收起状态的 trigger 属于字段控件，展开后的面板是独立浮层外壳，面板内部选项取 `--app-radius-popover-item`；ComboBox、Autocomplete trigger 遵循相同拆分。
 - Tooltip 的 `--app-radius-tooltip` 只作用于气泡本体；触发它的按钮或字段仍按自身语义取 token。
 - 嵌套浮层按外壳半径和内容 inset 计算内层半径，状态切换（hover、selected、focus-visible）不得改变同一控件的圆角。
-- Sidebar 导航项、hover 和 selected 背景使用 `--app-radius-sidebar-item`；头像、状态点、滚动条、胶囊标签等具有明确圆形语义的元素使用 `--app-radius-pill`，不写字面量 `999px` 或 `50%`。
+- Sidebar 导航项、hover 和 selected 背景使用 `--app-radius-sidebar-item`；头像、状态点、滚动条、胶囊标签等圆形语义元素使用 `--app-radius-pill`，正方形元素的整圆可以直接写 `50%`。
 - 新增圆角先选择语义 token；语义 token 缺失时在 `src/styles/theme/radius.css` 的应用语义层补一个，再让组件引用。
-- 组件样式不得直接引用 `--radius-*`，也不得硬编码圆角数值；需要更大或更小的几何值时报给应用语义层处理。
+- 组件样式不得直接引用 `--radius-*`，也不得硬编码圆角数值；需要更大或更小的几何值时报给应用语义层处理。新增语义 token 时同步更新本节表格。
 - 唯一例外是第三方 iframe 等外部契约：drawio 通过 `src/components/editors/drawio/hooks/useDrawioTheme.ts` 按对方变量名透传主题，必须在代码旁注明原因；项目自有样式即使位于第三方适配目录内也不适用该例外。
-- 存量仍有少量硬编码圆角与失效的 `--ant-*` 取值，属于待清理项，不作为新代码参考。
+- `pnpm check:radius` 在 CI 拦截上述两类写法：扫描 `src/**` 的 `.less`/`.css`（`src/styles/**` 是 token 与基础设施层，除外），只放行 `0`、百分比整圆和 `--app-radius-*`。
 
 ## 七、组件库使用
 
