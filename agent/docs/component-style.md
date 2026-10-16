@@ -76,7 +76,7 @@ ComponentName/
 | 内容容器 | `--app-radius-content`                                       | 8px    | 卡片、面板、表格外壳、正文内嵌块（代码块、Mermaid、拖拽预览、拖拽区）                                |
 | 导航项   | `--app-radius-sidebar-item` / `--app-radius-breadcrumb-item` | 8px    | Sidebar 与 Breadcrumb 导航项                                                                         |
 | 浮层     | `--app-radius-popover`                                       | 12px   | Popover、Dropdown、Select、ComboBox/Autocomplete、EmojiPicker、SlashMenu、编辑器浮动工具条与内联面板 |
-| Modal    | `--app-radius-modal`                                         | 12px   | Modal、AlertDialog、FormDialog、DisplayDialog；全屏 Modal 保持直角                                   |
+| Modal    | `--app-radius-modal`                                         | 12px   | Modal、AlertDialog、FormDialog、DisplayDialog；`size="cover"` 仍是 12px 圆角，`size="full"` 保持直角 |
 
 规则：
 

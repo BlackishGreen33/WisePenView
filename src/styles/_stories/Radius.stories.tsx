@@ -186,46 +186,55 @@ export const SidebarStates: Story = {
   ),
 };
 
-function ModalRadiusStory() {
+function CoverModalRadiusStory() {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
-        打开普通 Modal（12px 圆角）
-      </AppButton>
-      <AppModal isOpen={isOpen} onOpenChange={setIsOpen} title="普通 Modal" description="12px 圆角">
-        普通尺寸弹窗内容
-      </AppModal>
-    </>
-  );
-}
-
-export const ModalRadius: Story = {
-  render: () => <ModalRadiusStory />,
-};
-
-function FullCoverModalRadiusStory() {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <>
-      <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
-        打开 Full / cover Modal（保持直角）
+        打开 Cover Modal（保留 12px 圆角）
       </AppButton>
       <AppModal
         isOpen={isOpen}
         onOpenChange={setIsOpen}
-        title="Full / cover Modal"
-        size="full"
-        placement="center"
+        title="Cover Modal"
+        description="size=cover，同样铺满视口，但保留 12px 圆角"
+        size="cover"
+        actions={<AppButton onPress={() => setIsOpen(false)}>关闭</AppButton>}
       >
-        全屏覆盖弹窗内容
+        Cover 尺寸弹窗内容
       </AppModal>
     </>
   );
 }
 
-export const FullCoverModalRadius: Story = {
-  render: () => <FullCoverModalRadiusStory />,
+export const CoverModalRadius: Story = {
+  render: () => <CoverModalRadiusStory />,
+};
+
+function FullModalRadiusStory() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
+        打开 Full Modal（保持直角）
+      </AppButton>
+      <AppModal
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        title="Full Modal"
+        description="size=full，铺满视口且保持直角"
+        size="full"
+        placement="center"
+        actions={<AppButton onPress={() => setIsOpen(false)}>关闭</AppButton>}
+      >
+        Full 尺寸铺满视口的弹窗内容
+      </AppModal>
+    </>
+  );
+}
+
+export const FullModalRadius: Story = {
+  render: () => <FullModalRadiusStory />,
 };
 
 function AlertDialogRadiusStory() {
@@ -239,7 +248,7 @@ function AlertDialogRadiusStory() {
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         title="AlertDialog"
-        description="确认操作并验证弹窗圆角。"
+        description="size 默认，确认操作并验证弹窗圆角。"
       >
         AlertDialog 内容
       </AppAlertDialog>
@@ -249,4 +258,28 @@ function AlertDialogRadiusStory() {
 
 export const AlertDialogRadius: Story = {
   render: () => <AlertDialogRadiusStory />,
+};
+
+function CoverAlertDialogRadiusStory() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <>
+      <AppButton variant="secondary" onPress={() => setIsOpen(true)}>
+        打开 Cover AlertDialog（保留 12px 圆角）
+      </AppButton>
+      <AppAlertDialog
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        title="Cover AlertDialog"
+        description="size=cover，验证满尺寸变体的圆角与底部操作区。"
+        size="cover"
+      >
+        Cover AlertDialog 内容
+      </AppAlertDialog>
+    </>
+  );
+}
+
+export const CoverAlertDialogRadius: Story = {
+  render: () => <CoverAlertDialogRadiusStory />,
 };
