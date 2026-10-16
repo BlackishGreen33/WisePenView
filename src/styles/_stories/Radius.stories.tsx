@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import AppModal from '@/components/base/AppModal';
 import AppPopover from '@/components/base/AppPopover';
 import { AppButton } from '@/components/base/Button';
+import { Checkbox } from '@/components/base/Input';
 import Input from '@/components/base/Input/Input';
 import Select from '@/components/base/Input/Select';
 import { DataTable } from '@/components/base/Table';
@@ -135,6 +136,45 @@ export const InteractiveControls: Story = {
     </div>
   ),
 };
+export const SmallSurfaceRadius: Story = {
+  render: () => (
+    <div className={styles.smallGrid}>
+      <div className={styles.sampleCard}>
+        <span className={styles.sampleLabel}>--app-radius-detail · 2px</span>
+        <div className={styles.sampleRow}>
+          <span className={styles.legendSwatch} />
+          <span className={styles.tabTrack}>
+            <span className={styles.tabIndicator} />
+          </span>
+          <span className={styles.textHighlight}>行内文本高亮</span>
+          <span className={styles.dividerBlock} />
+        </div>
+      </div>
+      <div className={styles.sampleCard}>
+        <span className={styles.sampleLabel}>--app-radius-inline · 4px</span>
+        <div className={styles.sampleRow}>
+          <code className={styles.inlineCode}>inline code</code>
+          <span className={styles.inlineFormula}>a² + b² = c²</span>
+          <span className={styles.skeletonBlock} />
+        </div>
+      </div>
+      <div className={styles.sampleCard}>
+        <span className={styles.sampleLabel}>--app-radius-checkbox · 4px</span>
+        <div className={styles.sampleRow}>
+          <Checkbox isSelected={false}>未选中</Checkbox>
+          <Checkbox isSelected>已选中</Checkbox>
+          <Checkbox isSelected isIndeterminate>
+            半选
+          </Checkbox>
+          <Checkbox isSelected={false} isDisabled>
+            禁用
+          </Checkbox>
+        </div>
+      </div>
+    </div>
+  ),
+};
+
 export const SidebarStates: Story = {
   render: () => (
     <SidebarExample>
