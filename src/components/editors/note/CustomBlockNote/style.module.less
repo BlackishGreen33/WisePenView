@@ -66,6 +66,17 @@
   display: flex;
   flex-direction: column;
 
+  /* 外部定位（chat 原文链接）命中的目标块高亮，时长与 NOTE_ANCHOR_HIGHLIGHT_DURATION_MS 一致 */
+  :global(.wise-note-anchor-highlight) {
+    animation: noteAnchorHighlight 1.2s var(--motion-ease-standard);
+    border-radius: var(--app-radius-detail);
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      background: var(--accent-soft);
+    }
+  }
+
   /* 正文批注原文高亮 */
   :global(.bodyBlockNoteView .bn-editor .bn-thread-mark:not([data-orphan='true'])) {
     background: var(--warning-soft);
@@ -1262,4 +1273,14 @@
 
 :global(.bn-drag-preview .bn-block-content[data-content-type='codeBlock'] .shiki) {
   background: transparent !important;
+}
+
+@keyframes noteAnchorHighlight {
+  0% {
+    background: var(--accent-soft);
+  }
+
+  100% {
+    background: transparent;
+  }
 }
