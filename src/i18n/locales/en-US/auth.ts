@@ -106,6 +106,18 @@ const enUSAuth = {
     tokenMissing: 'Token is missing',
     setFailed: 'Failed to set password',
   },
+  changePassword: {
+    title: 'Change Password',
+    oldPasswordLabel: 'Current Password',
+    oldPasswordPlaceholder: 'Please enter current password',
+    oldPasswordRequired: 'Please enter your current password',
+    passwordRequired: 'Please enter a new password',
+    confirmPasswordRequired: 'Please enter the new password again',
+    submit: 'Change Password',
+    successTitle: 'Password Changed Successfully',
+    successDescription: 'Your password has been updated. Please sign in again.',
+    goToLogin: 'Go to Sign In',
+  },
   agreement: {
     title: 'Service Agreement',
     close: 'I Understand',

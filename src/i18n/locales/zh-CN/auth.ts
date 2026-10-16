@@ -106,6 +106,18 @@ const zhCNAuth = {
     tokenMissing: 'token不存在',
     setFailed: '设置失败',
   },
+  changePassword: {
+    title: '修改密码',
+    oldPasswordLabel: '旧密码',
+    oldPasswordPlaceholder: '请输入旧密码',
+    oldPasswordRequired: '请输入旧密码',
+    passwordRequired: '请输入新密码',
+    confirmPasswordRequired: '请再次输入新密码',
+    submit: '修改密码',
+    successTitle: '密码修改成功',
+    successDescription: '密码已更新，请重新登录。',
+    goToLogin: '前往登录',
+  },
   agreement: {
     title: '服务协议',
     close: '我知道了',
