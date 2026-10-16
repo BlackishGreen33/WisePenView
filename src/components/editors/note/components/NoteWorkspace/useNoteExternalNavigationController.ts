@@ -56,10 +56,10 @@ export function useNoteExternalNavigationController({
       // 已被新请求覆盖或已被消费时直接结束
       if (!request || request.requestId !== requestId) return;
 
-      const matched = bodyEditorRef.current?.scrollToAnchor(
-        { kind: 'block', blockId: request.blockId },
-        { highlight: true }
-      );
+      const matched = bodyEditorRef.current?.scrollToAnchor({
+        kind: 'block',
+        blockId: request.blockId,
+      });
       if (matched) {
         store.consumeExternalNavigation(requestId);
         return;

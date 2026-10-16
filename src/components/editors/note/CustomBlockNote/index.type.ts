@@ -11,11 +11,6 @@ export type { NoteOutlineItem } from './engines/outline';
 export type NoteEditorAnchor =
   { kind: 'block'; blockId: string } | { kind: 'inlineComment'; threadId: string };
 
-export interface NoteScrollAnchorOptions {
-  /** 命中目标块后短暂高亮，用于外部来源的定位（例如 chat 原文链接） */
-  highlight?: boolean;
-}
-
 export interface NoteFindResult {
   current: number;
   total: number;
@@ -30,7 +25,7 @@ export interface NoteBodyEditorHandle {
   focus: () => void;
   openFind: (initialQuery?: string) => void;
   /** 返回是否在文档中命中目标块；未命中时不滚动，由调用方决定重试或提示 */
-  scrollToAnchor: (anchor: NoteEditorAnchor, options?: NoteScrollAnchorOptions) => boolean;
+  scrollToAnchor: (anchor: NoteEditorAnchor) => boolean;
   /** 导出 PDF（桌面端直接保存到本地，浏览器端通过系统打印对话框另存） */
   exportPdf: (options?: { title?: string; defaultFileName?: string }) => Promise<void>;
   /** 导出正文 Markdown artifact（AIDiff 按仅旧文本投影） */
