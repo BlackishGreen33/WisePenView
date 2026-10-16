@@ -103,6 +103,7 @@
   --radius-full: 999px;
   /* 应用圆角 */
   --app-radius-field: var(--radius-lg);
+  --app-radius-checkbox: var(--radius-sm);
   --app-radius-tooltip: var(--radius-md);
   --app-radius-menu-item: var(--radius-md);
   --app-radius-button: var(--radius-lg);

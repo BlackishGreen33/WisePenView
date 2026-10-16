@@ -60,11 +60,12 @@ ComponentName/
 
 ## 六、圆角层级
 
-圆角按“8px 基准 → 基础圆角 → 应用圆角”单向定义。组件和业务样式使用应用圆角；基础圆角仅用于应用语义未覆盖的局部几何细节。
+圆角按“8px 基准 → 基础圆角 → 应用圆角”单向定义。基准圆角（`--radius`）和基础圆角（`--radius-xs` 到 `--radius-4xl`）只是把数值参数化，不表达业务含义，组件和业务样式不得直接引用；组件和业务样式只使用应用圆角，缺少匹配语义时先在应用层补 token。
 
 | 语义     | Token                                                        | 当前值 | 使用范围                                                                 |
 | -------- | ------------------------------------------------------------ | ------ | ------------------------------------------------------------------------ |
 | 字段控件 | `--app-radius-field`                                         | 8px    | Input、Select trigger、ComboBox/Autocomplete trigger                     |
+| 勾选控件 | `--app-radius-checkbox`                                      | 4px    | Checkbox 控件本体（含表格选择框、Tree、Markdown/BlockNote 任务列表）     |
 | 菜单项   | `--app-radius-menu-item`                                     | 6px    | Dropdown、Popover、Select 等选项                                         |
 | 按钮     | `--app-radius-button`                                        | 8px    | Button、ToggleButton、IconButton、按钮组首尾边缘                         |
 | 内容容器 | `--app-radius-content`                                       | 8px    | 卡片、面板、表格外壳                                                     |
@@ -75,12 +76,14 @@ ComponentName/
 规则：
 
 - Button 与 Input 分别使用 `--app-radius-button` 和 `--app-radius-field`。
+- Checkbox 使用 `--app-radius-checkbox`（4px）；它不是字段控件，不得复用 `--app-radius-field`，否则 16px 控件会被裁成正圆。
 - Popover / Modal 外壳使用 12px，内部选中项和操作控件分别遵循 6px / 8px，不得使用 HeroUI `radius-3xl` 作为默认值。
 - Select 收起状态的 trigger 属于字段控件，使用 `--app-radius-field`（8px）；展开后的选项面板外壳为 12px，面板内部选项为 6px。ComboBox、Autocomplete trigger 遵循相同拆分。
 - Tooltip 指提示气泡本体使用 6px；触发它的按钮或字段仍按自身语义使用 8px 或 6px。
 - Sidebar 的主要导航项、hover 和 selected 背景使用 8px；头像、状态点、滚动条、胶囊标签等具有明确圆形语义的元素可以继续使用 `50%` 或 `999px`。
 - 嵌套浮层按外壳半径和内容 inset 计算内层半径，状态切换（hover、selected、focus-visible）不得改变同一控件的圆角。
-- 新增圆角先选择语义 token；只有明确的大型容器或特殊视觉场景才可以使用 `radius-2xl` 以上的 token，并在组件样式旁说明原因。
+- 新增圆角先选择语义 token；语义 token 缺失时在 `src/styles/theme/tokens.css` 的应用圆角区补一个，再让组件引用。
+- 组件样式不得直接引用 `--radius-*`，需要更大或更小的几何值时报给应用圆角区处理；存量直连基础圆角的用法按域逐步收敛，不做无差别批量替换。
 
 ## 七、组件库使用
 
