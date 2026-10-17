@@ -233,6 +233,7 @@ const enUSNote = {
     deleteRow: 'Delete row',
     deleteColumn: 'Delete column',
     selectRow: 'Select row {{index}}',
+    resizeRow: 'Resize row {{index}}, double-click to reset',
     selectColumn: 'Select column {{index}}',
     headerRow: 'Header row',
     headerColumn: 'Header column',
