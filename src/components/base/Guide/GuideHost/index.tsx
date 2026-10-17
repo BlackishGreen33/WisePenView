@@ -264,7 +264,12 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
   return (
     <>
       {spotlightToolIds.length > 0 ? (
-        <GuideSpotlight key={activeStepConfig?.id} toolIds={spotlightToolIds} zIndex={zIndex + 1} />
+        <GuideSpotlight
+          key={activeStepConfig?.id}
+          toolIds={spotlightToolIds}
+          padding={activeStepConfig?.spotlightPadding}
+          zIndex={zIndex + 1}
+        />
       ) : null}
       {Tour}
     </>

@@ -1,6 +1,6 @@
 import type { GuideActionId } from './actions';
 import type { GuideToolId } from './toolId';
-import type { GuideStepConfig } from './types';
+import type { GuideSpotlightPadding, GuideStepConfig } from './types';
 
 interface GuideStepOptions {
   restore?: GuideActionId;
@@ -8,6 +8,7 @@ interface GuideStepOptions {
   spotlightToolIds?: readonly GuideToolId[];
   preventFlip?: boolean;
   tooltipWidth?: string;
+  spotlightPadding?: GuideSpotlightPadding;
 }
 
 export function step(
