@@ -38,6 +38,7 @@ import {
 
 import { BlockTypeMenu } from './components/BlockTypeMenu';
 import { ColorMenu } from './components/ColorMenu';
+import { ConvertToTaskToolbarButton } from './components/ConvertToTaskButton';
 import { FileCaptionToolbarButton } from './components/FileButtons';
 import { CreateLinkToolbarButton } from './components/LinkButton';
 import { NestButtons } from './components/NestButtons';
@@ -265,7 +266,10 @@ function CustomFormattingToolbar({
             <ToolbarSeparator />
             <NestButtons />
             <ToolbarSeparator />
-            <CreateLinkToolbarButton onOpenChange={onLinkPopoverOpenChange} />
+            <ButtonGroup size="sm" variant="ghost" aria-label={t('editor.toolbar.linkAndTask')}>
+              <CreateLinkToolbarButton onOpenChange={onLinkPopoverOpenChange} />
+              <ConvertToTaskToolbarButton />
+            </ButtonGroup>
             <ToolbarSeparator />
             <TableDeleteAction />
           </>
