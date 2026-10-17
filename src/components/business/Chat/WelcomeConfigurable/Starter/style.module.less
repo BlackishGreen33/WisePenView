@@ -76,7 +76,7 @@
 
   &::-webkit-scrollbar-thumb {
     border: 0;
-    border-radius: var(--scrollbar-radius, 999px);
+    border-radius: var(--app-radius-scrollbar);
     background: transparent;
   }
 
@@ -175,10 +175,9 @@
   gap: var(--space-md);
   min-width: 0;
   /* 可配置区块圆角：改此处即可联动 list / 卡片 / 场景块（随全局 --radius 伸缩） */
-  --welcome-surface-radius: var(--radius-2xl);
-  --welcome-control-radius: var(--radius-xl);
-  --welcome-icon-radius: var(--radius-lg);
-  --welcome-chip-radius: var(--radius-md);
+  --welcome-surface-radius: var(--app-radius-content);
+  --welcome-icon-radius: var(--app-radius-button);
+  --welcome-chip-radius: var(--app-radius-menu-item);
   --welcome-elevated-bg: transparent;
   --welcome-hover-bg: var(--accent-soft);
   --welcome-hover-border: color-mix(
@@ -365,7 +364,7 @@
   gap: var(--space-sm);
   padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-xs);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--app-radius-pill);
   background: transparent;
   box-shadow: none;
 
@@ -391,7 +390,7 @@
   gap: var(--space-sm);
   padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-xs);
   border: 1px solid transparent;
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--app-radius-pill);
   background: transparent;
   box-shadow: none;
 
@@ -412,7 +411,7 @@
   justify-content: flex-start;
   gap: var(--space-xs);
   padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--app-radius-pill);
   border-color: var(--border-light);
   background: transparent;
   white-space: nowrap;
@@ -554,7 +553,7 @@
   height: 1.75rem;
   padding: 0;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--app-radius-pill);
   background: transparent;
   color: var(--muted);
   box-shadow: none;
