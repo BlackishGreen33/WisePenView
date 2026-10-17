@@ -13,9 +13,9 @@ import {
 
 import { compileGuideSteps } from '../compileGuideSteps';
 import type { GuideActionPort } from '../guideActions';
+import GuideSpotlight from '../GuideSpotlight';
 import GuideTooltip, { GuideArrow } from '../GuideTooltip';
 import { getPageTourId, subscribePageTours } from '../pageTourRegistry';
-import GuideMultiSpotlight from './GuideMultiSpotlight';
 import type { GuideHostProps } from './index.type';
 
 const GUIDE_Z_INDEX_FALLBACK = 1050;
@@ -241,17 +241,13 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
   const activeStepConfig = activeStep
     ? tour.steps.find((item) => item.id === activeStep.id)
     : undefined;
-  const multiSpotlightToolIds = activeStepConfig?.spotlightToolIds;
+  const spotlightToolIds = activeStepConfig?.spotlightToolIds;
 
   if (!run) return null;
   return (
     <>
-      {multiSpotlightToolIds && multiSpotlightToolIds.length > 1 ? (
-        <GuideMultiSpotlight
-          toolIds={multiSpotlightToolIds}
-          radius={spotlightRadius}
-          zIndex={zIndex + 1}
-        />
+      {spotlightToolIds && spotlightToolIds.length > 1 ? (
+        <GuideSpotlight toolIds={spotlightToolIds} radius={spotlightRadius} zIndex={zIndex + 1} />
       ) : null}
       {Tour}
     </>
