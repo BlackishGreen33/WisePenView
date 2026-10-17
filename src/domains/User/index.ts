@@ -17,6 +17,7 @@ export type {
   UserTaskStatus,
   UserTaskType,
 } from './entity/userTask';
+export type { TourCode, UserTourStatus } from './entity/userTour';
 export type { DegreeLevel, FeedbackType, UserVerificationMode } from './enum';
 export {
   DEGREE,

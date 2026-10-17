@@ -5,9 +5,6 @@ import { noteTour } from './note';
 import { sidebarTour } from './sidebar';
 import type { GuideTourConfig, GuideTourId } from './types';
 
-/** 后端记下「已看过」之前先不自动播放。接上后改为 true。 */
-export const GUIDE_ENABLED = true;
-
 export const GUIDE_TOUR_ID = {
   sidebar: 'sidebar',
   chat: 'chat',
@@ -27,5 +24,6 @@ export const GUIDE_TOURS = {
 } satisfies Record<GuideTourId, GuideTourConfig>;
 
 export { GUIDE_ACTION_ID, type GuideActionId } from './actions';
+export { GUIDE_TOUR_CODE } from './task';
 export { GUIDE_TOOL_ID, type GuideToolId } from './toolId';
 export type { GuideStepConfig, GuideStepPlacement, GuideTourConfig, GuideTourId } from './types';

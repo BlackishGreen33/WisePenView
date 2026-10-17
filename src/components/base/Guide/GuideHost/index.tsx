@@ -1,20 +1,24 @@
 import './style.module.less';
 
+import { useMount } from 'ahooks';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useJoyride } from 'react-joyride';
 
 import {
-  GUIDE_ENABLED,
+  GUIDE_TOUR_CODE,
   GUIDE_TOURS,
   type GuideTourConfig,
   type GuideTourId,
 } from '@/constants/tour';
+import { useUserService } from '@/domains';
+import { useApi } from '@/hooks/useApi';
 
 import { getActivePageTourId, subscribeActivePageTour } from '../activePageTourStore';
 import { compileGuideSteps } from '../compileGuideSteps';
 import type { GuideActionPort } from '../guideActions';
 import GuideSpotlight from '../GuideSpotlight';
+import { useGuideTaskStore } from '../guideTaskStore';
 import GuideTooltip, { GuideArrow } from '../GuideTooltip';
 import type { GuideHostProps } from './index.type';
 
@@ -254,29 +258,49 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
   );
 }
 
-/** 新手指引宿主。不读取、不写入是否已看过。 */
+/** 新手指引宿主。按后端引导记录决定是否播放，并在结束时汇报完成状态。 */
 function GuideHost({ shellTourId, actions }: GuideHostProps) {
+  const userService = useUserService();
+  const tourStatusLoaded = useGuideTaskStore((state) => state.loaded);
+  const pendingByTourId = useGuideTaskStore((state) => state.pendingByTourId);
+  const beginLoading = useGuideTaskStore((state) => state.beginLoading);
+  const loadTourStatuses = useGuideTaskStore((state) => state.loadTourStatuses);
+  const finishLoading = useGuideTaskStore((state) => state.finishLoading);
+  const markCompleted = useGuideTaskStore((state) => state.markCompleted);
+  const { run: loadTourStatus } = useApi(() => userService.listTourStatus(), {
+    manual: true,
+    showErrorToast: false,
+    onSuccess: loadTourStatuses,
+    onError: finishLoading,
+  });
+
+  useMount(() => {
+    if (beginLoading()) void loadTourStatus();
+  });
+
   const pageTourId = useSyncExternalStore(
     subscribeActivePageTour,
     getActivePageTourId,
     getActivePageTourId
   );
-  const [shellFinished, setShellFinished] = useState(false);
-  const shellTour = shellTourId ? GUIDE_TOURS[shellTourId] : null;
-  const pageTour = pageTourId ? GUIDE_TOURS[pageTourId] : null;
-  const showShellTour = !shellFinished && shellTour !== null;
-  const activeTour = showShellTour ? shellTour : pageTour;
-  const activeTourId: GuideTourId | null = showShellTour ? (shellTourId ?? null) : pageTourId;
+  const shellTour = shellTourId && pendingByTourId[shellTourId] ? GUIDE_TOURS[shellTourId] : null;
+  const pageTour = pageTourId && pendingByTourId[pageTourId] ? GUIDE_TOURS[pageTourId] : null;
+  const activeTour = shellTour ?? pageTour;
+  const activeTourId: GuideTourId | null = shellTour ? (shellTourId ?? null) : pageTourId;
 
-  if (!GUIDE_ENABLED || !activeTour || !activeTourId) return null;
+  const handleFinished = () => {
+    if (!activeTourId) return;
+    markCompleted(activeTourId);
+    void userService.completeTour(GUIDE_TOUR_CODE[activeTourId]).catch(() => undefined);
+  };
+
+  if (!tourStatusLoaded || !activeTour || !activeTourId) return null;
   return (
     <GuidePlayer
       key={activeTourId}
       tour={activeTour}
       actions={actions}
-      onFinished={() => {
-        if (!shellFinished && shellTour) setShellFinished(true);
-      }}
+      onFinished={handleFinished}
     />
   );
 }
