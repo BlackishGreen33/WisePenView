@@ -81,7 +81,9 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
       skip: t('controls.skip'),
     },
     options: {
-      arrowColor: 'var(--surface)',
+      arrowBase: 20,
+      arrowSize: 10,
+      arrowSpacing: 16,
       buttons: ['back', 'skip', 'primary'],
       dismissKeyAction: false,
       showProgress: true,
