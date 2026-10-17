@@ -146,6 +146,21 @@ const enUSNote = {
       underline: 'Underline',
       code: 'Inline code',
     },
+    fontFamily: {
+      label: 'Font',
+      default: 'Default',
+      serif: 'Serif',
+      kai: 'Kai',
+      mono: 'Monospace',
+    },
+    fontSize: {
+      label: 'Font size',
+      small: 'Small 14',
+      default: 'Body 16',
+      large: 'Large 18',
+      xlarge: 'Extra large 22',
+      xxlarge: 'Huge 28',
+    },
     indent: {
       label: 'Indentation',
       align: 'Indentation and alignment',
@@ -155,6 +170,7 @@ const enUSNote = {
     toolbar: {
       label: 'Formatting toolbar',
       blockAndFile: 'Block type and file',
+      fontAndSize: 'Font and size',
       searchCommentAi: 'Search, comments, and AI',
       search: 'Search document',
       addComment: 'Add comment',

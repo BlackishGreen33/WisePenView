@@ -151,6 +151,21 @@ const zhCNNote = {
       underline: '下划线',
       code: '行内代码',
     },
+    fontFamily: {
+      label: '字体',
+      default: '默认字体',
+      serif: '宋体',
+      kai: '楷体',
+      mono: '等宽',
+    },
+    fontSize: {
+      label: '字号',
+      small: '小 14',
+      default: '正文 16',
+      large: '大 18',
+      xlarge: '特大 22',
+      xxlarge: '超大 28',
+    },
     indent: {
       label: '缩进',
       align: '缩进和对齐',
@@ -160,6 +175,7 @@ const zhCNNote = {
     toolbar: {
       label: '格式工具栏',
       blockAndFile: '块类型和文件',
+      fontAndSize: '字体和字号',
       searchCommentAi: '搜索、批注和 AI',
       search: '全文搜索',
       addComment: '添加批注',
