@@ -7,4 +7,29 @@
   html.guide-pointer-lock [data-guide-tooltip] * {
     pointer-events: auto !important;
   }
+
+  /* 抽屉重新打开时浏览器会恢复上次焦点，HeroUI 菜单项会因此显示焦点描边。 */
+  html.guide-pointer-lock [data-slot='menu-item'][data-focus-visible='true'],
+  html.guide-pointer-lock [data-slot='menu-item']:focus-visible {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
+.multiSpotlight {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.multiSpotlightSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.multiSpotlightPath {
+  fill: color-mix(in oklab, var(--foreground) 30%, transparent);
 }

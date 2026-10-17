@@ -15,6 +15,7 @@ import { compileGuideSteps } from '../compileGuideSteps';
 import type { GuideActionPort } from '../guideActions';
 import GuideTooltip, { GuideArrow } from '../GuideTooltip';
 import { getPageTourId, subscribePageTours } from '../pageTourRegistry';
+import GuideMultiSpotlight from './GuideMultiSpotlight';
 import type { GuideHostProps } from './index.type';
 
 const GUIDE_Z_INDEX_FALLBACK = 1050;
@@ -61,7 +62,12 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
     [actions, tour, t]
   );
 
-  const { controls, on, Tour } = useJoyride({
+  const {
+    controls,
+    on,
+    step: activeStep,
+    Tour,
+  } = useJoyride({
     continuous: true,
     run,
     steps,
@@ -80,11 +86,11 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
       buttons: ['back', 'skip', 'primary'],
       dismissKeyAction: false,
       overlayClickAction: false,
-      overlayColor: 'color-mix(in oklab, var(--foreground) 40%, transparent)',
+      overlayColor: 'color-mix(in oklab, var(--foreground) 30%, transparent)',
       showProgress: true,
       skipBeacon: true,
       spotlightRadius,
-      zIndex,
+      zIndex: zIndex + 2,
     },
     // 模态打开时 body 是 pointer-events: none，气泡必须自己接点击，否则会落到遮罩上。
     styles: {
@@ -232,8 +238,24 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
     });
   }, [actions, on, onFinished]);
 
+  const activeStepConfig = activeStep
+    ? tour.steps.find((item) => item.id === activeStep.id)
+    : undefined;
+  const multiSpotlightToolIds = activeStepConfig?.spotlightToolIds;
+
   if (!run) return null;
-  return Tour;
+  return (
+    <>
+      {multiSpotlightToolIds && multiSpotlightToolIds.length > 1 ? (
+        <GuideMultiSpotlight
+          toolIds={multiSpotlightToolIds}
+          radius={spotlightRadius}
+          zIndex={zIndex + 1}
+        />
+      ) : null}
+      {Tour}
+    </>
+  );
 }
 
 /** 新手指引宿主。不读取、不写入是否已看过。 */

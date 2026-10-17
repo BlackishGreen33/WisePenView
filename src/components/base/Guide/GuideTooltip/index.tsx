@@ -1,3 +1,5 @@
+import { CornerDownLeft } from 'lucide-react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { ArrowRenderProps } from 'react-joyride';
 
 import type { GuideTooltipProps } from './index.type';
@@ -55,11 +57,17 @@ function GuideTooltip({
   const showBack = step.buttons.includes('back') && index > 0;
   const showSkip = step.buttons.includes('skip') && !isLastStep;
   const showPrimary = step.buttons.includes('primary');
+  const { children: primaryChildren, ...primaryButtonProps } =
+    primaryProps as typeof primaryProps & {
+      children?: ReactNode;
+    };
+  const primaryLabel = primaryChildren ?? primaryProps['aria-label'];
 
   return (
     <div
       className={styles.tooltip}
       {...tooltipProps}
+      style={step.styles?.tooltip as CSSProperties | undefined}
       data-guide-tooltip=""
       data-react-aria-top-layer="true"
       onPointerDown={(event) => {
@@ -74,7 +82,17 @@ function GuideTooltip({
         <div className={styles.nav}>
           {showBack ? <button type="button" className={styles.back} {...backProps} /> : null}
           {showPrimary ? (
-            <button type="button" className={styles.primary} {...primaryProps} />
+            <button
+              type="button"
+              className={styles.primary}
+              aria-keyshortcuts={isLastStep ? undefined : 'Enter'}
+              {...primaryButtonProps}
+            >
+              <span>{primaryLabel}</span>
+              {isLastStep ? null : (
+                <CornerDownLeft className={styles.enterIcon} size={14} aria-hidden="true" />
+              )}
+            </button>
           ) : null}
         </div>
       </div>
