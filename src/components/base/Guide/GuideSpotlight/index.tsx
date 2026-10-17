@@ -5,7 +5,7 @@ import type { GuideSpotlightProps } from './index.type';
 import styles from './style.module.less';
 import { useGuideSpotlightFrame } from './useGuideSpotlightFrame';
 
-const SPOTLIGHT_FEATHER = 5;
+const SPOTLIGHT_FEATHER = 1;
 
 /** 引导遮罩：为当前步骤需要说明的区域挖出柔边高亮孔。 */
 function GuideSpotlight({ toolIds, zIndex }: GuideSpotlightProps) {
