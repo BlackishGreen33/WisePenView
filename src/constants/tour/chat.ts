@@ -23,7 +23,7 @@ export const chatTour: GuideTourConfig = {
       'top',
       GUIDE_ACTION_ID.openModelMenu,
       {
-        offset: 64,
+        offset: 0,
         restore: GUIDE_ACTION_ID.openModelMenu,
         spotlightToolIds: [GUIDE_TOOL_ID.chatModel, GUIDE_TOOL_ID.chatModelOpen],
       }

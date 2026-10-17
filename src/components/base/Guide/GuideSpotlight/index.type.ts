@@ -1,10 +1,12 @@
-import type { GuideToolId } from '@/constants/tour';
+import type { GuideSpotlightPadding, GuideToolId } from '@/constants/tour';
 
 export interface GuideSpotlightRect {
   left: number;
   top: number;
   width: number;
   height: number;
+  /** 已包含孔洞 padding 的外圈圆角。 */
+  radius: number;
 }
 
 export interface GuideSpotlightFrame {
@@ -15,6 +17,7 @@ export interface GuideSpotlightFrame {
 
 export interface GuideSpotlightProps {
   toolIds: readonly GuideToolId[];
-  radius: number;
+  /** 覆盖默认的高亮孔 padding。 */
+  padding?: GuideSpotlightPadding;
   zIndex: number;
 }

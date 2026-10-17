@@ -26,4 +26,10 @@ export const GUIDE_TOURS = {
 export { GUIDE_ACTION_ID, type GuideActionId } from './actions';
 export { GUIDE_TOUR_CODE } from './task';
 export { GUIDE_TOOL_ID, type GuideToolId } from './toolId';
-export type { GuideStepConfig, GuideStepPlacement, GuideTourConfig, GuideTourId } from './types';
+export type {
+  GuideSpotlightPadding,
+  GuideStepConfig,
+  GuideStepPlacement,
+  GuideTourConfig,
+  GuideTourId,
+} from './types';
