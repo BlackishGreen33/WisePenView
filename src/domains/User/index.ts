@@ -18,7 +18,12 @@ export type {
   UserTaskType,
 } from './entity/userTask';
 export type { TourCode, UserTourStatus } from './entity/userTour';
-export type { DegreeLevel, FeedbackType, UserVerificationMode } from './enum';
+export type {
+  DegreeLevel,
+  FeedbackType,
+  UserVerificationMode,
+  UserVerificationProvider,
+} from './enum';
 export {
   DEGREE,
   EMAIL_SUFFIX,
@@ -27,6 +32,7 @@ export {
   SEX,
   USER_STATUS,
   USER_VERIFICATION,
+  USER_VERIFICATION_PROVIDER,
 } from './enum';
 export type {
   ConfirmEmailVerifyRequest,
