@@ -66,6 +66,9 @@ jobs:
       - name: Check API response contract
         run: pnpm check:api-contract
 
+      - name: Check z-index layers
+        run: pnpm check:z-index
+
       - name: Check radius tokens
         run: pnpm check:radius
 
