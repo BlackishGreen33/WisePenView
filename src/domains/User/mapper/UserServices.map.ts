@@ -78,6 +78,7 @@ const mapAccountProfileFromApi = (data: GetUserInfoApiResponse): UserAccountProf
       email: userInfo.email ?? undefined,
       mobile: userInfo.mobile ?? undefined,
       verificationMode: userInfo.verificationMode,
+      verificationProviderCode: userInfo.verificationProviderCode,
       status: normalizeUserStatusFromApi(userInfo.userStatus),
     },
     userProfile: {
