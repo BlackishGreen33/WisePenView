@@ -17,12 +17,14 @@ const zhCNNote = {
   title: {
     untitled: '未命名笔记',
     placeholder: '请输入标题',
+    field: '笔记标题',
   },
   info: {
     authors: '作者：{{names}}',
     noAuthors: '作者：暂无',
     empty: '暂无',
     lastEdited: '上次编辑',
+    bar: '笔记信息',
   },
   save: {
     saving: '保存中...',
