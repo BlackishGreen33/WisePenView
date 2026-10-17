@@ -244,6 +244,7 @@ const zhCNNote = {
     deleteRow: '删除行',
     deleteColumn: '删除列',
     selectRow: '选择第 {{index}} 行',
+    resizeRow: '调整第 {{index}} 行高度，双击恢复自动高度',
     selectColumn: '选择第 {{index}} 列',
     headerRow: '标题行',
     headerColumn: '标题列',

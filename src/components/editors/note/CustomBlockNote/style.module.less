@@ -182,7 +182,11 @@
   }
 
   :global(.ProseMirror .column-resize-handle) {
-    background-color: var(--accent);
+    right: calc(var(--note-table-resize-line-width, 2px) / -2);
+    width: var(--note-table-resize-line-width, 2px);
+    border-radius: var(--app-radius-pill);
+    /* 列宽提示线统一由表格浮层绘制，避免原生 4px 线与 1px 自定义线叠加后变粗。 */
+    background-color: transparent;
   }
 
   :global(.bn-table-drop-cursor) {
