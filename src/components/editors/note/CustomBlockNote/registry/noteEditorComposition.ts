@@ -1,6 +1,7 @@
 import { createAiDiffEditorExtension } from '../engines/aiDiff/extension';
 import { anchorHighlightEditorExtension } from '../engines/anchorHighlight/extension';
 import { searchEditorExtension } from '../engines/search/extension';
+import { checklistPlugin } from '../plugins/ChecklistPlugin';
 import { codeBlockPlugin } from '../plugins/CodeBlockPlugin';
 import { createDefaultContentPlugin } from '../plugins/DefaultContentPlugin';
 import { emojiEditorExtension } from '../plugins/EmojiPlugin/emojiExtension';
@@ -33,6 +34,7 @@ const notePluginTree = {
     codeBlockPlugin,
     tablePlugin,
     latexPlugin,
+    checklistPlugin,
     mermaidPlugin,
   ],
 } satisfies NotePluginBundle;
