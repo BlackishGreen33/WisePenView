@@ -3,8 +3,10 @@ import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { GuideAnchor } from '@/components/base/Guide';
 import { TextArea } from '@/components/base/Input';
 import { FULL_WIDTH_MODEL_ICON_ONLY_MAX_WIDTH } from '@/constants/layoutScale';
+import { GUIDE_TOOL_ID } from '@/constants/tour';
 import { useAppAuth } from '@/layouts/App/_context';
 
 import { ChatInputFileProvider, ChatInputStoreProvider } from './_context';
@@ -95,12 +97,14 @@ function ChatInputContent({
           </div>
         ) : null}
 
-        <TextArea
-          {...textAreaProps}
-          placeholder={t('input.placeholder')}
-          rows={1}
-          className={styles.textarea}
-        />
+        <GuideAnchor id={GUIDE_TOOL_ID.chatComposer} layout="area">
+          <TextArea
+            {...textAreaProps}
+            placeholder={t('input.placeholder')}
+            rows={1}
+            className={styles.textarea}
+          />
+        </GuideAnchor>
 
         <InputToolbar
           {...toolbarProps}
