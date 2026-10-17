@@ -1,6 +1,6 @@
 export { findGuideTarget } from './findGuideTarget';
-export type { GuideActionHandler } from './guideActionHandlers';
-export { registerGuideActionHandler } from './guideActionHandlers';
+export type { GuideActionHandler, GuideActionHandlers } from './guideActionHandlers';
+export { registerGuideActionHandler, registerGuideActionHandlers } from './guideActionHandlers';
 export type { GuideActionPort } from './guideActions';
 export { createGuideActions } from './guideActions';
 export { default as GuideAnchor } from './GuideAnchor';

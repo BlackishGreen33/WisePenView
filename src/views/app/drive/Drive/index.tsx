@@ -3,7 +3,7 @@ import { type Key, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { GuideAnchor, GuideScope, registerGuideActionHandler } from '@/components/base/Guide';
+import { GuideAnchor, GuideScope, registerGuideActionHandlers } from '@/components/base/Guide';
 import PageHeader from '@/components/base/PageHeader';
 import DriveBrowser from '@/components/business/Drive/DriveBrowser';
 import { GUIDE_ACTION_ID, GUIDE_TOOL_ID, GUIDE_TOUR_ID } from '@/constants/tour';
@@ -48,23 +48,16 @@ function Drive({ viewMode = 'tableDrive' }: DriveProps) {
    * cleanup：撤销四个动作处理器。
    */
   useEffect(() => {
-    const registerView = (
-      id: (typeof GUIDE_ACTION_ID)[keyof typeof GUIDE_ACTION_ID],
-      mode: DriveViewMode
-    ) =>
-      registerGuideActionHandler(id, {
-        open: () => setPreviewViewMode(mode),
-        close: () => setPreviewViewMode(null),
-      });
-    const unregister = [
-      registerView(GUIDE_ACTION_ID.showDriveFiles, 'tableDrive'),
-      registerView(GUIDE_ACTION_ID.showDriveUploadQueue, 'uploadQueue'),
-      registerView(GUIDE_ACTION_ID.showDriveFavorites, 'favorites'),
-      registerView(GUIDE_ACTION_ID.showDriveTrash, 'trash'),
-    ];
-    return () => {
-      for (const remove of unregister) remove();
-    };
+    const registerView = (mode: DriveViewMode) => ({
+      open: () => setPreviewViewMode(mode),
+      close: () => setPreviewViewMode(null),
+    });
+    return registerGuideActionHandlers({
+      [GUIDE_ACTION_ID.showDriveFiles]: registerView('tableDrive'),
+      [GUIDE_ACTION_ID.showDriveUploadQueue]: registerView('uploadQueue'),
+      [GUIDE_ACTION_ID.showDriveFavorites]: registerView('favorites'),
+      [GUIDE_ACTION_ID.showDriveTrash]: registerView('trash'),
+    });
   }, []);
 
   const { data: trashFolder } = useApi(

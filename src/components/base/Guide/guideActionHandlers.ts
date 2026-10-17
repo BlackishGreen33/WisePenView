@@ -9,6 +9,8 @@ export interface GuideActionHandler {
   close?: () => void;
 }
 
+export type GuideActionHandlers = Partial<Record<GuideActionId, GuideActionHandler>>;
+
 const handlersById = new Map<GuideActionId, GuideActionHandler[]>();
 const warnedDuplicateIds = new Set<GuideActionId>();
 
@@ -28,6 +30,18 @@ export function registerGuideActionHandler(
     const next = current.filter((item) => item !== handler);
     if (next.length === 0) handlersById.delete(id);
     else handlersById.set(id, next);
+  };
+}
+
+/** 批量登记引导动作，卸载时统一撤销。 */
+export function registerGuideActionHandlers(handlers: GuideActionHandlers): () => void {
+  const unregister: Array<() => void> = [];
+  for (const [id, handler] of Object.entries(handlers)) {
+    if (!handler) continue;
+    unregister.push(registerGuideActionHandler(id as GuideActionId, handler));
+  }
+  return () => {
+    for (const remove of unregister) remove();
   };
 }
 

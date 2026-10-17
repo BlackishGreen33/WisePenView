@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GuideAnchor, registerGuideActionHandler } from '@/components/base/Guide';
+import { GuideAnchor, registerGuideActionHandlers } from '@/components/base/Guide';
 import { TextArea } from '@/components/base/Input';
 import { FULL_WIDTH_MODEL_ICON_ONLY_MAX_WIDTH } from '@/constants/layoutScale';
 import { GUIDE_ACTION_ID, GUIDE_TOOL_ID } from '@/constants/tour';
@@ -87,31 +87,28 @@ function ChatInputContent({
       state.setSkillMenuOpen(false);
       open(state);
     };
-    const unregister = [
-      registerGuideActionHandler(GUIDE_ACTION_ID.openModelMenu, {
+    return registerGuideActionHandlers({
+      [GUIDE_ACTION_ID.openModelMenu]: {
         isOpen: () => store.getState().modelOpen,
         open: () => openOnly((state) => state.setModelOpen(true)),
         close: () => store.getState().setModelOpen(false),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.openUploadMenu, {
+      },
+      [GUIDE_ACTION_ID.openUploadMenu]: {
         isOpen: () => store.getState().attachmentOpen,
         open: () => openOnly((state) => state.setAttachmentOpen(true)),
         close: () => store.getState().setAttachmentOpen(false),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.openAgentMenu, {
+      },
+      [GUIDE_ACTION_ID.openAgentMenu]: {
         isOpen: () => store.getState().agentOpen,
         open: () => openOnly((state) => state.setAgentOpen(true)),
         close: () => store.getState().setAgentOpen(false),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.openSkillMenu, {
+      },
+      [GUIDE_ACTION_ID.openSkillMenu]: {
         isOpen: () => store.getState().skillMenuOpen,
         open: () => openOnly((state) => state.setSkillMenuOpen(true)),
         close: () => store.getState().setSkillMenuOpen(false),
-      }),
-    ];
-    return () => {
-      for (const remove of unregister) remove();
-    };
+      },
+    });
   }, [store]);
 
   return (

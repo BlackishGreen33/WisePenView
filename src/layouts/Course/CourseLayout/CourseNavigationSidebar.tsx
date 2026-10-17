@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { AppButton } from '@/components/base/Button';
-import { registerGuideActionHandler } from '@/components/base/Guide';
+import { registerGuideActionHandlers } from '@/components/base/Guide';
 import { GUIDE_ACTION_ID, GUIDE_TOOL_ID } from '@/constants/tour';
 import { COURSE_ROLE } from '@/domains/Course';
 import {
@@ -37,20 +37,17 @@ function CourseNavigationSidebar() {
           getChatSessionId(location)
         )
       );
-    const unregister = [
-      registerGuideActionHandler(GUIDE_ACTION_ID.openCourseHome, {
+    return registerGuideActionHandlers({
+      [GUIDE_ACTION_ID.openCourseHome]: {
         open: () => openCoursePage('home'),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.openCourseMaterials, {
+      },
+      [GUIDE_ACTION_ID.openCourseMaterials]: {
         open: () => openCoursePage('materials'),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.openCourseMembers, {
+      },
+      [GUIDE_ACTION_ID.openCourseMembers]: {
         open: () => openCoursePage('members'),
-      }),
-    ];
-    return () => {
-      for (const remove of unregister) remove();
-    };
+      },
+    });
   }, [course.courseId, location, navigate]);
 
   const navItems = [

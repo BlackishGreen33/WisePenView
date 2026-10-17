@@ -4,7 +4,7 @@ import { BookOpen, FolderOpen, type LucideIcon, MessageSquare } from 'lucide-rea
 import { type ComponentPropsWithRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GuideAnchor, registerGuideActionHandler } from '@/components/base/Guide';
+import { GuideAnchor, registerGuideActionHandlers } from '@/components/base/Guide';
 import CommandPaletteTrigger from '@/components/business/CommandPalette/Trigger';
 import { GUIDE_ACTION_ID, GUIDE_TOOL_ID, type GuideToolId } from '@/constants/tour';
 import { useAppAuth } from '@/layouts/App/_context';
@@ -80,20 +80,17 @@ function AppSidebarTabs() {
    * cleanup：撤销三个动作处理器。
    */
   useEffect(() => {
-    const unregister = [
-      registerGuideActionHandler(GUIDE_ACTION_ID.showSidebarSessions, {
+    return registerGuideActionHandlers({
+      [GUIDE_ACTION_ID.showSidebarSessions]: {
         open: () => setSelectedTab(SIDEBAR_VIEW_TAB.SESSIONS),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.showSidebarDrive, {
+      },
+      [GUIDE_ACTION_ID.showSidebarDrive]: {
         open: () => setSelectedTab(SIDEBAR_VIEW_TAB.DRIVE),
-      }),
-      registerGuideActionHandler(GUIDE_ACTION_ID.showSidebarCourses, {
+      },
+      [GUIDE_ACTION_ID.showSidebarCourses]: {
         open: () => setSelectedTab(SIDEBAR_VIEW_TAB.COURSES),
-      }),
-    ];
-    return () => {
-      for (const remove of unregister) remove();
-    };
+      },
+    });
   }, [setSelectedTab]);
 
   if (!appAuth.isAuthenticated) {
