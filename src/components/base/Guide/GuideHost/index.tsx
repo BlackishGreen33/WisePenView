@@ -11,11 +11,11 @@ import {
   type GuideTourId,
 } from '@/constants/tour';
 
+import { getActivePageTourId, subscribeActivePageTour } from '../activePageTourStore';
 import { compileGuideSteps } from '../compileGuideSteps';
 import type { GuideActionPort } from '../guideActions';
 import GuideSpotlight from '../GuideSpotlight';
 import GuideTooltip, { GuideArrow } from '../GuideTooltip';
-import { getPageTourId, subscribePageTours } from '../pageTourRegistry';
 import type { GuideHostProps } from './index.type';
 
 const GUIDE_Z_INDEX_FALLBACK = 1050;
@@ -256,7 +256,11 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
 
 /** 新手指引宿主。不读取、不写入是否已看过。 */
 function GuideHost({ shellTourId, actions }: GuideHostProps) {
-  const pageTourId = useSyncExternalStore(subscribePageTours, getPageTourId, getPageTourId);
+  const pageTourId = useSyncExternalStore(
+    subscribeActivePageTour,
+    getActivePageTourId,
+    getActivePageTourId
+  );
   const [shellFinished, setShellFinished] = useState(false);
   const shellTour = shellTourId ? GUIDE_TOURS[shellTourId] : null;
   const pageTour = pageTourId ? GUIDE_TOURS[pageTourId] : null;

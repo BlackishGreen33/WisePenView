@@ -6,7 +6,7 @@ import {
 } from '@/constants/tour';
 
 import { findGuideTarget } from './findGuideTarget';
-import { getGuideActionHandler } from './guideActionRegistry';
+import { getGuideActionHandler } from './guideActionHandlers';
 
 export interface GuideActionPort {
   prepare: (id: GuideActionId) => void | Promise<void>;

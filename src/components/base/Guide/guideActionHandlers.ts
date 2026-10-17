@@ -9,24 +9,30 @@ export interface GuideActionHandler {
   close?: () => void;
 }
 
-const handlers = new Map<GuideActionId, GuideActionHandler[]>();
+const handlersById = new Map<GuideActionId, GuideActionHandler[]>();
+const warnedDuplicateIds = new Set<GuideActionId>();
 
 export function registerGuideActionHandler(
   id: GuideActionId,
   handler: GuideActionHandler
 ): () => void {
-  const registered = handlers.get(id) ?? [];
-  handlers.set(id, [...registered, handler]);
+  const registered = handlersById.get(id) ?? [];
+  if (import.meta.env.DEV && registered.length > 0 && !warnedDuplicateIds.has(id)) {
+    warnedDuplicateIds.add(id);
+    console.warn(`[Guide] 动作 ${id} 存在多个处理器，将使用最后注册的实例。`);
+  }
+  handlersById.set(id, [...registered, handler]);
   return () => {
-    const current = handlers.get(id);
+    const current = handlersById.get(id);
     if (!current) return;
     const next = current.filter((item) => item !== handler);
-    if (next.length === 0) handlers.delete(id);
-    else handlers.set(id, next);
+    if (next.length === 0) handlersById.delete(id);
+    else handlersById.set(id, next);
   };
 }
 
+/** 同一动作允许多个实例登记，取最后挂载者。 */
 export function getGuideActionHandler(id: GuideActionId): GuideActionHandler | undefined {
-  const registered = handlers.get(id);
+  const registered = handlersById.get(id);
   return registered?.[registered.length - 1];
 }
