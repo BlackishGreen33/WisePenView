@@ -136,10 +136,15 @@
   .welcomeTransparentScrollbar();
 }
 
-.root[data-welcome-starters='compact'] .scrollViewport,
 .root[data-welcome-starters='focused'] .scrollViewport {
   min-height: 0;
   padding-block: var(--space-xs);
+}
+
+/* compact = 仅 Hero：去掉 Starter 外壳内边距，对齐旧 Welcome 相对输入框的间距 */
+.root[data-welcome-starters='compact'] .scrollViewport {
+  min-height: 0;
+  padding-block: 0;
 }
 
 .scrollViewportContent {
@@ -151,6 +156,12 @@
   min-height: 100%;
   flex-shrink: 0;
   justify-content: center;
+}
+
+.root[data-welcome-starters='compact'] .scrollViewportContent {
+  gap: 0;
+  min-height: 0;
+  justify-content: flex-start;
 }
 
 .root[data-welcome-starters='focused'] .hero {
@@ -167,6 +178,10 @@
   flex-shrink: 0;
   align-items: center;
   padding-block-end: var(--space-xs);
+}
+
+.root[data-welcome-starters='compact'] .hero {
+  padding-block-end: 0;
 }
 
 .startersCluster {

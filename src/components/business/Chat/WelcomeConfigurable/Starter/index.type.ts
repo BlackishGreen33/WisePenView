@@ -72,9 +72,35 @@ export type WelcomeStarterBlock = WelcomeQuestionsBlock | WelcomePromptCardsBloc
 /** @deprecated 使用 WelcomeStarterBlock */
 export type WelcomeConfigurableBlock = WelcomeStarterBlock;
 
+/**
+ * Hero（Logo + 主文案）配置；可序列化，便于静态 / 接口 / Agent 共用。
+ * 需要完全自定义 DOM 时仍用 Host 的 `hero` ReactNode 插槽。
+ */
+export interface WelcomeHeroConfig {
+  /**
+   * 图标图片地址。
+   * - 不传：主题品牌 Logo
+   * - `null`：不展示图标
+   * - string：自定义图片 URL
+   */
+  iconSrc?: string | null;
+  /**
+   * 主文案。
+   * - 不传：默认 i18n 问候（可选带用户名）
+   * - string：原样展示
+   */
+  title?: string;
+  /**
+   * 仅在未配置 `title` 时生效：默认问候是否插入用户昵称。默认 true。
+   */
+  greetWithUserName?: boolean;
+}
+
 /** Welcome 屏配置协议（静态 / 接口 / Agent 共用） */
 export interface WelcomeScreenConfig {
   showHero?: boolean;
+  /** Hero 图标与文案；`showHero === false` 时忽略 */
+  hero?: WelcomeHeroConfig;
   blocks: WelcomeStarterBlock[];
 }
 
