@@ -127,7 +127,7 @@ export function compileGuideSteps(
       ...(singleSpotlightToolId
         ? { spotlightTarget: () => findGuideTarget(singleSpotlightToolId) }
         : {}),
-      ...(spotlightToolIds.length > 1 ? { hideOverlay: true } : {}),
+      hideOverlay: true,
       ...(step.offset !== undefined ? { offset: step.offset } : {}),
       floatingOptions: {
         strategy: 'fixed',

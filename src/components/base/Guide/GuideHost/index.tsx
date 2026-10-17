@@ -24,21 +24,17 @@ import type { GuideHostProps } from './index.type';
 
 const GUIDE_Z_INDEX_FALLBACK = 1050;
 
-function readGuideChrome(): { spotlightRadius: number; zIndex: number } {
+function readGuideZIndex(): number {
   const style = getComputedStyle(document.documentElement);
-  const radius = Number.parseFloat(style.getPropertyValue('--radius'));
   const zIndex = Number.parseFloat(style.getPropertyValue('--app-z-index-guide'));
-  return {
-    spotlightRadius: Number.isFinite(radius) ? radius : 0,
-    zIndex: Number.isFinite(zIndex) && zIndex > 0 ? zIndex : GUIDE_Z_INDEX_FALLBACK,
-  };
+  return Number.isFinite(zIndex) && zIndex > 0 ? zIndex : GUIDE_Z_INDEX_FALLBACK;
 }
 
-let guideChrome: { spotlightRadius: number; zIndex: number } | null = null;
+let guideZIndex: number | null = null;
 
-function getGuideChrome(): { spotlightRadius: number; zIndex: number } {
-  if (!guideChrome) guideChrome = readGuideChrome();
-  return guideChrome;
+function getGuideZIndex(): number {
+  if (!guideZIndex) guideZIndex = readGuideZIndex();
+  return guideZIndex;
 }
 
 interface GuidePlayerProps {
@@ -50,7 +46,7 @@ interface GuidePlayerProps {
 /** 当前一条指引。换一条时整段重挂，从第一步重新开始。 */
 function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
   const { t } = useTranslation('tour');
-  const { spotlightRadius, zIndex } = getGuideChrome();
+  const zIndex = getGuideZIndex();
   const [run, setRun] = useState(true);
   const backTo = useRef<number | null>(null);
   const backAttempts = useRef(0);
@@ -86,14 +82,10 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
     },
     options: {
       arrowColor: 'var(--surface)',
-      blockTargetInteraction: true,
       buttons: ['back', 'skip', 'primary'],
       dismissKeyAction: false,
-      overlayClickAction: false,
-      overlayColor: 'color-mix(in oklab, var(--foreground) 30%, transparent)',
       showProgress: true,
       skipBeacon: true,
-      spotlightRadius,
       zIndex: zIndex + 2,
     },
     // 模态打开时 body 是 pointer-events: none，气泡必须自己接点击，否则会落到遮罩上。
@@ -106,8 +98,8 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
 
   /**
    * @wisepen-manual-effect
-   * 执行时机：指引还在播放时，document 捕获阶段的按下和点击，以及弹出层把卡片标成 inert 时。
-   * 不可替代原因：模态弹出层会把卡片标成 inert，pointer-events 挡不住；只拦 document 上的 click 也挡不住弹出层的 pointerup。
+   * 执行时机：指引还在播放时，document 捕获阶段的按下、点击和焦点，以及弹出层把卡片标成 inert 时。
+   * 不可替代原因：模态弹出层会把卡片标成 inert，pointer-events 挡不住；目标菜单异步挂载后还会主动聚焦，必须把焦点拉回引导按钮。
    * cleanup：指引结束或换一条时卸下监听，避免遮罩拆掉后页面仍然点不了。
    */
   useEffect(() => {
@@ -183,13 +175,22 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
     };
 
     const pointerEvents = ['pointerdown', 'pointerup', 'mousedown', 'mouseup'] as const;
+    const keepGuideFocus = (event: FocusEvent) => {
+      if (!(event.target instanceof Node)) return;
+      const tip = document.querySelector('[data-guide-tooltip]');
+      if (!(tip instanceof HTMLElement) || tip.contains(event.target)) return;
+      const primary = tip.querySelector<HTMLElement>('[data-action="primary"]');
+      primary?.focus({ preventScroll: true });
+    };
     for (const type of pointerEvents) window.addEventListener(type, blockPageEvent, true);
     window.addEventListener('click', onClick, true);
+    document.addEventListener('focusin', keepGuideFocus, true);
     return () => {
       observer.disconnect();
       document.documentElement.classList.remove('guide-pointer-lock');
       for (const type of pointerEvents) window.removeEventListener(type, blockPageEvent, true);
       window.removeEventListener('click', onClick, true);
+      document.removeEventListener('focusin', keepGuideFocus, true);
     };
   }, [controls, run]);
 
@@ -245,13 +246,22 @@ function GuidePlayer({ tour, actions, onFinished }: GuidePlayerProps) {
   const activeStepConfig = activeStep
     ? tour.steps.find((item) => item.id === activeStep.id)
     : undefined;
-  const spotlightToolIds = activeStepConfig?.spotlightToolIds;
+  /**
+   * @wisepen-manual-memo
+   * 为什么：同一配置对象在步骤内引用稳定，而默认目标需要按配置生成数组；每次渲染新建数组会让遮罩反复重挂并重置测量。
+   * 收益：同一指引步骤内复用同一份高亮目标，避免无意义的重渲染与位置跳动。
+   * 失效条件：切换步骤或步骤配置的高亮目标变化时必须重建。
+   */
+  const spotlightToolIds = useMemo(
+    () => activeStepConfig?.spotlightToolIds ?? (activeStepConfig ? [activeStepConfig.toolId] : []),
+    [activeStepConfig]
+  );
 
   if (!run) return null;
   return (
     <>
-      {spotlightToolIds && spotlightToolIds.length > 1 ? (
-        <GuideSpotlight toolIds={spotlightToolIds} radius={spotlightRadius} zIndex={zIndex + 1} />
+      {spotlightToolIds.length > 0 ? (
+        <GuideSpotlight key={activeStepConfig?.id} toolIds={spotlightToolIds} zIndex={zIndex + 1} />
       ) : null}
       {Tour}
     </>

@@ -5,10 +5,14 @@ import type { GuideSpotlightProps } from './index.type';
 import styles from './style.module.less';
 import { useGuideSpotlightFrame } from './useGuideSpotlightFrame';
 
-/** 一步需要同时说明多个区域时，用同一层遮罩挖出多个高亮孔。 */
-function GuideSpotlight({ toolIds, radius, zIndex }: GuideSpotlightProps) {
+const SPOTLIGHT_FEATHER = 5;
+
+/** 引导遮罩：为当前步骤需要说明的区域挖出柔边高亮孔。 */
+function GuideSpotlight({ toolIds, zIndex }: GuideSpotlightProps) {
   const frame = useGuideSpotlightFrame(toolIds);
-  const maskId = `guide-spotlight-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const maskId = `guide-spotlight-mask-${id}`;
+  const featherId = `guide-spotlight-feather-${id}`;
 
   if (frame.rects.length === 0) return null;
 
@@ -20,6 +24,16 @@ function GuideSpotlight({ toolIds, radius, zIndex }: GuideSpotlightProps) {
         preserveAspectRatio="none"
       >
         <defs>
+          <filter
+            id={featherId}
+            x="-100%"
+            y="-100%"
+            width="300%"
+            height="300%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feGaussianBlur stdDeviation={SPOTLIGHT_FEATHER} />
+          </filter>
           <mask
             id={maskId}
             x={0}
@@ -37,8 +51,9 @@ function GuideSpotlight({ toolIds, radius, zIndex }: GuideSpotlightProps) {
                 y={rect.top}
                 width={rect.width}
                 height={rect.height}
-                rx={radius}
+                rx={rect.radius}
                 fill="black"
+                filter={`url(#${featherId})`}
               />
             ))}
           </mask>
