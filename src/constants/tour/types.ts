@@ -20,10 +20,14 @@ export interface GuideStepConfig {
   preventFlip?: boolean;
   /** 气泡与目标的间距。紧贴输入框时用 0。 */
   offset?: number;
+  /** 指定气泡宽度；用于空间较窄、需要固定单侧展示的步骤。 */
+  tooltipWidth?: string;
+  /** 额外需要同时高亮的区域。一步有多个目标时由引导层合并绘制。 */
+  spotlightToolIds?: readonly GuideToolId[];
 }
 
 export interface GuideTourConfig {
   steps: readonly GuideStepConfig[];
 }
 
-export type GuideTourId = 'sidebar' | 'chat' | 'note' | 'drive';
+export type GuideTourId = 'sidebar' | 'chat' | 'note' | 'drive' | 'courseResources';
