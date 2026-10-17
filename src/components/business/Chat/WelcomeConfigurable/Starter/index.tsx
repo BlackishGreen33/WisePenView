@@ -353,9 +353,11 @@ function WelcomeStarter({
         <div className={styles.scrollViewportContent}>
           {showHero ? <div className={styles.hero}>{hero}</div> : null}
 
-          <div className={styles.startersCluster}>
-            {config.blocks.map((block) => renderBlock(block, onPromptPick))}
-          </div>
+          {config.blocks.length > 0 ? (
+            <div className={styles.startersCluster}>
+              {config.blocks.map((block) => renderBlock(block, onPromptPick))}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
