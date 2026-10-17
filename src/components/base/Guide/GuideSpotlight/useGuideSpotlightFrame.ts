@@ -1,11 +1,22 @@
 import { useLayoutEffect, useState } from 'react';
 
-import type { GuideToolId } from '@/constants/tour';
+import type { GuideSpotlightPadding, GuideToolId } from '@/constants/tour';
 
 import { findGuideTarget } from '../findGuideTarget';
 import type { GuideSpotlightFrame } from './index.type';
 
-const SPOTLIGHT_PADDING = 12;
+const DEFAULT_SPOTLIGHT_PADDING = 12;
+
+type SpotlightInsets = Required<GuideSpotlightPadding>;
+
+function normalizePadding(padding?: GuideSpotlightPadding): SpotlightInsets {
+  return {
+    top: padding?.top ?? DEFAULT_SPOTLIGHT_PADDING,
+    right: padding?.right ?? DEFAULT_SPOTLIGHT_PADDING,
+    bottom: padding?.bottom ?? DEFAULT_SPOTLIGHT_PADDING,
+    left: padding?.left ?? DEFAULT_SPOTLIGHT_PADDING,
+  };
+}
 
 /** 百分比圆角以对应方向的尺寸为基准，其余单位按 CSS 长度解析。 */
 function parseRadius(value: string, reference: number): number {
@@ -53,24 +64,21 @@ function readSpotlightRadius(element: HTMLElement, rect: DOMRect): number {
   return radius;
 }
 
-function readFrame(toolIds: readonly GuideToolId[]): GuideSpotlightFrame {
+function readFrame(toolIds: readonly GuideToolId[], padding: SpotlightInsets): GuideSpotlightFrame {
   const rects = toolIds.flatMap((id) => {
     const element = findGuideTarget(id);
     if (!element) return [];
     const rect = element.getBoundingClientRect();
-    const width = rect.width + SPOTLIGHT_PADDING * 2;
-    const height = rect.height + SPOTLIGHT_PADDING * 2;
+    const width = rect.width + padding.left + padding.right;
+    const height = rect.height + padding.top + padding.bottom;
+    const radiusPadding = Math.max(padding.top, padding.right, padding.bottom, padding.left);
     return [
       {
-        left: rect.left - SPOTLIGHT_PADDING,
-        top: rect.top - SPOTLIGHT_PADDING,
+        left: rect.left - padding.left,
+        top: rect.top - padding.top,
         width,
         height,
-        radius: Math.min(
-          readSpotlightRadius(element, rect) + SPOTLIGHT_PADDING,
-          width / 2,
-          height / 2
-        ),
+        radius: Math.min(readSpotlightRadius(element, rect) + radiusPadding, width / 2, height / 2),
       },
     ];
   });
@@ -78,11 +86,16 @@ function readFrame(toolIds: readonly GuideToolId[]): GuideSpotlightFrame {
 }
 
 /** 跟踪多个高亮目标在视口中的位置，供聚光遮罩绘制高亮孔。 */
-export function useGuideSpotlightFrame(toolIds: readonly GuideToolId[]): GuideSpotlightFrame {
-  const [frame, setFrame] = useState(() => readFrame(toolIds));
+export function useGuideSpotlightFrame(
+  toolIds: readonly GuideToolId[],
+  padding?: GuideSpotlightPadding
+): GuideSpotlightFrame {
+  const { top, right, bottom, left } = normalizePadding(padding);
+  const [frame, setFrame] = useState(() => readFrame(toolIds, { top, right, bottom, left }));
 
   useLayoutEffect(() => {
-    const update = () => setFrame(readFrame(toolIds));
+    const insets = { top, right, bottom, left };
+    const update = () => setFrame(readFrame(toolIds, insets));
     update();
 
     // 弹出层用 transform 做缩放动画，ResizeObserver 不会收到 transform 变化，需在动画期间补测位置。
@@ -103,7 +116,7 @@ export function useGuideSpotlightFrame(toolIds: readonly GuideToolId[]): GuideSp
       window.removeEventListener('resize', update);
       window.removeEventListener('scroll', update, true);
     };
-  }, [toolIds]);
+  }, [toolIds, top, right, bottom, left]);
 
   return frame;
 }

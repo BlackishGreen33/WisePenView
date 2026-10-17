@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GuideAnchor } from '@/components/base/Guide';
 import { GUIDE_TOOL_ID } from '@/constants/tour';
 
 import UserProfile from '../_common/footer/UserProfile';
@@ -40,16 +39,15 @@ function AppSidebar({
         canGoBack={canGoBack}
         canGoForward={canGoForward}
         nav={
-          <GuideAnchor id={GUIDE_TOOL_ID.sidebarNavigation} layout="area">
-            <HeaderNav
-              ariaLabel={t('navigation.appAria')}
-              activeKey={selectedKey}
-              collapsed={railLayout}
-              items={headerNavItems}
-              labelsHidden={labelsHidden}
-              showIndicator
-            />
-          </GuideAnchor>
+          <HeaderNav
+            ariaLabel={t('navigation.appAria')}
+            activeKey={selectedKey}
+            collapsed={railLayout}
+            guideToolId={GUIDE_TOOL_ID.sidebarNavigation}
+            items={headerNavItems}
+            labelsHidden={labelsHidden}
+            showIndicator
+          />
         }
         onGoBack={onGoBack}
         onGoForward={onGoForward}

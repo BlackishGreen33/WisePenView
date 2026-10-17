@@ -5,6 +5,14 @@ import type { GuideToolId } from './toolId';
 
 export type GuideStepPlacement = Placement | 'center' | 'auto';
 
+/** 高亮孔相对目标四边外扩的距离；未填写的方向使用组件默认值。 */
+export interface GuideSpotlightPadding {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
+
 /** 一条可配置的新手指引步骤。文案使用 tour namespace 下的 i18n key。 */
 export interface GuideStepConfig {
   id: string;
@@ -24,6 +32,8 @@ export interface GuideStepConfig {
   tooltipWidth?: string;
   /** 额外需要同时高亮的区域。一步有多个目标时由引导层合并绘制。 */
   spotlightToolIds?: readonly GuideToolId[];
+  /** 覆盖这一步的高亮孔 padding；用于让高亮范围在分割线等边界前收住。 */
+  spotlightPadding?: GuideSpotlightPadding;
 }
 
 export interface GuideTourConfig {

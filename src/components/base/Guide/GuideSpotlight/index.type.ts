@@ -1,4 +1,4 @@
-import type { GuideToolId } from '@/constants/tour';
+import type { GuideSpotlightPadding, GuideToolId } from '@/constants/tour';
 
 export interface GuideSpotlightRect {
   left: number;
@@ -17,5 +17,7 @@ export interface GuideSpotlightFrame {
 
 export interface GuideSpotlightProps {
   toolIds: readonly GuideToolId[];
+  /** 覆盖默认的高亮孔 padding。 */
+  padding?: GuideSpotlightPadding;
   zIndex: number;
 }

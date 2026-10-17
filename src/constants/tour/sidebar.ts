@@ -3,13 +3,20 @@ import { step } from './step';
 import { GUIDE_TOOL_ID } from './toolId';
 import type { GuideTourConfig } from './types';
 
+/** tab 内容铺满侧栏内容区，四周都不外扩，避免高亮越过侧栏边界。 */
+const TAB_PANEL_SPOTLIGHT_PADDING = { top: 0, right: 0, bottom: 0, left: 0 } as const;
+
 export const sidebarTour: GuideTourConfig = {
   steps: [
     step(
       'navigation',
       GUIDE_TOOL_ID.sidebarNavigation,
       'sidebar.navigation.title',
-      'sidebar.navigation.content'
+      'sidebar.navigation.content',
+      'right',
+      undefined,
+      // 菜单横向铺满侧栏，左右不再外扩；上下收紧，避开 logo 和分割线。
+      { spotlightPadding: { top: 8, right: 0, bottom: 6, left: 0 } }
     ),
     step(
       'sessions',
@@ -17,7 +24,8 @@ export const sidebarTour: GuideTourConfig = {
       'sidebar.sessions.title',
       'sidebar.sessions.content',
       'right-start',
-      GUIDE_ACTION_ID.showSidebarSessions
+      GUIDE_ACTION_ID.showSidebarSessions,
+      { spotlightPadding: TAB_PANEL_SPOTLIGHT_PADDING }
     ),
     step(
       'drive',
@@ -25,7 +33,8 @@ export const sidebarTour: GuideTourConfig = {
       'sidebar.drive.title',
       'sidebar.drive.content',
       'right-start',
-      GUIDE_ACTION_ID.showSidebarDrive
+      GUIDE_ACTION_ID.showSidebarDrive,
+      { spotlightPadding: TAB_PANEL_SPOTLIGHT_PADDING }
     ),
     step(
       'courses',
@@ -33,7 +42,8 @@ export const sidebarTour: GuideTourConfig = {
       'sidebar.courses.title',
       'sidebar.courses.content',
       'right-start',
-      GUIDE_ACTION_ID.showSidebarCourses
+      GUIDE_ACTION_ID.showSidebarCourses,
+      { spotlightPadding: TAB_PANEL_SPOTLIGHT_PADDING }
     ),
     step(
       'account',

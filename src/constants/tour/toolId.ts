@@ -4,7 +4,7 @@
  * 新增一步时在这里加字段，再用 GuideAnchor 包住那一块，查找逻辑不用改。
  */
 export const GUIDE_TOOL_ID = {
-  /** 侧栏顶部功能导航整块 */
+  /** 侧栏顶部功能导航菜单，不含下方分割线 */
   sidebarNavigation: 'sidebar-navigation',
   /** 侧栏 HeaderNav：新建对话 */
   sidebarNewChat: 'sidebar-new-chat',
