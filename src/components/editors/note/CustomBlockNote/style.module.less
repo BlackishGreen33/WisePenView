@@ -37,7 +37,7 @@
   height: var(--app-checkbox-control-size);
   margin: 3px var(--space-xs) 0 1px;
   border: 1px solid var(--app-checkbox-control-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--app-radius-checkbox);
   appearance: none;
   background-color: var(--app-checkbox-control-bg);
   box-shadow: var(--shadow-none);
@@ -69,7 +69,7 @@
   /* 正文批注原文高亮 */
   :global(.bodyBlockNoteView .bn-editor .bn-thread-mark:not([data-orphan='true'])) {
     background: var(--warning-soft);
-    border-radius: var(--radius-xs);
+    border-radius: var(--app-radius-detail);
   }
 
   :global(
@@ -107,8 +107,8 @@
     --bn-shadow-medium: var(--overlay-shadow);
     --bn-shadow-light: var(--surface-shadow);
     --bn-border: 1px solid var(--border-light);
-    --bn-border-radius: var(--radius-md);
-    --bn-ui-base-z-index: var(--app-z-index-editor-menu, 180);
+    --bn-border-radius: var(--app-radius-menu-item);
+    --bn-ui-base-z-index: var(--app-z-index-editor-menu);
     --prosemirror-highlight: var(--foreground);
     --prosemirror-highlight-bg: var(--surface);
 
@@ -148,7 +148,7 @@
     display: inline-block;
     min-height: 18px;
     padding: 1px var(--space-2xs) var(--space-3xs);
-    border-radius: var(--radius-xs);
+    border-radius: var(--app-radius-detail);
     font-family: var(--app-font-family);
     font-size: var(--font-size-xs);
     font-style: normal;
@@ -178,11 +178,15 @@
   :global(.ProseMirror td > *),
   :global(.ProseMirror th > *) {
     position: relative;
-    z-index: calc(var(--note-table-selection-layer, 25) + 1);
+    z-index: calc(var(--app-z-index-editor-block-overlay) + 1);
   }
 
   :global(.ProseMirror .column-resize-handle) {
-    background-color: var(--accent);
+    right: calc(var(--note-table-resize-line-width, 2px) / -2);
+    width: var(--note-table-resize-line-width, 2px);
+    border-radius: var(--app-radius-pill);
+    /* 列宽提示线统一由表格浮层绘制，避免原生 4px 线与 1px 自定义线叠加后变粗。 */
+    background-color: transparent;
   }
 
   :global(.bn-table-drop-cursor) {
@@ -396,7 +400,7 @@
     margin: var(--space-xs) 0 10px;
     overflow: visible;
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
+    border-radius: var(--app-radius-content);
     background-color: var(--surface-secondary) !important;
     color: var(--foreground);
     box-shadow: var(--shadow-none);
@@ -449,7 +453,7 @@
   :global(
     .bn-editor .bn-block-content[data-content-type='codeBlock']:has(.wise-code-block-toolbarOpen)
   ) {
-    z-index: var(--app-z-index-editor-toolbar, 220);
+    z-index: var(--app-z-index-editor-toolbar);
   }
 
   :global(
@@ -457,7 +461,7 @@
       .bn-block-content[data-content-type='codeBlock']:has(.wise-code-block-toolbarOpen)
       > div.wise-code-block-toolbarWrapper
   ) {
-    z-index: calc(var(--app-z-index-editor-toolbar, 220) + 1);
+    z-index: calc(var(--app-z-index-editor-toolbar) + 1);
   }
 
   :global(.bn-editor .bn-block-content[data-content-type='codeBlock'] .wise-code-block-toolbar) {
@@ -574,12 +578,12 @@
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
-    z-index: calc(var(--app-z-index-editor-toolbar, 220) + 2);
+    z-index: calc(var(--app-z-index-editor-toolbar) + 2);
     box-sizing: border-box;
     width: 220px;
     padding: var(--space-2xs-plus);
     border: 1px solid color-mix(in srgb, var(--prosemirror-highlight) 9%, var(--border));
-    border-radius: var(--radius-lg);
+    border-radius: var(--app-radius-popover);
     background: var(--surface);
     box-shadow: var(--overlay-shadow);
   }
@@ -593,7 +597,7 @@
     margin-bottom: var(--space-2xs-plus);
     padding: 0 var(--space-xs);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    border-radius: var(--app-radius-field);
     background: var(--surface);
     color: var(--foreground);
     font-family: var(--app-font-family);
@@ -627,7 +631,7 @@
     height: 28px;
     padding: 0 var(--space-xs);
     border: 0;
-    border-radius: var(--radius-md);
+    border-radius: var(--app-radius-menu-item);
     background: transparent;
     color: var(--foreground);
     cursor: pointer;
@@ -683,7 +687,7 @@
     height: 28px;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: var(--radius-md);
+    border-radius: var(--app-radius-menu-item);
     background: transparent;
     color: color-mix(in srgb, var(--prosemirror-highlight) 64%, transparent);
     cursor: pointer;
@@ -881,7 +885,7 @@
   margin: var(--space-xs) 0 10px;
   overflow: visible;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-xl);
+  border-radius: var(--app-radius-content);
   background-color: var(--surface-secondary) !important;
   color: var(--foreground);
   box-shadow: var(--shadow-none);
@@ -939,7 +943,7 @@
   .bn-drag-preview
     .bn-block-content[data-content-type='codeBlock']:has(.wise-code-block-toolbarOpen)
 ) {
-  z-index: var(--app-z-index-editor-toolbar, 220);
+  z-index: var(--app-z-index-editor-toolbar);
 }
 
 :global(
@@ -947,7 +951,7 @@
     .bn-block-content[data-content-type='codeBlock']:has(.wise-code-block-toolbarOpen)
     > div.wise-code-block-toolbarWrapper
 ) {
-  z-index: calc(var(--app-z-index-editor-toolbar, 220) + 1);
+  z-index: calc(var(--app-z-index-editor-toolbar) + 1);
 }
 
 :global(
@@ -1068,12 +1072,12 @@
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  z-index: calc(var(--app-z-index-editor-toolbar, 220) + 2);
+  z-index: calc(var(--app-z-index-editor-toolbar) + 2);
   box-sizing: border-box;
   width: 220px;
   padding: var(--space-2xs-plus);
   border: 1px solid color-mix(in srgb, var(--prosemirror-highlight) 9%, var(--border));
-  border-radius: var(--radius-lg);
+  border-radius: var(--app-radius-popover);
   background: var(--surface);
   box-shadow: var(--overlay-shadow);
 }
@@ -1087,7 +1091,7 @@
   margin-bottom: var(--space-2xs-plus);
   padding: 0 var(--space-xs);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--app-radius-field);
   background: var(--surface);
   color: var(--foreground);
   font-family: var(--app-font-family);
@@ -1123,7 +1127,7 @@
   height: 28px;
   padding: 0 var(--space-xs);
   border: 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--app-radius-menu-item);
   background: transparent;
   color: var(--foreground);
   cursor: pointer;
@@ -1183,7 +1187,7 @@
   height: 28px;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--app-radius-menu-item);
   background: transparent;
   color: color-mix(in srgb, var(--prosemirror-highlight) 64%, transparent);
   cursor: pointer;

@@ -10,7 +10,7 @@
   padding: var(--space-lg);
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--app-radius-content);
 }
 
 .panel {
@@ -32,4 +32,15 @@
   font-weight: var(--font-weight-medium);
   color: var(--foreground);
   line-height: 1.4;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+
+  .sectionTitle {
+    margin-bottom: 0;
+  }
 }

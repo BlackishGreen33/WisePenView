@@ -14,7 +14,7 @@
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  border-radius: var(--radius-sm);
+  border-radius: var(--app-radius-inline);
   box-sizing: border-box;
   outline: none;
 
@@ -51,13 +51,13 @@
 /* 行内公式编辑：脱离文档流，浮在正文之上 */
 .inlineEditPopover {
   position: fixed;
-  z-index: var(--app-z-index-editor-floating, 450);
+  z-index: var(--app-z-index-editor-floating);
   display: flex;
   flex-direction: column;
   gap: var(--space-2xs, var(--space-2xs));
   padding: 0;
   border: 1px solid var(--field-border, var(--border));
-  border-radius: var(--radius-field, calc(var(--radius) * 1.5));
+  border-radius: var(--app-radius-popover);
   overflow: clip;
   background: var(--field-background, var(--surface));
   color: var(--field-foreground, var(--foreground));

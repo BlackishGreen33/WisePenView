@@ -40,14 +40,14 @@
   height: var(--app-checkbox-control-size, 16px);
   overflow: hidden;
   border: 1px solid var(--app-checkbox-control-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--app-radius-checkbox);
   background-color: var(--app-checkbox-control-bg);
   box-shadow: var(--shadow-none);
 }
 
 .checkbox:global(.checkbox) :global(.checkbox__indicator) {
   position: relative;
-  z-index: 1;
+  z-index: var(--app-z-index-raised);
   display: inline-flex;
   align-items: center;
   justify-content: center;

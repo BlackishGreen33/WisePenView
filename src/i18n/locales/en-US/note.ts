@@ -14,13 +14,15 @@ const enUSNote = {
     imageUploadLeaveDescription:
       'Wait for {{count}} image upload to finish before leaving this note.',
     imageUploadContinue: 'Continue uploading',
+    anchorNotFound: 'Unable to locate the referenced text. It may have been deleted or moved.',
   },
-  title: { untitled: 'Untitled note', placeholder: 'Enter a title' },
+  title: { untitled: 'Untitled note', placeholder: 'Enter a title', field: 'Note title' },
   info: {
     authors: 'Authors: {{names}}',
     noAuthors: 'Authors: None',
     empty: 'None',
     lastEdited: 'Last edited',
+    bar: 'Note details',
   },
   save: {
     saving: 'Saving...',
@@ -231,6 +233,7 @@ const enUSNote = {
     deleteRow: 'Delete row',
     deleteColumn: 'Delete column',
     selectRow: 'Select row {{index}}',
+    resizeRow: 'Resize row {{index}}, double-click to reset',
     selectColumn: 'Select column {{index}}',
     headerRow: 'Header row',
     headerColumn: 'Header column',
