@@ -27,6 +27,13 @@ export const NOTE_FONT_FAMILY_STACKS = {
   kai: '"Kaiti SC", STKaiti, KaiTi, 楷体, "Kaiti TC", serif',
   fangsong: 'FangSong, STFangsong, "FangSong_GB2312", 仿宋, serif',
   round: '"Yuanti SC", YouYuan, 圆体, sans-serif',
+  timesNewRoman: '"Times New Roman", Times, "Songti SC", "Noto Serif CJK SC", SimSun, serif',
+  arial:
+    'Arial, "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
+  georgia: 'Georgia, "Times New Roman", "Songti SC", "Noto Serif CJK SC", serif',
+  garamond: 'Garamond, "EB Garamond", "Palatino Linotype", Georgia, serif',
+  palatino: 'Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif',
+  courierNew: '"Courier New", Courier, "SFMono-Regular", Menlo, "Songti SC", monospace',
   mono: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace',
 } as const;
 
@@ -40,6 +47,12 @@ export const NOTE_FONT_FAMILY_VALUES: readonly NoteFontFamilyValue[] = [
   'kai',
   'fangsong',
   'round',
+  'timesNewRoman',
+  'arial',
+  'georgia',
+  'garamond',
+  'palatino',
+  'courierNew',
   'mono',
 ];
 

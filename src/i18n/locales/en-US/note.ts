@@ -154,6 +154,12 @@ const enUSNote = {
       kai: 'Kai',
       fangsong: 'FangSong',
       round: 'Round',
+      timesNewRoman: 'Times New Roman',
+      arial: 'Arial',
+      georgia: 'Georgia',
+      garamond: 'Garamond',
+      palatino: 'Palatino',
+      courierNew: 'Courier New',
       mono: 'Monospace',
     },
     fontSize: {
