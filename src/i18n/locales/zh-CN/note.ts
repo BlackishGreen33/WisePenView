@@ -154,17 +154,16 @@ const zhCNNote = {
     fontFamily: {
       label: '字体',
       default: '默认字体',
+      hei: '黑体',
       serif: '宋体',
       kai: '楷体',
+      fangsong: '仿宋',
+      round: '圆体',
       mono: '等宽',
     },
     fontSize: {
       label: '字号',
-      small: '小 14',
-      default: '正文 16',
-      large: '大 18',
-      xlarge: '特大 22',
-      xxlarge: '超大 28',
+      defaultSuffix: '（default）',
     },
     indent: {
       label: '缩进',

@@ -8,45 +8,44 @@
 export const FONT_SIZE_STYLE_TYPE = 'fontSize';
 export const FONT_FAMILY_STYLE_TYPE = 'fontFamily';
 
-/** 字号预设（px）。`default` 表示不写 mark，回到正文默认字号。 */
-export const NOTE_FONT_SIZE_PX = {
-  small: 14,
-  large: 18,
-  xlarge: 22,
-  xxlarge: 28,
-} as const;
+/** 可选字号（px，升序）。16px 是笔记正文默认字号，只以 `default` 项出现，不写入 mark。 */
+export const NOTE_FONT_SIZES_PX = [12, 14, 16, 18, 22, 28] as const;
 
-export type NoteFontSizeValue = keyof typeof NOTE_FONT_SIZE_PX | 'default';
+export const NOTE_DEFAULT_FONT_SIZE_PX = 16;
 
-/** 菜单顺序：默认档次插在小号与大号之间，便于从常用字号向两侧选取。 */
-export const NOTE_FONT_SIZE_VALUES: readonly NoteFontSizeValue[] = [
-  'small',
-  'default',
-  'large',
-  'xlarge',
-  'xxlarge',
-];
+export type NoteFontSizeValue = `${(typeof NOTE_FONT_SIZES_PX)[number]}` | 'default';
+
+/** 菜单选项：mark 的值直接用 px 数字，默认字号用 `default` 表示。 */
+export const NOTE_FONT_SIZE_VALUES: readonly NoteFontSizeValue[] = NOTE_FONT_SIZES_PX.map(
+  (px): NoteFontSizeValue => (px === NOTE_DEFAULT_FONT_SIZE_PX ? 'default' : `${px}`)
+);
 
 /** 字体族预设：全部为系统字体栈，中文优先命中本地字库，未命中时降级到通用族。 */
 export const NOTE_FONT_FAMILY_STACKS = {
+  hei: '"Heiti SC", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", SimHei, sans-serif',
   serif: '"Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", SimSun, STSong, serif',
   kai: '"Kaiti SC", STKaiti, KaiTi, 楷体, "Kaiti TC", serif',
+  fangsong: 'FangSong, STFangsong, "FangSong_GB2312", 仿宋, serif',
+  round: '"Yuanti SC", YouYuan, 圆体, sans-serif',
   mono: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace',
 } as const;
 
 export type NoteFontFamilyValue = keyof typeof NOTE_FONT_FAMILY_STACKS | 'default';
 
+/** 菜单顺序：默认在最前，其余按中文排版习惯排列。 */
 export const NOTE_FONT_FAMILY_VALUES: readonly NoteFontFamilyValue[] = [
   'default',
+  'hei',
   'serif',
   'kai',
+  'fangsong',
+  'round',
   'mono',
 ];
 
 export function getFontSizePx(value: string): number | undefined {
-  return Object.hasOwn(NOTE_FONT_SIZE_PX, value)
-    ? NOTE_FONT_SIZE_PX[value as keyof typeof NOTE_FONT_SIZE_PX]
-    : undefined;
+  const px = Number(value);
+  return (NOTE_FONT_SIZES_PX as readonly number[]).includes(px) ? px : undefined;
 }
 
 export function getFontFamilyStack(value: string): string | undefined {

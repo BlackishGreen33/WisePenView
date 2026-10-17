@@ -149,17 +149,16 @@ const enUSNote = {
     fontFamily: {
       label: 'Font',
       default: 'Default',
+      hei: 'Hei',
       serif: 'Serif',
       kai: 'Kai',
+      fangsong: 'FangSong',
+      round: 'Round',
       mono: 'Monospace',
     },
     fontSize: {
       label: 'Font size',
-      small: 'Small 14',
-      default: 'Body 16',
-      large: 'Large 18',
-      xlarge: 'Extra large 22',
-      xxlarge: 'Huge 28',
+      defaultSuffix: ' (default)',
     },
     indent: {
       label: 'Indentation',

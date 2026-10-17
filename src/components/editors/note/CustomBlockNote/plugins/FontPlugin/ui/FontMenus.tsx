@@ -20,6 +20,7 @@ import {
   FONT_FAMILY_STYLE_TYPE,
   FONT_SIZE_STYLE_TYPE,
   getFontFamilyStack,
+  NOTE_DEFAULT_FONT_SIZE_PX,
   NOTE_FONT_FAMILY_VALUES,
   NOTE_FONT_SIZE_VALUES,
 } from '../model';
@@ -116,7 +117,11 @@ export function FontSizeMenu(buttonGroupProps: ButtonGroupChildProps) {
   const { t } = useTranslation('note');
   const options = NOTE_FONT_SIZE_VALUES.map((value) => ({
     key: value,
-    label: t(`editor.fontSize.${value}`),
+    // 字号菜单直接列为数值；默认档靠后缀标明，避免用户猜哪一个是正文尺寸。
+    label:
+      value === 'default'
+        ? `${NOTE_DEFAULT_FONT_SIZE_PX}px${t('editor.fontSize.defaultSuffix')}`
+        : `${value}px`,
   }));
 
   return (
