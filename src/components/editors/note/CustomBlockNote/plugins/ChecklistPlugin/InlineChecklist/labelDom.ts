@@ -17,6 +17,39 @@ export function focusLabelAtEnd(node: HTMLElement) {
   selection.addRange(range);
 }
 
+type CaretDocument = Document & {
+  caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+};
+
+/** 进入编辑时尽量把光标放到点击位置；浏览器不支持坐标命中时回退到末尾。 */
+export function focusLabelAtPoint(node: HTMLElement, clientX: number, clientY: number) {
+  node.focus();
+  const selection = window.getSelection();
+  if (!selection) return;
+
+  const doc = node.ownerDocument as CaretDocument;
+  let range: Range | null = null;
+  if (doc.caretRangeFromPoint) {
+    range = doc.caretRangeFromPoint(clientX, clientY);
+  } else if (doc.caretPositionFromPoint) {
+    const position = doc.caretPositionFromPoint(clientX, clientY);
+    if (position) {
+      range = doc.createRange();
+      range.setStart(position.offsetNode, position.offset);
+      range.collapse(true);
+    }
+  }
+
+  if (!range || !node.contains(range.startContainer)) {
+    focusLabelAtEnd(node);
+    return;
+  }
+
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
 function getEditableRange(host: HTMLElement): Range | null {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) return null;
