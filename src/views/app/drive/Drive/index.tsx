@@ -103,8 +103,8 @@ function Drive({ viewMode = 'tableDrive' }: DriveProps) {
         onSelectionChange={handleViewModeSelectionChange}
         className={`${underlineTabs.underlineTabs} ${styles.detailTabs}`}
       >
-        <Tabs.ListContainer>
-          <GuideAnchor id={GUIDE_TOOL_ID.driveViews} layout="area">
+        <GuideAnchor id={GUIDE_TOOL_ID.driveViews} asChild>
+          <Tabs.ListContainer>
             <Tabs.List aria-label={t('page.viewAria')}>
               {[
                 { key: 'tableDrive', label: t('page.tabs.drive') },
@@ -118,8 +118,8 @@ function Drive({ viewMode = 'tableDrive' }: DriveProps) {
                 </Tabs.Tab>
               ))}
             </Tabs.List>
-          </GuideAnchor>
-        </Tabs.ListContainer>
+          </Tabs.ListContainer>
+        </GuideAnchor>
       </Tabs>
 
       <div className={styles.previewContent}>
