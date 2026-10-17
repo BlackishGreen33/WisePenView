@@ -8,7 +8,11 @@ import type { WelcomePromptPickMeta } from '../Starter/index.type';
 import WelcomeTitle from '../Title';
 import type { WelcomeScreenHostProps } from './index.type';
 
-function resolveHero(hero: WelcomeScreenHostProps['hero'], showHero: boolean) {
+function resolveHero(
+  hero: WelcomeScreenHostProps['hero'],
+  showHero: boolean,
+  heroConfig: WelcomeScreenHostProps['config']['hero']
+) {
   if (!showHero) {
     return undefined;
   }
@@ -18,7 +22,7 @@ function resolveHero(hero: WelcomeScreenHostProps['hero'], showHero: boolean) {
   if (hero !== undefined) {
     return hero;
   }
-  return <WelcomeTitle />;
+  return <WelcomeTitle {...heroConfig} />;
 }
 
 interface WelcomeScreenHostBodyProps extends WelcomeScreenHostProps {
@@ -37,7 +41,7 @@ function WelcomeScreenHostBody({
   useWelcomeScreenOrchestration(syncLayoutWithShell ? config : null);
 
   const showHero = config.showHero !== false;
-  const heroNode = resolveHero(hero, showHero);
+  const heroNode = resolveHero(hero, showHero, config.hero);
 
   const handlePromptPick = (prompt: string, meta: WelcomePromptPickMeta) => {
     if (chatInputStore) {

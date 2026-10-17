@@ -20,6 +20,7 @@ export type { WelcomeScreenHostProps } from './Host/index.type';
 export type {
   WelcomeConfigurableBlock,
   WelcomeConfigurableProps,
+  WelcomeHeroConfig,
   WelcomeIconTone,
   WelcomeLayoutMode,
   WelcomePromptCardItem,
@@ -35,3 +36,4 @@ export type {
   WelcomeStarterProps,
 } from './Starter/index.type';
 export { default as ChatWelcomeHero } from './Title';
+export type { WelcomeTitleProps } from './Title/index.type';
