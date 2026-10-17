@@ -50,8 +50,8 @@ function NoteWorkspace({ resourceId, noteInfoDisplay, onRefreshNoteInfo }: NoteW
   const titleEditorRef = useRef<NoteTitleHandle>(null);
   const scrollBarHideTimerRef = useRef<number | null>(null);
   const [isMainScrolling, setIsMainScrolling] = useState(false);
-  // 目录默认展开，用户仍可手动收起
-  const [isOutlineOpen, setIsOutlineOpen] = useState(true);
+  // 目录默认收起，避免挤占正文空间，用户仍可手动展开
+  const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineItems, setOutlineItems] = useState<NoteOutlineItem[]>([]);
   const [activeHeadingId, setActiveHeadingId] = useState<string | undefined>(undefined);
   const [titleSaveStatus, setTitleSaveStatus] = useState<NoteTitleSaveStatus>('saved');
