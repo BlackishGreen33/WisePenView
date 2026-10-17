@@ -23,6 +23,7 @@ import GuideTooltip, { GuideArrow } from '../GuideTooltip';
 import type { GuideHostProps } from './index.type';
 
 const GUIDE_Z_INDEX_FALLBACK = 1050;
+const SCOPE_TRANSITION_GAP_MS = 500;
 
 function readGuideZIndex(): number {
   const style = getComputedStyle(document.documentElement);
@@ -295,24 +296,48 @@ function GuideHost({ shellTourId, actions }: GuideHostProps) {
     getActivePageTourId,
     getActivePageTourId
   );
-  const shellTour = shellTourId && pendingByTourId[shellTourId] ? GUIDE_TOURS[shellTourId] : null;
-  const pageTour = pageTourId && pendingByTourId[pageTourId] ? GUIDE_TOURS[pageTourId] : null;
-  const activeTour = shellTour ?? pageTour;
-  const activeTourId: GuideTourId | null = shellTour ? (shellTourId ?? null) : pageTourId;
+  const activeTourId: GuideTourId | null =
+    shellTourId && pendingByTourId[shellTourId]
+      ? shellTourId
+      : pageTourId && pendingByTourId[pageTourId]
+        ? pageTourId
+        : null;
 
-  const handleFinished = () => {
-    if (!activeTourId) return;
-    markCompleted(activeTourId);
-    void userService.completeTour(GUIDE_TOUR_CODE[activeTourId]).catch(() => undefined);
+  const [visibleTourId, setVisibleTourId] = useState<GuideTourId | null>(null);
+  const previousTourId = useRef<GuideTourId | null>(null);
+
+  /**
+   * @wisepen-manual-effect
+   * 执行时机：当前 scope 切换时。
+   * 不可替代原因：上一条指引结束会立刻挂载下一条，遮罩没有消失窗口，用户感知不到 scope 已完成。
+   * cleanup：清掉尚未触发的延时，避免页面切换后把旧 scope 的指引重新挂出来。
+   */
+  useEffect(() => {
+    const previous = previousTourId.current;
+    previousTourId.current = activeTourId;
+    if (!activeTourId) return undefined;
+
+    // 两条 scope 之间留出空档；首次出现或页面重新挂载时立即展示。
+    const delay = previous && previous !== activeTourId ? SCOPE_TRANSITION_GAP_MS : 0;
+    const timer = window.setTimeout(() => setVisibleTourId(activeTourId), delay);
+    return () => window.clearTimeout(timer);
+  }, [activeTourId]);
+
+  const handleFinished = (tourId: GuideTourId) => {
+    markCompleted(tourId);
+    void userService.completeTour(GUIDE_TOUR_CODE[tourId]).catch(() => undefined);
   };
 
-  if (!tourStatusLoaded || !activeTour || !activeTourId) return null;
+  const renderedTourId = visibleTourId === activeTourId ? visibleTourId : null;
+  const renderedTour = renderedTourId ? GUIDE_TOURS[renderedTourId] : null;
+
+  if (!tourStatusLoaded || !renderedTour || !renderedTourId) return null;
   return (
     <GuidePlayer
-      key={activeTourId}
-      tour={activeTour}
+      key={renderedTourId}
+      tour={renderedTour}
       actions={actions}
-      onFinished={handleFinished}
+      onFinished={() => handleFinished(renderedTourId)}
     />
   );
 }
