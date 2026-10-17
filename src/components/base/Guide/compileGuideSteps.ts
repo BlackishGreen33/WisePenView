@@ -123,11 +123,12 @@ export function compileGuideSteps(
       content: translate(step.contentKey),
       placement: step.placement,
       skipScroll: true,
-      ...(step.tooltipWidth ? { styles: { tooltip: { width: step.tooltipWidth } } } : {}),
+      // Joyride 会把默认 tooltip 样式合并进 step.styles，宽度经 data 透传，避免覆盖组件样式。
+      ...(step.tooltipWidth ? { data: { tooltipWidth: step.tooltipWidth } } : {}),
       ...(singleSpotlightToolId
         ? { spotlightTarget: () => findGuideTarget(singleSpotlightToolId) }
         : {}),
-      ...(spotlightToolIds.length > 1 ? { hideOverlay: true } : {}),
+      hideOverlay: true,
       ...(step.offset !== undefined ? { offset: step.offset } : {}),
       floatingOptions: {
         strategy: 'fixed',
