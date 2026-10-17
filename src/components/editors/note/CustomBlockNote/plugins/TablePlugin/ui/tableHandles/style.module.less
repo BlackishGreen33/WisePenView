@@ -19,6 +19,8 @@
   --note-table-select-hit-size: var(--control-height-sm);
 
   position: relative;
+  /* 选择层与插入手柄只应在表格块内竞争层级，避免逃逸到应用层遮挡其他浮层。 */
+  isolation: isolate;
   overflow: visible;
 }
 
