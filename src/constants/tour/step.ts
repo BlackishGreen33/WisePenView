@@ -5,6 +5,9 @@ import type { GuideStepConfig } from './types';
 interface GuideStepOptions {
   restore?: GuideActionId;
   offset?: number;
+  spotlightToolIds?: readonly GuideToolId[];
+  preventFlip?: boolean;
+  tooltipWidth?: string;
 }
 
 export function step(

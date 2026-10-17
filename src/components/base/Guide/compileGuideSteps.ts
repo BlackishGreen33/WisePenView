@@ -114,6 +114,8 @@ export function compileGuideSteps(
   return tour.steps.map((step) => {
     const prepare = step.prepare;
     const restore = step.restore;
+    const spotlightToolIds = step.spotlightToolIds ?? [];
+    const singleSpotlightToolId = spotlightToolIds.length === 1 ? spotlightToolIds[0] : null;
     return {
       id: step.id,
       target: () => findGuideTarget(step.toolId),
@@ -121,17 +123,26 @@ export function compileGuideSteps(
       content: translate(step.contentKey),
       placement: step.placement,
       skipScroll: true,
+      ...(step.tooltipWidth ? { styles: { tooltip: { width: step.tooltipWidth } } } : {}),
+      ...(singleSpotlightToolId
+        ? { spotlightTarget: () => findGuideTarget(singleSpotlightToolId) }
+        : {}),
+      ...(spotlightToolIds.length > 1 ? { hideOverlay: true } : {}),
       ...(step.offset !== undefined ? { offset: step.offset } : {}),
       floatingOptions: {
         strategy: 'fixed',
-        ...(step.preventFlip
+        ...(step.preventFlip === false
           ? {
-              flipOptions: {
-                padding: VIEWPORT_PADDING,
-                fallbackPlacements: [oppositePlacement(step.placement ?? 'right')],
-              },
+              flipOptions: false,
             }
-          : {}),
+          : step.preventFlip
+            ? {
+                flipOptions: {
+                  padding: VIEWPORT_PADDING,
+                  fallbackPlacements: [oppositePlacement(step.placement ?? 'right')],
+                },
+              }
+            : {}),
         shiftOptions: {
           padding: VIEWPORT_PADDING,
           mainAxis: true,
