@@ -16,6 +16,10 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { useNoteEditorReadOnlyContext } from '@/components/editors/note/CustomBlockNote/engines/editor/_context';
+import {
+  FontFamilyMenu,
+  FontSizeMenu,
+} from '@/components/editors/note/CustomBlockNote/plugins/FontPlugin/ui/FontMenus';
 import { TableToolbarProvider } from '@/components/editors/note/CustomBlockNote/plugins/TablePlugin/ui/_context';
 import {
   type TableRailSelectionOrientation,
@@ -246,6 +250,11 @@ function CustomFormattingToolbar({
             ) : null}
             <ToolbarSeparator />
             <TextStyleButtons />
+            <ToolbarSeparator />
+            <ButtonGroup size="sm" variant="ghost" aria-label={t('editor.toolbar.fontAndSize')}>
+              <FontFamilyMenu />
+              <FontSizeMenu />
+            </ButtonGroup>
             <ToolbarSeparator />
             <TextAlignButtons />
             <ToolbarSeparator />
