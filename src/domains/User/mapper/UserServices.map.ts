@@ -12,6 +12,7 @@ import type {
   UserInviteRecord,
   UserInviteRecordList,
   UserSearchUser,
+  UserTourStatus,
 } from '@/domains/User';
 import { normalizeId } from '@/utils/normalize/normalizeId';
 
@@ -37,6 +38,7 @@ import type {
   UserTaskRewardPreviewApiResponse,
   UserTaskStatusApiResponse,
 } from '../apis/UserTaskApi.type';
+import type { UserTourStatusApiResponse } from '../apis/UserTourApi.type';
 import type {
   UserTaskCheckInResult,
   UserTaskPeriodicStatus,
@@ -91,6 +93,7 @@ const mapAccountProfileFromApi = (data: GetUserInfoApiResponse): UserAccountProf
       email: userInfo.email ?? undefined,
       mobile: userInfo.mobile ?? undefined,
       verificationMode: userInfo.verificationMode,
+      verificationProviderCode: userInfo.verificationProviderCode,
       status: normalizeUserStatusFromApi(userInfo.userStatus),
     },
     userProfile: {
@@ -327,6 +330,12 @@ const mapTaskCheckInFromApi = (data: UserTaskCheckInApiResponse): UserTaskCheckI
   };
 };
 
+const mapTourStatusesFromApi = (data: UserTourStatusApiResponse[]): UserTourStatus[] =>
+  data.map(({ tourCode, completed }) => ({
+    tourCode,
+    completed: completed === true,
+  }));
+
 const mapUpdateUserInfoRequests = (
   params: UpdateUserInfoRequest
 ): {
@@ -373,5 +382,6 @@ export const UserServicesMap = {
   mapSubmitFeedbackRequest,
   mapTaskStatusesFromApi,
   mapTaskCheckInFromApi,
+  mapTourStatusesFromApi,
   mapUpdateUserInfoRequests,
 };

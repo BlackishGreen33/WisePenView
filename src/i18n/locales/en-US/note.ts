@@ -16,12 +16,13 @@ const enUSNote = {
     imageUploadContinue: 'Continue uploading',
     anchorNotFound: 'Unable to locate the referenced text. It may have been deleted or moved.',
   },
-  title: { untitled: 'Untitled note', placeholder: 'Enter a title' },
+  title: { untitled: 'Untitled note', placeholder: 'Enter a title', field: 'Note title' },
   info: {
     authors: 'Authors: {{names}}',
     noAuthors: 'Authors: None',
     empty: 'None',
     lastEdited: 'Last edited',
+    bar: 'Note details',
   },
   save: {
     saving: 'Saving...',

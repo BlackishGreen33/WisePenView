@@ -59,7 +59,6 @@ const AuthBindingOnboarding = lazy(() => import('@/views/app/auth/AuthBindingOnb
 const ResetPassword = lazy(() => import('@/views/app/auth/ResetPassword'));
 const NewPassword = lazy(() => import('@/views/app/auth/NewPassword'));
 const VerifyEmail = lazy(() => import('@/views/app/auth/VerifyEmail'));
-const ChangePassword = lazy(() => import('@/views/app/auth/ChangePassword'));
 const ResourceRouteBoundary = lazy(() => import('@/views/app/resource/ResourceRouteBoundary'));
 const ChatPage = lazy(() => import('@/views/app/chat'));
 const NotificationsPage = lazy(() => import('@/views/app/notifications'));
@@ -140,10 +139,6 @@ const router = createBrowserRouter([
     errorElement: <AppError />,
     children: [
       {
-        element: <AuthLayout />,
-        children: [{ path: 'password/change', element: <ChangePassword /> }],
-      },
-      {
         element: (
           <AppAuthProvider mode="authenticated">
             <AppNavigationLayout />
@@ -154,7 +149,14 @@ const router = createBrowserRouter([
             element: <AppLayout />,
             errorElement: <RouteError />,
             children: [
-              { path: 'chat/:sessionId?', element: <ChatPage />, handle: chatRouteHandle },
+              {
+                path: 'chat',
+                handle: chatRouteHandle,
+                children: [
+                  { index: true, element: <ChatPage /> },
+                  { path: ':sessionId', element: <ChatPage /> },
+                ],
+              },
               {
                 element: <AppScrollablePageLayout />,
                 children: [
