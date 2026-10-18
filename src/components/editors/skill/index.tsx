@@ -130,7 +130,7 @@ function SkillEditorContent() {
       toast.warning(t('toast.moveInProgress'));
       return;
     }
-    save.handleSaveCurrentFile();
+    save.handleSaveAll();
   };
   const {
     onEditorMount: handleMarkdownEditorMount,
